@@ -1,6 +1,6 @@
 # Proposal: Handheld GPS
 ## Raspberry Pi2 based GPS	
-Garrett Wells
+Garrett Wells (countryBumpkin)
 
 ## Needs and Opportunities
 Humanity needs an alternative GPS option. Using a raspberry pi to run a GPS will provide a cheap alternative option to systems like Garmin or any common application that can be run off of a phone.

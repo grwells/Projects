@@ -12,10 +12,7 @@ All people who would like to track their location or the location of someone or 
 The product will be a raspberry pi that is capable of acting as a GPS. It will specifically be capable of storing data over an extended period of time independently without user management. Pros are that it will be light, cheap, and small.
 
 ## Timeline
-What is your monthly timeline for this project. I want to see a list of
-deliverables with deadlines. You may find that the timeline needs adjustment
-during the course of the year, which may be fine. Check in with me if that\u2019s
-the case. 
+I plan to have the hardware in hand and ready for me to begin working on my code by the end of February. I am leaving some time here for me to learn how to use the file system in linux as well as set up the various connections between the raspberry pi and whatever other computer I plan to be using. By April 1 I plan to have the raspberry pi hooked up to the GPS unit and receiving information from the GPS. By April 29 I will have all of my data collection and organization done for the raspberry pi and will be ready to begin working on the software and visual aids that I will implement to make the data more readable.
 
 | Date          | Deliverable   |
 | ------------- | ------------- |

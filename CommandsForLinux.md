@@ -25,3 +25,11 @@ Directory Navigation Commands:
 	Go Up One Directory => cd .. or cd /
 
 	Go To the Root Directory cd ~
+
+	Garrett's Pi
+
+	VNC Server login password : Garrett1
+	to run type this in SSH terminal: vncserver :1
+	Pi login username: pi
+		password: raspberry
+		ip: 192.168.0.38

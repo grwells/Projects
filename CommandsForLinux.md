@@ -32,4 +32,16 @@ Directory Navigation Commands:
 	to run type this in SSH terminal: vncserver :1
 	Pi login username: pi
 		password: raspberry
+
+		vkwells5511
+		43dda7daf7e9fa
 		ip: 192.168.0.38
+
+		102
+		A0F0154D36001AFDB6BBAAD008
+		ip: 10.58.42.158 (will probably change next time)
+
+To Connect to WiFi 
+	sudo nano /etc/network/interfaces
+		change ssid and psk
+	sudo dhclient wlan0

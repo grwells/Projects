@@ -45,3 +45,7 @@ To Connect to WiFi
 	sudo nano /etc/network/interfaces
 		change ssid and psk
 	sudo dhclient wlan0
+
+To Disabble the Serial Boot Up
+	sudo nano /boot/cmdline.txt
+		then remove console=ttyAMAO,115200 and if there kgdboc=ttyAMA0,115200

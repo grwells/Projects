@@ -46,6 +46,13 @@ To Connect to WiFi
 		change ssid and psk
 	sudo dhclient wlan0
 
-To Disabble the Serial Boot Up
-	sudo nano /boot/cmdline.txt
+GPS Setup:
+
+	1. Disabble the Serial Boot Up
+		sudo nano /boot/cmdline.txt
 		then remove console=ttyAMAO,115200 and if there kgdboc=ttyAMA0,115200
+
+	2. Run 
+		stty -F /dev/ttyAMA0 raw 9600 cs8 clocal -cstopb
+		and then
+		cat /dev/ttyAMA0

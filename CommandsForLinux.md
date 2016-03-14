@@ -56,3 +56,13 @@ GPS Setup:
 		stty -F /dev/ttyAMA0 raw 9600 cs8 clocal -cstopb
 		and then
 		cat /dev/ttyAMA0
+
+VNC Server Setup and Settings:
+	Installation Process:
+		1- sudo apt-get install tightvncserver
+		2- vncserver :1 //starts server and on first start will activate settings for the passwd
+		3- say no to read only password
+
+	Resetting Password:
+		1- passwd
+		2- type the new passwd

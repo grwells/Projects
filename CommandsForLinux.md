@@ -1,5 +1,8 @@
 Commands For Linux
 
+Change Password For the Pi:
+	passwd
+
 File and Folder Commands:
 
 	Create a Folder => mkdir <folderName>
@@ -28,7 +31,7 @@ Directory Navigation Commands:
 
 	Garrett's Pi
 
-	VNC Server login password : Garrett1
+	VNC Server login password : Garrett1 "HelloG"
 	to run type this in SSH terminal: vncserver :1
 	Pi login username: pi
 		password: raspberry
@@ -64,5 +67,5 @@ VNC Server Setup and Settings:
 		3- say no to read only password
 
 	Resetting Password:
-		1- passwd
-		2- type the new passwd
+		1- vncpasswd
+		2- type the new pass word

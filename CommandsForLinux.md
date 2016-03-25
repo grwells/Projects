@@ -69,3 +69,5 @@ VNC Server Setup and Settings:
 	Resetting Password:
 		1- vncpasswd
 		2- type the new pass word
+
+	

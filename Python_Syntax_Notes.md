@@ -52,6 +52,8 @@
 	>>>import subprocess
 	>>>subprocess.Popen(args, bufsize=-1, executable=None, stdin=None, stdout=None, stderr=None, preexec_fn=None, close_fds=True, shell=False, cwd=None, env=None, universal_newlines=False, startupinfo=None, creationflags=0, restore_signals=True, start_new_session=False, pass_fds=())
 
+	The text from the subprocess.PIPE may end up being in the form of binary and as a result cannot be written to a file as a string. Therefore use '%s' to insert numbers or binary as a string. Also, in the case of the GPS data, it also needs to be split into lines of code which means that in addition to '%s', '\n' needs to be used. The cumulative python script is "'%s\n' %line". For more explanation see 'String Formatting'.
+
 	os Method:
 	>>>import os
 	>>>os.system("command_here")
@@ -122,4 +124,27 @@ Lists of Items:
 For Loops:
 	for int_name in list_name:
 		# Goes through each element in list and performs whatever operations are in the body of the for loop.
+
+##String Formatting
+	Strings can be formatted using concatenation as well as another method specific to python.
+
+		Concatenation:
+			the addition symbol is also used for concatenating strings.
+
+			example:
+			>>> first = 'Hello'
+			>>> second = 'World!'
+			>>> print(first + ' ' + second)
+				Hello World!
+
+		Using %s and %d:
+
+			%d works with only integers in cases like the following example. However, %s works with all cases as far as I know.
+
+			example:
+			>>> one = 1
+			>>> two = 2
+			>>> print('%s+%s' % (one, two))
+				1+2
+
 

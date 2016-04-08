@@ -70,4 +70,31 @@ VNC Server Setup and Settings:
 		1- vncpasswd
 		2- type the new pass word
 
+
+How to Clone a GitHub Repository Into a local Repository:
+
+
+	When you create a repository on GitHub, it exists as a remote repository. You can create a local clone of your repository on your computer and sync between the two locations.
+
+	This procedure assumes you have already created a repository on GitHub, or have an existing repository owned by someone else you'd like to contribute to.
+
+	1-On GitHub, navigate to the main page of the repository.
+
+	2-Clone URL buttonUnder your repository name, click  to copy the clone URL for the repository.
+
+	3-Open Terminal.
+
+	4-Change the current working directory to the location where you want the cloned directory to be made.
+
+	5-Type git clone, and then paste the URL you copied in Step 2.
+
+		git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
 	
+	6-Press Enter. Your local clone will be created.
+
+	git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
+	Cloning into `Spoon-Knife`...
+	remote: Counting objects: 10, done.
+	remote: Compressing objects: 100% (8/8), done.
+	remove: Total 10 (delta 1), reused 10 (delta 1)
+	Unpacking objects: 100% (10/10), done.

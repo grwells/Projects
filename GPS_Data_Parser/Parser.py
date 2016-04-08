@@ -3,12 +3,32 @@ Created on Apr 4, 2016
 
 @author: deepg
 '''
+sentence = ''
+gmt = sentence[7 : 16] 
 
-def parse_location(sentence):
+def parse_location(gmt):
     '''
-    Parse the location data in the sentence
+    Parse the time data in the sentence and convert it to a readable format
     '''
-        
+    hours = gmt[0 : 2]
+    minutes = gmt[2 : 4]
+    seconds = gmt[4 : 6]
+    milliseconds = gmt[6 : 8]
+    
+    print('Current Time: ' + hours + ' hrs, ' + minutes + ' min, ' + seconds + ' sec,' + milliseconds  + ' millisec ')
+    
+
+def parse_time(gmt):
+    '''
+    Parse the time data in the sentence and convert it to a readable format
+    '''
+    hours = gmt[0 : 2]
+    minutes = gmt[2 : 4]
+    seconds = gmt[4 : 6]
+    milliseconds = gmt[6 : 8]
+    
+    print('Current Time: ' + hours + ' hrs, ' + minutes + ' min, ' + seconds + ' sec,' + milliseconds  + ' millisec ')
+    
     
 def parse_RMC(sentence):
     '''
@@ -17,15 +37,19 @@ def parse_RMC(sentence):
     #Location
     location_north = sentence[20:31]
     location_west = sentence[32:44]
+    print('Location North: ' + location_north)
+    print('Location West: ' + location_west)
     
     #Speed knots
     speed_knots = sentence[44:48]
+    print('Velocity(Knots): ' + speed_knots)
     
     #Angle of Velocity
     angle_ofvelocity = sentence[49:55]
-    
+    print('Angle of Velocity: ' + angle_ofvelocity)
+        
     #Time in hours, minutes, seconds, and milliseconds
-    gmt = sentence[7 : 16]
+    global gmt = sentence[7 : 16]
     
     #Status
     gp_status = sentence[18]
@@ -51,7 +75,7 @@ def parse_file(file):
     n = open('GPS_Log.txt', 'w')
     
     for line in f:
-        if line[0:5] == '$GPRMC':
+        if line[0:5] == 'b\'$GPRMC':
             parse_RMC(line)
         
  

@@ -17,17 +17,15 @@ def write_tofile(fill_limit):
     result = subprocess.Popen('cat /dev/ttyAMA0', shell=True, stdout=subprocess.PIPE)
     print('---PIPE is now OPEN!!!')
     
-    for line in result.stdout.splitlines():
-        if count < fill_limit:
+    for line in result.stdout:
+        if count < int(fill_limit):
             f.write("%s\n" %line)
             print("%s" %line)
             count += 1
-            print('Count is now: ' + count)
+            print('Count is now: ' + str(count))
         else:
             print('---Limit Reached---')
             print('---Ending Process---')
             break
 
-print('---Process Starting---')
-write_tofile(20)
-print('---Process Ended---')
+

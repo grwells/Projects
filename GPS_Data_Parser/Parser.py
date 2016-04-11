@@ -37,13 +37,8 @@ def parse_RMC(sentence):
     #Location
     location_north = sentence[20:31]
     location_west = sentence[32:44]
-<<<<<<< HEAD
     print('Location North: ' + location_north)
     print('Location West: ' + location_west)
-=======
-    print('Location N: ' + location_north)
-    print('Location W: ' + location_west)
->>>>>>> a773bb31bd33447187751c977db72d24f88724d9
     
     #Speed knots
     speed_knots = sentence[44:48]
@@ -51,23 +46,17 @@ def parse_RMC(sentence):
     
     #Angle of Velocity
     angle_ofvelocity = sentence[49:55]
-<<<<<<< HEAD
     print('Angle of Velocity: ' + angle_ofvelocity)
         
-=======
-    print('Angle Of Velocity: ' + angle_ofvelocity)
-    
->>>>>>> a773bb31bd33447187751c977db72d24f88724d9
     #Time in hours, minutes, seconds, and milliseconds
     global gmt = sentence[7 : 16]
     
-    
     #Status
     gp_status = sentence[18]
-        
+    
     if gp_status == 'A':
         parse_location(sentence)
-        print('GPS Status: Active')
+    
     else:
         current_status = sentence[18]
         print(current_status)
@@ -85,16 +74,10 @@ def parse_file(file):
     
     n = open('GPS_Log.txt', 'w')
     
-<<<<<<< HEAD
     for line in f:
         if line[0:5] == 'b\'$GPRMC':
-=======
-    for line in f.readline():
-        if line[0:8] == 'b\'$GPRMC':
-            print('GPRMC Data:')
->>>>>>> a773bb31bd33447187751c977db72d24f88724d9
             parse_RMC(line)
         
  
   
-
+parse_file('GPS_Data.txt')

@@ -11,31 +11,35 @@ def parse_RMC(sentence):
     '''
     Parse the sentence and find the important chucks of data
     '''
-    #Location
-    location_north = sentence[20:31]
-    location_west = sentence[32:44]
-    print('Location North: ' + location_north)
-    print('Location West: ' + location_west)
-    
-    #Speed knots
-    speed_knots = sentence[44:48]
-    print('Velocity(Knots): ' + speed_knots)
-    
-    #Angle of Velocity
-    angle_ofvelocity = sentence[49:55]
-    print('Angle of Velocity: ' + angle_ofvelocity)
-        
     #Time in hours, minutes, seconds, and milliseconds
-    gmt=sentence[7 : 16]
+    gmt = sentence[7 : 16]
+    print(gmt)
     
     #Status
     gp_status = sentence[18]
-    
-    
         
+    if gp_status == 'A':
+        print('Status: Active')
+            
+        #Location
+        location_north = sentence[20:31]
+        location_west = sentence[32:44]
+        print('Location North: ' + location_north)
+        print('Location West: ' + location_west)
+        
+        #Speed knots
+        speed_knots = sentence[44:48]
+        print('Velocity(Knots): ' + speed_knots)
+        
+        #Angle of Velocity
+        angle_ofvelocity = sentence[49:55]
+        print('Angle of Velocity: ' + angle_ofvelocity)
+            
     
-    
-    
+    else:
+        
+        print('Status: Inactive')
+        
 
 def write_tofile(fill_limit, save_tofile=False):
     print('---Process Starting---')
@@ -47,8 +51,11 @@ def write_tofile(fill_limit, save_tofile=False):
     print('---PIPE IS OPEN---')
     
     if save_tofile:
+        
+        print('---Opening File---')
         f = open('GPS_Data.txt', 'w')
-        print('-File open-')
+        print('---File Open---')
+        
         for line in result.stdout:
             if line_count < fill_limit:
                 f.write("%s\n" %line)
@@ -58,6 +65,7 @@ def write_tofile(fill_limit, save_tofile=False):
         else:
             print('---Limit Reached---')
             print('---Ending Process---')
+            f.close()
             break
             
     
@@ -75,7 +83,7 @@ def write_tofile(fill_limit, save_tofile=False):
                 print('---Ending Process---')
                 break
     
-    f.close()
+    
     print('---Process Ended---')
 
 

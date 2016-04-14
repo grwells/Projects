@@ -5,7 +5,7 @@ Created on Mar 23, 2016
 @author: deepg
 '''
 import DataManager
-import Parser
+#import Parser
 
 #Introduction
 '''
@@ -26,7 +26,7 @@ def start_Process():
             
         print('How many sentences would you like the file to contain?')
         size = input()
-        DataManager.write_tofile(size, True)
+        DataManager.write_tofile(int(size), True)
         #Parser.parse_file('GPS_Data.txt')
         
     else: 

@@ -16,7 +16,7 @@ def parse_RMC(sentence):
     print(gmt)
     
     #Status
-    gp_status = sentence[18]
+    gp_status = sentence[19]
         
     if gp_status == 'A':
         print('Status: Active')

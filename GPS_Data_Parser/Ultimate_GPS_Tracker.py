@@ -8,9 +8,12 @@ import DataManager
 import Parser
 
 #Introduction
+'''
 print('-----------------------WELCOME-----------------------')
 print('------------------STARTING APPLICATION------------------')
 print('For information on how to run the Ultimate GPS Data Tracker enter "help". To view data from the GPS enter "startApp".')
+'''
+
 
 '''
 Start App
@@ -58,7 +61,8 @@ def get_help():
                 
         print('To Exit The Help Menu Enter "exit"') 
             
-            
+
+'''          
 while input() != 'exit':
     
     if input() == 'help':
@@ -68,3 +72,7 @@ while input() != 'exit':
     elif input() == 'startApp':
         
         start_Process()
+        
+    else: 
+        print("Command not understood, please enunciate more clearly")
+'''

@@ -49,7 +49,8 @@ def parse_RMC(sentence):
     print('Angle of Velocity: ' + angle_ofvelocity)
         
     #Time in hours, minutes, seconds, and milliseconds
-    global gmt = sentence[7 : 16]
+    gmt = sentence[7 : 16]
+    print('Time:' + gmt)
     
     #Status
     gp_status = sentence[18]

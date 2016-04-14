@@ -62,11 +62,12 @@ def write_tofile(fill_limit, save_tofile=False):
                 print("%s" %line)
                 line_count += 1
                 print('Count is now: ' + line_count)
-        else:
-            print('---Limit Reached---')
-            print('---Ending Process---')
-            f.close()
-            break
+            else:
+                print('---Limit Reached---')
+                print('---Ending Process---')
+                f.close()
+                break
+            
             
     
         

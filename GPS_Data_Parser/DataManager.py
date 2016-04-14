@@ -6,6 +6,7 @@ Created on Mar 23, 2016
 
 #Imports from Monty!
 import subprocess
+import Parser
 
 def parse_RMC(sentence):
     '''
@@ -22,8 +23,8 @@ def parse_RMC(sentence):
         print('Status: Active')
             
         #Location
-        location_north = sentence[20:31]
-        location_west = sentence[32:44]
+        location_north = sentence[22:31]
+        location_west = sentence[34:44]
         print('Location North: ' + location_north)
         print('Location West: ' + location_west)
         
@@ -78,7 +79,7 @@ def write_tofile(fill_limit, save_tofile=False):
             if line_count < fill_limit:
                 #f.write("%s\n" %line)
                 print("%s" %line)
-                parse_RMC("%s\n" %line)
+                Parser.identify_sentence("%s" %line)
                 line_count += 1
                 print('Count is now: ' + str(line_count))
             else:

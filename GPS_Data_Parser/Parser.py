@@ -76,9 +76,15 @@ def parse_file(file):
     n = open('GPS_Log.txt', 'w')
     
     for line in f:
-        if line[0:5] == 'b\'$GPRMC':
-            parse_RMC(line)
+        identify_sentence(line)
         
- 
+'''
+b'$GPRMC,194509.000,A,4042.6142,N,07400.4168,W,2.03,221.11,160412,,,A*77 
+'''
+def identify_sentence(sentence):
+    if sentence[0 : 8] == "b\'$GPRMC":
+        parse_RMC(sentence)
+    
+    else:
+        print('Not of Interest')
   
-parse_file('GPS_Data.txt')

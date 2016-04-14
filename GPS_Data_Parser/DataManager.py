@@ -39,6 +39,7 @@ def parse_RMC(sentence):
     else:
         
         print('Status: Inactive')
+        print(gp_status)
         
 
 def write_tofile(fill_limit, save_tofile=False):

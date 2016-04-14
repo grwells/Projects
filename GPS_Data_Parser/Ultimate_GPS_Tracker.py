@@ -21,17 +21,20 @@ Start App
 def start_Process():
     
     print('Would you like to save the data from the GPS for a latter date?')
-    
-    if input() == 'yes' or input() == 'Yes':
+           
+    if input() == 'yes':
             
         print('How many sentences would you like the file to contain?')
         size = input()
         DataManager.write_tofile(int(size), True)
         #Parser.parse_file('GPS_Data.txt')
         
-    else: 
+    elif input() == 'no': 
         DataManager.write_tofile(200)
         
+    else:
+        print('Goodbye')
+    
 def get_help():
     '''
     Open Help Menu

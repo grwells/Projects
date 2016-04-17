@@ -78,7 +78,7 @@ def write_tofile(fill_limit, save_tofile=False):
         for line in result.stdout:
             if line_count < fill_limit:
                 #f.write("%s\n" %line)
-                print("%s" %line)
+                #print("%s" %line)
                 Parser.identify_sentence("%s" %line)
                 line_count += 1
                 print('Count is now: ' + str(line_count))

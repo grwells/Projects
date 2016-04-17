@@ -4,7 +4,7 @@ Created on Apr 4, 2016
 @author: deepg
 '''
 sentence = ''
-gmt = sentence[7 : 16] 
+
 
 def parse_location(gmt):
     '''
@@ -15,7 +15,7 @@ def parse_location(gmt):
     seconds = gmt[4 : 6]
     milliseconds = gmt[6 : 8]
     
-    print('Current Time: ' + hours + ' hrs, ' + minutes + ' min, ' + seconds + ' sec,' + milliseconds  + ' millisec ')
+    print('Current Time: ' + hours + ' hrs, ' + minutes + ' min, ' + seconds + ' sec, ' + milliseconds  + ' millisec ')
     
 
 def parse_time(gmt):
@@ -23,45 +23,61 @@ def parse_time(gmt):
     Parse the time data in the sentence and convert it to a readable format
     '''
     hours = gmt[0 : 2]
+    
+    if int(hours) >= 12:
+        half_ofDay = 'PM'
+        hours = int(hours) - 12
+    
+    else:
+        half_ofDay = 'AM'
+    
     minutes = gmt[2 : 4]
     seconds = gmt[4 : 6]
-    milliseconds = gmt[6 : 8]
+    milliseconds = gmt[7 : 10]
     
-    print('Current Time: ' + hours + ' hrs, ' + minutes + ' min, ' + seconds + ' sec,' + milliseconds  + ' millisec ')
-    
+    print('Current Time: ' + str(hours) + ' hrs, ' + minutes + ' min, ' + seconds + ' sec, ' + milliseconds  + ' millisec ')
+    print(str(hours) + ':' + minutes + ':' + seconds + ':' + milliseconds + ' ' + half_ofDay)
     
 def parse_RMC(sentence):
     '''
     Parse the sentence and find the important chucks of data
     '''
-    #Location
-    location_north = sentence[20:31]
-    location_west = sentence[32:44]
-    print('Location North: ' + location_north)
-    print('Location West: ' + location_west)
-    
-    #Speed knots
-    speed_knots = sentence[44:48]
-    print('Velocity(Knots): ' + speed_knots)
-    
-    #Angle of Velocity
-    angle_ofvelocity = sentence[49:55]
-    print('Angle of Velocity: ' + angle_ofvelocity)
+    gp_status = sentence[20]
         
-    #Time in hours, minutes, seconds, and milliseconds
-    gmt = sentence[7 : 16]
-    print('Time:' + gmt)
-    
-    #Status
-    gp_status = sentence[18]
-    
     if gp_status == 'A':
-        parse_location(sentence)
+        print('Status: ' + gp_status)
+        
+        #Time
+        gmt = sentence[9 : 19] 
+        parse_time(gmt)
+        
+        #Date MM:DD:YYYY
+        day = sentence[59 : 61]
+        month = sentence[61 : 63]
+        year = sentence[63 : 65]
+        print('Date: ' + month + ', ' + day + ', 20' + year)
+        
+        #Location
+        location_north = sentence[22:31]
+        location_west = sentence[34:44]
+        print('Location North: ' + location_north)
+        print('Location West: ' + location_west)
+        
+        #Speed knots
+        speed_knots = sentence[47:51]
+        print('Velocity(Knots): ' + speed_knots)
+        
+        #Angle of Velocity
+        angle_ofvelocity = sentence[52:58]
+        print('Angle of Velocity: ' + angle_ofvelocity)
+                    
     
     else:
-        current_status = sentence[18]
-        print(current_status)
-        print('---No Fix---')
+        
+        print('Status: ' + gp_status)
+        
+        
+    
     
 def parse_file(file):
     '''

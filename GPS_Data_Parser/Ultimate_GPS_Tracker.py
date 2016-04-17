@@ -8,32 +8,56 @@ import DataManager
 #import Parser
 
 #Introduction
-'''
+
 print('-----------------------WELCOME-----------------------')
 print('------------------STARTING APPLICATION------------------')
 print('For information on how to run the Ultimate GPS Data Tracker enter "help". To view data from the GPS enter "startApp".')
+
+
 '''
-
-
+Processes a string and sees if it is a valid command, if successful recognized as a command the command is run
+'''
+def command_Processer(command):
+    
+    if command == 'get help':
+        get_help()
+        
+    elif command == 'configure settings':
+        configure_application()
+        
+    elif command == 'start new process' or command == 'startApp':
+        start_Process()
+    
+    else:
+        print(command + ' is not a valid command, please enter a command from the list below:')
+        print('Commands: \n\"get help\" -- opens the help menu \n\"configure settings\" -- opens the settings menu' + 
+            '\n\"start new process\" -- starts a new process')       
+    
 '''
 Start App
 '''
 def start_Process():
     
     print('Would you like to save the data from the GPS for a latter date?')
+    
+    user_reply = input()
            
-    if input() == 'yes':
+    if user_reply == 'yes':
             
         print('How many sentences would you like the file to contain?')
         size = input()
         DataManager.write_tofile(int(size), True)
         #Parser.parse_file('GPS_Data.txt')
         
-    elif input() == 'no': 
+    elif user_reply == 'no': 
         DataManager.write_tofile(200)
         
     else:
         print('Goodbye')
+    
+def configure_application():
+    
+    print('not done yet, get on it Garrett')
     
 def get_help():
     '''
@@ -64,18 +88,25 @@ def get_help():
                 
         print('To Exit The Help Menu Enter "exit"') 
             
-
-'''          
-while input() != 'exit':
-    
-    if input() == 'help':
-        
-        get_help()       
-        
-    elif input() == 'startApp':
-        
-        start_Process()
-        
-    else: 
-        print("Command not understood, please enunciate more clearly")
 '''
+Loops through the commands entered by the user
+'''
+
+def task_manager():
+    
+    print('Enter Command to Continue')
+    
+    reply = input()
+    
+    while reply != 'exit':
+        
+        command_Processer(reply)
+        
+        print('Enter Fresh Command to Continue')
+        
+        reply = input()
+        
+        
+task_manager()
+        
+        

@@ -1,5 +1,8 @@
 Commands For Linux
 
+To run a program as an administrator either right click on the program and select "run as administrator" from the list of options or, 
+open the program using the search bar and open by pressing ctrl + shift + enter
+ 
 Change Password For the Pi:
 	passwd
 

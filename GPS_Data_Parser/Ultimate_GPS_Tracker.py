@@ -11,7 +11,7 @@ from clint.textui import puts, colored
 
 puts(colored.green('-----------------------WELCOME-----------------------'))
 puts(colored.green('------------------STARTING APPLICATION------------------'))
-puts(colored.green('For information on how to run the Ultimate GPS Data Tracker enter "help". To view data from the GPS enter "startApp".'))
+puts(colored.green('For information on how to run the Ultimate GPS Data Tracker enter "get information". \nTo view data from the GPS enter "startApp".'))
 
 
 '''
@@ -19,7 +19,7 @@ Processes a string and sees if it is a valid command, if successful recognized a
 '''
 def command_Processer(command):
     
-    if command == 'help':
+    if command == 'get information':
         get_help()
         
     elif command == 'configure settings':
@@ -37,18 +37,14 @@ def command_Processer(command):
 Start App
 '''
 def start_Process():
-    
-    puts(colored.red('Would you like to save the data from the GPS for a latter date?'))
-    
-    user_reply = input()
+      
+    user_reply = input(colored.red('Would you like to save the data from the GPS for a latter date?'))
            
     if user_reply == 'yes':
             
-        puts(colored.red('How many sentences would you like the file to contain?'))
-        size = input()
+        size = input(colored.red('Enter the number of lines you would like the file to contain: '))
         DataManager.write_tofile(int(size), True)
-        #Parser.parse_file('GPS_Data.txt')
-        
+                
     elif user_reply == 'no':
          
         DataManager.write_tofile(200)

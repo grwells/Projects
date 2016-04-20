@@ -5,13 +5,13 @@ Created on Mar 23, 2016
 @author: deepg
 '''
 import DataManager
-#import Parser
+from clint.textui import puts, colored, indent
 
 #Introduction
 
-print('-----------------------WELCOME-----------------------')
-print('------------------STARTING APPLICATION------------------')
-print('For information on how to run the Ultimate GPS Data Tracker enter "help". To view data from the GPS enter "startApp".')
+puts(colored.green('-----------------------WELCOME-----------------------'))
+puts(colored.green('------------------STARTING APPLICATION------------------'))
+puts(colored.green('For information on how to run the Ultimate GPS Data Tracker enter "help". To view data from the GPS enter "startApp".'))
 
 
 '''
@@ -29,31 +29,32 @@ def command_Processer(command):
         start_Process()
     
     else:
-        print(command + ' is not a valid command, please enter a command from the list below:')
-        print('Commands: \n\"get help\" -- opens the help menu \n\"configure settings\" -- opens the settings menu' + 
-            '\n\"start new process\" -- starts a new process')       
+        puts(colored.red(command) + colored.cyan(' is not a valid command, please enter a command from the list below:'))
+        puts(colored.red('Commands:') + colored.green('\n\"get help\" -- opens the help menu') + colored.green('\n\"configure settings\" -- opens the settings menu') + 
+            colored.green('\n\"start new process\" -- starts a new process'))       
     
 '''
 Start App
 '''
 def start_Process():
     
-    print('Would you like to save the data from the GPS for a latter date?')
+    puts(colored.red('Would you like to save the data from the GPS for a latter date?'))
     
     user_reply = input()
            
     if user_reply == 'yes':
             
-        print('How many sentences would you like the file to contain?')
+        puts(colored.red('How many sentences would you like the file to contain?'))
         size = input()
         DataManager.write_tofile(int(size), True)
         #Parser.parse_file('GPS_Data.txt')
         
-    elif user_reply == 'no': 
+    elif user_reply == 'no':
+         
         DataManager.write_tofile(200)
         
     else:
-        print('Goodbye')
+        puts(colored.green('Goodbye!!'))
     
 def configure_application():
     
@@ -65,7 +66,7 @@ def get_help():
     '''
     
     #Print Designer Credits
-    print('-----------------------Help Menu-----------------------')
+    puts(colored.green('-----------------------Help Menu-----------------------'))
         
     print('The Ultimate GPS Tracker was designed April 1, 2016 by Garrett Wells with contributions from the following sponsors:')
     print('Garrett Wells')
@@ -94,7 +95,7 @@ Loops through the commands entered by the user
 
 def task_manager():
     
-    print('Enter Command to Continue')
+    puts(colored.red('Enter Command to Continue'))
     
     reply = input()
     
@@ -102,7 +103,7 @@ def task_manager():
         
         command_Processer(reply)
         
-        print('Enter Fresh Command to Continue')
+        puts(colored.red('Enter New Command to Continue'))
         
         reply = input()
         

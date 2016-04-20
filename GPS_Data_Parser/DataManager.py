@@ -7,6 +7,7 @@ Created on Mar 23, 2016
 #Imports from Monty!
 import subprocess
 import Parser
+from clint.textui import puts, colored
 
 def parse_RMC(sentence):
     '''
@@ -20,57 +21,70 @@ def parse_RMC(sentence):
     gp_status = sentence[20]
         
     if gp_status == 'A':
-        print('Status: Active')
+        puts(colored.cyan('Status:') + colored.green(' Active'))
             
         #Location
         location_north = sentence[22:31]
         location_west = sentence[34:44]
-        print('Location North: ' + location_north)
-        print('Location West: ' + location_west)
+        puts(colored.cyan('Location North: ') + colored.magenta(location_north))
+        puts(colored.cyan('Location West: ') + colored.magenta(location_west))
         
         #Speed knots
         speed_knots = sentence[44:48]
-        print('Velocity(Knots): ' + speed_knots)
+        puts(colored.cyan('Velocity(Knots): ') + colored.magenta(speed_knots))
         
         #Angle of Velocity
         angle_ofvelocity = sentence[49:55]
-        print('Angle of Velocity: ' + angle_ofvelocity)
+        puts(colored.cyan('Angle of Velocity: ') + colored.magenta(angle_ofvelocity))
             
     
     else:
         
-        print('Status: Inactive')
-        print(gp_status)
+        puts(colored.cyan('Status:') + colored.red(' Inactive'))
+        puts(colored.red(gp_status))
         
 
 def write_tofile(fill_limit, save_tofile=False):
-    print('---Process Starting---')
+    
+    puts(colored.green('---Process Starting---'))
     line_count = 0
     subprocess.getoutput('stty -F /dev/ttyAMA0 raw 9600 cs8 clocal -cstopb')
-    print('-Baud rate set-')
+    puts(colored.green('---Baud rate set---'))
     
     result = subprocess.Popen('cat /dev/ttyAMA0', shell=True, stdout=subprocess.PIPE)
-    print('---PIPE IS OPEN---')
+    puts(colored.green('---PIPE IS OPEN---'))
     
     if save_tofile:
         
-        print('---Opening File---')
-        f = open('GPS_Data.txt', 'w')
-        print('---File Open---')
+        #Specify the file to write to        
+        puts(colored.red('Please enter the name of the file that you would like to save the data to in the line below,'))
+        file_toWrite = input()
         
-        for line in result.stdout:
-            if line_count < fill_limit:
-                f.write("%s\n" %line)
-                print("%s" %line)
-                line_count += 1
-                print('Count is now: ' + str(line_count))
-            else:
-                print('---Limit Reached---')
-                print('---Ending Process---')
-                f.close()
-                break
+        puts(colored.red('--WARNING-- \nIf the file named above is preexisting and contains data, that data will be overwritten with' +
+              'the new data from the GPS. Would you like to continue?'))
+        
+        continue_Writing = input()
+        
+        if continue_Writing == 'yes':
             
+            print('---Opening File---')
+            f = open(file_toWrite, 'w')
+            print('---File Open---')
             
+            for line in result.stdout:
+                if line_count < fill_limit:
+                    f.write("%s\n" %line)
+                    print("%s" %line)
+                    line_count += 1
+                    print('Count is now: ' + str(line_count))
+                else:
+                    print('---Limit Reached---')
+                    print('---Ending Process---')
+                    f.close()
+                    break
+        
+         
+                        
     
         
     else:

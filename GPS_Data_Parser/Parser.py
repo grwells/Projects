@@ -3,6 +3,8 @@ Created on Apr 4, 2016
 
 @author: deepg
 '''
+
+from clint.textui import puts, colored
 sentence = ''
 
 
@@ -45,7 +47,7 @@ def parse_RMC(sentence):
     gp_status = sentence[20]
         
     if gp_status == 'A':
-        print('Status: ' + gp_status)
+        puts(colored.cyan('Status:') + colored.green(' Active'))
         
         #Time
         gmt = sentence[9 : 19] 
@@ -55,27 +57,28 @@ def parse_RMC(sentence):
         day = sentence[59 : 61]
         month = sentence[61 : 63]
         year = sentence[63 : 65]
-        print('Date: ' + month + ', ' + day + ', 20' + year)
+        puts(colored.yellow('Date: ' + month + ', ' + day + ', 20' + year))
         
         #Location
         location_north = sentence[22:31]
         location_west = sentence[34:44]
-        print('Location North: ' + location_north)
-        print('Location West: ' + location_west)
+        puts(colored.cyan('Location North: ') + colored.magenta(location_north))
+        puts(colored.cyan('Location West: ') + colored.magenta(location_west))
         
         #Speed knots
         speed_knots = sentence[47:51]
-        print('Velocity(Knots): ' + speed_knots)
+        puts(colored.cyan('Velocity(Knots): ') + colored.magenta(speed_knots))
         
         #Angle of Velocity
         angle_ofvelocity = sentence[52:58]
-        print('Angle of Velocity: ' + angle_ofvelocity)
+        puts(colored.cyan('Angle of Velocity: ') + colored.magenta(angle_ofvelocity))
                     
     
     else:
         
-        print('Status: ' + gp_status)
-        
+        puts(colored.cyan('Status:') + colored.red(' Inactive'))
+        puts(colored.red(gp_status))
+            
         
     
     

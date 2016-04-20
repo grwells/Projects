@@ -97,7 +97,7 @@ def task_manager():
     
     #puts(colored.red('Enter Command to Continue'))
     
-    reply = input(colored.red('Enter Command to Continue'))
+    reply = input(colored.red('Enter Command to Continue '))
     
     while reply != 'exit':
         
@@ -105,7 +105,7 @@ def task_manager():
         
         #puts(colored.red('Enter New Command to Continue'))
         
-        reply = input(colored.red('Enter New Command to Continue'))
+        reply = input(colored.red('Enter New Command to Continue '))
         
         
 task_manager()

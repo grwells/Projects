@@ -5,7 +5,7 @@ Created on Mar 23, 2016
 @author: deepg
 '''
 import DataManager
-from clint.textui import puts, colored, indent
+from clint.textui import puts, colored
 
 #Introduction
 
@@ -95,17 +95,17 @@ Loops through the commands entered by the user
 
 def task_manager():
     
-    puts(colored.red('Enter Command to Continue'))
+    #puts(colored.red('Enter Command to Continue'))
     
-    reply = input()
+    reply = input(colored.red('Enter Command to Continue'))
     
     while reply != 'exit':
         
         command_Processer(reply)
         
-        puts(colored.red('Enter New Command to Continue'))
+        #puts(colored.red('Enter New Command to Continue'))
         
-        reply = input()
+        reply = input(colored.red('Enter New Command to Continue'))
         
         
 task_manager()

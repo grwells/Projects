@@ -19,7 +19,7 @@ Processes a string and sees if it is a valid command, if successful recognized a
 '''
 def command_Processer(command):
     
-    if command == 'get help':
+    if command == 'help':
         get_help()
         
     elif command == 'configure settings':
@@ -68,44 +68,35 @@ def get_help():
     #Print Designer Credits
     puts(colored.green('-----------------------Help Menu-----------------------'))
         
-    print('The Ultimate GPS Tracker was designed April 1, 2016 by Garrett Wells with contributions from the following sponsors:')
-    print('Garrett Wells')
-    print('G Wells')
-    print('And last but not least: Yours Truly')
-    print('')
-    print('For serious information and technical details enter "SHUT UP!!" on the line below.')
+    print('The Ultimate GPS Tracker was designed April 1, 2016 by Garrett Wells')
+    print('For serious information and technical details enter "exit" on the line below.')
         
     #Print Command Options
-    if input() == 'SHUT UP!!':
+    if input() == 'exit':
             
         print('Okay! Sheesh, no need to get mad. Here is a list of basic \ncommands accepted by the Ultimate GPS Tracker as well as '
         + 'descriptions of their impact on the functionality of the Ultimate GPS Tracker.')
                 
         print('')
                 
-        print('"stopApp" :     Stops the app')
+        print('"exit" :     Stops the Application')
         print('"help" :   Opens the Help Menu')
-        print('"getSpeed"  :   Returns the instantaneous speed of the GPS in knots')
+        
                 
-        print('To Exit The Help Menu Enter "exit"') 
-            
+                    
 '''
 Loops through the commands entered by the user
 '''
 
 def task_manager():
     
-    #puts(colored.red('Enter Command to Continue'))
-    
-    reply = input(colored.red('Enter Command to Continue '))
+    reply = input(colored.red('Enter Command to Continue: '))
     
     while reply != 'exit':
         
         command_Processer(reply)
-        
-        #puts(colored.red('Enter New Command to Continue'))
-        
-        reply = input(colored.red('Enter New Command to Continue '))
+                        
+        reply = input(colored.red('Enter Command to Continue: '))
         
         
 task_manager()

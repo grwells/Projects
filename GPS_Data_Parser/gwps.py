@@ -1,14 +1,3 @@
-'''
-Created on Apr 20, 2016
-
-@author: deepg
-'''
-'''
-Created on Mar 23, 2016
-:)
-
-@author: deepg
-'''
 from clint.textui import puts, colored
 
 #Imports from Monty!

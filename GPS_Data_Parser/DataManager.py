@@ -44,8 +44,8 @@ def write_tofile(fill_limit, save_tofile=False):
                     line_count += 1
                     #print('Count is now: ' + str(line_count))
                 else:
-                    print('---Limit Reached---')
-                    print('---Ending Process---')
+                    puts(colored.green('---Limit Reached---'))
+                    puts(colored.green('---Ending Process---'))
                     f.close()
                     break
         
@@ -59,14 +59,14 @@ def write_tofile(fill_limit, save_tofile=False):
             if line_count < fill_limit:
                 Parser.identify_sentence("%s" %line)
                 line_count += 1
-                #print('Count is now: ' + str(line_count))
+                
             else:
                 puts(colored.green('---Limit Reached---'))
                 puts(colored.green('---Ending Process---'))
                 break
     
     
-    print('---Process Ended---')
+    puts(colored.green('---Process Ended---'))
 
 
 

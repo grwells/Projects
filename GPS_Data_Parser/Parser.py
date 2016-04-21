@@ -48,15 +48,17 @@ def parse_RMC(sentence):
     if gp_status == 'A':
         puts(colored.cyan('Status:') + colored.green(' Active'))
         
-        #Time
-        gmt = sentence[9 : 19] 
-        parse_time(gmt)
-        
         #Date MM:DD:YYYY
         day = sentence[59 : 61]
         month = sentence[61 : 63]
         year = sentence[63 : 65]
         puts(colored.yellow('Date: ' + month + ', ' + day + ', 20' + year))
+        
+        
+        #Time
+        gmt = sentence[9 : 19] 
+        parse_time(gmt)
+        
         
         #Location
         location_north = sentence[22:31]
@@ -86,11 +88,7 @@ def identify_sentence(sentence):
     if sentence[0 : 8] == "b\'$GPRMC":
         parse_RMC(sentence)
     
-    else:
-        puts(colored.red('Not of Interest'))
-  
-   
-    
+     
 def parse_file(file):
     '''
     

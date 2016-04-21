@@ -20,7 +20,7 @@ Processes a string and sees if it is a valid command, if successful recognized a
 '''
 def command_Processer(command):
     
-    if command == 'get information':
+    if command == 'get information' or command == 'get help' or command == 'help':
         get_help()
         
             

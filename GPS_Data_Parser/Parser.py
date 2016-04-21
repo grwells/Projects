@@ -37,8 +37,7 @@ def parse_time(gmt):
     seconds = gmt[4 : 6]
     milliseconds = gmt[7 : 10]
     
-    print('Current Time: ' + str(hours) + ' hrs, ' + minutes + ' min, ' + seconds + ' sec, ' + milliseconds  + ' millisec ')
-    print(str(hours) + ':' + minutes + ':' + seconds + ':' + milliseconds + ' ' + half_ofDay)
+    puts(colored.yellow(str(hours) + ':' + minutes + ':' + seconds + ':' + milliseconds + ' ' + half_ofDay))
     
 def parse_RMC(sentence):
     '''
@@ -80,23 +79,6 @@ def parse_RMC(sentence):
         puts(colored.red(gp_status))
             
         
-    
-    
-def parse_file(file):
-    '''
-    
-    Parse through the data and call different methods depending on first six characters of the NMEA sentence.
-    Most Important Sentence: $GPRMC (Global Position Recommended Minimum)
-    
-    '''
-    
-    f = open('GPS_Data.txt', 'r')
-    
-    n = open('GPS_Log.txt', 'w')
-    
-    for line in f:
-        identify_sentence(line)
-        
 '''
 b'$GPRMC,194509.000,A,4042.6142,N,07400.4168,W,2.03,221.11,160412,,,A*77 
 '''
@@ -105,5 +87,29 @@ def identify_sentence(sentence):
         parse_RMC(sentence)
     
     else:
-        print('Not of Interest')
+        puts(colored.red('Not of Interest'))
   
+   
+    
+def parse_file(file):
+    '''
+    
+    Parse through the data and call different methods depending on first six characters of the NMEA sentence.
+    Most Important Sentence: $GPRMC (Global Position Recommended Minimum)
+    
+    '''
+     
+    try:
+        f = open(file, 'r')
+        for line in f:
+            identify_sentence(line)
+           
+    except IOError:
+        puts(colored.red('Could not open: ' +  file))
+        try_again = input(colored.red('Try Again? (y/n): '))
+            
+        if (try_again == 'y') or (try_again == 'yes'):
+            file = input(colored.red('Enter Name of File: '))
+            parse_file(file)
+               
+   

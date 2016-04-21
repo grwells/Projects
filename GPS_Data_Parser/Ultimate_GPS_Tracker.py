@@ -5,12 +5,13 @@ Created on Mar 23, 2016
 @author: deepg
 '''
 import DataManager
+import Parser
 from clint.textui import puts, colored
 
 #Introduction
 
 puts(colored.green('-----------------------WELCOME-----------------------'))
-puts(colored.green('------------------STARTING APPLICATION------------------'))
+puts(colored.green('------------------STARTING GPS Tracker 1.0 2016------------------'))
 puts(colored.green('For information on how to run the Ultimate GPS Data Tracker enter "get information". \nTo view data from the GPS enter "startApp".'))
 
 
@@ -22,15 +23,17 @@ def command_Processer(command):
     if command == 'get information':
         get_help()
         
-    elif command == 'configure settings':
-        configure_application()
-        
-    elif command == 'start new process' or command == 'startApp':
+            
+    elif (command == 'start new process') or (command == 'startApp'):
         start_Process()
+        
+    elif command == 'parse file':
+        file = input(colored.red('Enter Name of File: '))
+        Parser.parse_file(file)
     
     else:
         puts(colored.red(command) + colored.cyan(' is not a valid command, please enter a command from the list below:'))
-        puts(colored.red('Commands:') + colored.green('\n\"get help\" -- opens the help menu') + colored.green('\n\"configure settings\" -- opens the settings menu') + 
+        puts(colored.red('Commands:') + colored.green('\n\"get help\" -- opens the help menu') +  
             colored.green('\n\"start new process\" -- starts a new process'))       
     
 '''
@@ -38,23 +41,23 @@ Start App
 '''
 def start_Process():
       
-    user_reply = input(colored.red('Would you like to save the data from the GPS for a latter date?'))
+    user_reply = input(colored.red('Save data to file? (y/n): '))
            
-    if user_reply == 'yes':
+    if (user_reply == 'yes') or (user_reply == 'y'):
             
-        size = input(colored.red('Enter the number of lines you would like the file to contain: '))
+        size = input(colored.red('File Size(number of lines): '))
         DataManager.write_tofile(int(size), True)
                 
-    elif user_reply == 'no':
+    elif user_reply == 'n' or user_reply == 'no':
          
         DataManager.write_tofile(200)
         
     else:
-        puts(colored.green('Goodbye!!'))
+        puts(colored.green('---Invalid Input---'))
     
 def configure_application():
     
-    print('not done yet, get on it Garrett')
+    print('Not done yet, get on it Garrett')
     
 def get_help():
     '''
@@ -76,7 +79,7 @@ def get_help():
         print('')
                 
         print('"exit" :     Stops the Application')
-        print('"help" :   Opens the Help Menu')
+        print('"get information" :   Opens the Help Menu')
         
                 
                     

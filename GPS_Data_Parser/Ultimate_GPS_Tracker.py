@@ -78,9 +78,11 @@ def get_help():
                 
         print('')
                 
-        print('"exit" :     Stops the Application')
-        print('"get information" :   Opens the Help Menu')
+        puts(colored.red('Commands:') + colored.green('\n\"get help\" -- opens the help menu') +  
+            colored.green('\n\"start new process\" -- starts a new process'))       
         
+        
+        task_manager()
                 
                     
 '''

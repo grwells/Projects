@@ -101,3 +101,67 @@ How to Clone a GitHub Repository Into a local Repository:
 	remote: Compressing objects: 100% (8/8), done.
 	remove: Total 10 (delta 1), reused 10 (delta 1)
 	Unpacking objects: 100% (10/10), done.
+
+
+Running A Script On Startup:
+
+	If you need a script to run automatically at startup in linux without user login or after the automatic boot to the windowing environment, without being able to view the output, there are two ways to go.
+
+	1. Add a command to /etc/rc.local
+		- This causes the command to run every time the raspberry pi is booted or rebooted.
+
+		"Putting something into /etc/rc.local adds it to the boot sequence. The word "sequence" is important, if your code gets stuck then the boot sequence cannot proceed. The same with ~/.bashrc, if you put a faulty command in here you may not be able to login."
+
+		How:
+
+			1. raspberrypi ~$ nano /etc/rc.local
+
+			2. Add this line of code to /etc/rc.local,
+
+					python scriptname.py &
+
+					or
+
+					sleep 10;python scriptname.py &
+
+						- The "sleep 10" is there to make sure that a gap is in place between the commands so that other portions of the boot prpcess can proceed.
+
+					or 
+
+					(sleep 10;python scriptname.py)&
+
+						- The parenthesis are there to make sure that the commands within the parenthesis run in the background.
+
+					or
+
+					/yourpath/bin/yourscript.sh &
+
+						- This runs the script below at the end of the path above.
+
+						Then in yourscript.sh:
+
+							#!/bin/sh
+
+							sleep 10
+
+							sudo python scriptname.py
+
+
+
+	2. Add a command to ~/.bashrc
+		- Do this only if the script should run whenever a specific user logs in to the pi.
+
+		Implementation for this is the same as for the /etc/rc.local as far as I know.
+
+
+	Definitions & Explanations:
+
+		.bash_profile vs .bashrc:
+
+				- .bashrc is for use with non-login shells and .bash_profile is for login shells.
+
+		Non-login shells vs Login Shells:
+
+			Login shells are shells such as SSH and can be logged out of whereas non-login shells can not be logged out of and instead of being identified as "-bash" they are identified as just "bash".
+
+			For example, when the command "echo $0" is run in SSH it returns "-bash", signifying that it is a login shell. However when the command is run in LX Terminal on the raspberry pi it returns "/bin/bash", signifying that it is  a non-login shell.

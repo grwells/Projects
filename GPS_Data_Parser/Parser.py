@@ -87,6 +87,9 @@ b'$GPRMC,194509.000,A,4042.6142,N,07400.4168,W,2.03,221.11,160412,,,A*77
 def identify_sentence(sentence):
     if sentence[0 : 8] == "b\'$GPRMC":
         parse_RMC(sentence)
+        return True
+    else:
+        return False
     
      
 def parse_file(file):
@@ -109,5 +112,3 @@ def parse_file(file):
         if (try_again == 'y') or (try_again == 'yes'):
             file = input(colored.red('Enter Name of File: '))
             parse_file(file)
-               
-   

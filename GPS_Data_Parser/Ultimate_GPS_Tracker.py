@@ -6,6 +6,7 @@ Created on Mar 23, 2016
 '''
 import DataManager
 import Parser
+import settings_config
 from clint.textui import puts, colored
 
 #Introduction
@@ -21,6 +22,7 @@ Processes a string and sees if it is a valid command, if successful recognized a
 def command_Processer(command):
     
     if command == 'get information' or command == 'get help' or command == 'help':
+        
         get_help()
         
             
@@ -28,19 +30,21 @@ def command_Processer(command):
         start_Process()
         
     elif command == 'parse file':
+        
         file = input(colored.red('Enter Name of File: '))
         Parser.parse_file(file)
+        
+    elif command == 'config settings' or command == 'auto start config':
+        settings_config.start_process()
+        
     
-    else:
+    else:        
         puts(colored.red(command) + colored.cyan(' is not a valid command, please enter a command from the list below:'))
         puts(colored.red('Commands:') + colored.green('\n\"get help\" -- opens the help menu') +  
-            colored.green('\n\"start new process\" -- starts a new process'))       
+            colored.green('\n\"start new process\" -- starts a new process' + colored.green('\n\"config settings\" -- allows the user to configure the settings')))      
     
-'''
-Start App
-'''
-def start_Process():
-      
+
+def start_Process():      
     user_reply = input(colored.red('Save data to file? (y/n): '))
            
     if (user_reply == 'yes') or (user_reply == 'y'):
@@ -55,8 +59,7 @@ def start_Process():
     else:
         puts(colored.green('---Invalid Input---'))
     
-def configure_application():
-    
+def configure_application():    
     print('Not done yet, get on it Garrett')
     
 def get_help():
@@ -79,7 +82,7 @@ def get_help():
         print('')
                 
         puts(colored.red('Commands:') + colored.green('\n\"get help\" -- opens the help menu') +  
-            colored.green('\n\"start new process\" -- starts a new process'))       
+            colored.green('\n\"start new process\" -- starts a new process' + colored.green('\n\"config settings\" -- allows the user to configure the settings')))       
         
         
         task_manager()

@@ -1,3 +1,8 @@
+#Starts the gps parser
+'''
+Whohoo!
+'''
+
 from clint.textui import puts, colored
 
 #Imports from Monty!

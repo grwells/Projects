@@ -59,7 +59,7 @@ def write_tofile(fill_limit, save_tofile=False):
             if line_count < fill_limit:
                 Parser.identify_sentence("%s" %line)
                 line_count += 1
-                
+                 
             else:
                 puts(colored.green('---Limit Reached---'))
                 puts(colored.green('---Ending Process---'))

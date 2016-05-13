@@ -143,7 +143,8 @@ def start_process():
     puts(colored.green('-------Settings Configuration Menu-------'))   
     parse_file()
     get_commands()
-    update_file()    
+    update_file()   
+    f.close() 
 
             
         

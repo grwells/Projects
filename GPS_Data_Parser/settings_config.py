@@ -83,7 +83,6 @@ def parse_command(command):
              colored.green('\n\"config times used\"') +
              colored.green('\n\"exit\"'))          
              
-    
 
 def parse_file():
     count = 0    
@@ -103,6 +102,24 @@ def parse_file():
             time_limit = line 
             
         count += 1
+        
+def print_currentSettings():
+    parse_file()
+    
+    puts(colored.green('------Current Settings Configuration------'))
+    limit_exists = ''
+    
+    if keep_time == '0':
+        limit_exists = 'No'
+        
+    else:
+        limit_exists = 'Yes'
+    
+    puts(colored.green('Time Data Collection: ') + colored.red(limit_exists))
+    
+    puts(colored.green('Number of Lines To Be Collected: ') + colored.red(file_size))
+    
+    puts(colored.green('Current Time Limit To Be Used: ') +  colored.red(time_limit))
         
 def get_commands():
     exit_config = False

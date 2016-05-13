@@ -75,6 +75,9 @@ def parse_command(command):
     elif command == 'exit':
         exit_config = True
         
+    elif command == 'print settings':
+        print_currentSettings()
+        
     else: 
         puts(colored.red(command) + colored.cyan(' is not a valid command, please enter a command from the list below') +
              colored.red('\nCommands:') + 

@@ -84,6 +84,7 @@ def parse_command(command):
              colored.green('\n\"config time limits\"') + 
              colored.green('\n\"config file size\"') +
              colored.green('\n\"config times used\"') +
+             colored.green('\n\"print settings"') +
              colored.green('\n\"exit\"'))          
              
 

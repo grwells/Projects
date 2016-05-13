@@ -4,12 +4,39 @@ Created on May 9, 2016
 @author: deepg
 '''
 import subprocess
-import time
+import datetime
 
 global times_used
 global keep_time
 global numberof_lines
 global time_limit
+global hours_elapsed
+global last_timeStamp
+
+'''
+Increments hours_elapsed and returns hours_elapsed
+'''
+
+def get_timeDelta(current_time, last_time):
+    current_minute = int(current_time[14:16])
+    start_minute = int(last_time[14:16])
+    
+    portion_ofhour = 0
+    
+    if current_minute >= start_minute:
+        portion_ofhour = current_minute - start_minute
+        
+    else:
+        portion_ofhour = (60 - start_minute) + current_minute
+        
+    portion_ofhour = portion_ofhour/60
+    hours_elapsed += portion_ofhour
+    last_timeStamp = current_time
+    
+    return hours_elapsed
+    
+    
+
 
 def get_Data():
     
@@ -44,10 +71,23 @@ def get_Data():
                 break
             
     elif keep_time == True:
+        f = open(file_toWrite, 'w')
         
-        '''
-        Use timer to manage time
-        '''
+        start_time = str(datetime.datetime.now())
+        last_timeStamp = start_time
+        
+        for line in result.stdout:                                        
+            if get_timeDelta(str(datetime.datetime.now()), last_timeStamp) <= time_limit:                           
+                line = "%s" %line
+                    
+                if line[0 : 8] == "b\'$GPRMC":                        
+                    f.write("%s\n" %line)
+                    line_count += 1
+                               
+            else:                        
+                f.close()
+                break
+        
         
 def get_settings():
     

@@ -27,6 +27,7 @@
 		minute => datetime.minute
 		second => datetime.second
 		to retrieve old date as well as set the new date => date
+		to get current date => datetime.datetime.now()
 
 ##Importing Modules:
 	

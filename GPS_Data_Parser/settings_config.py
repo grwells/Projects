@@ -110,9 +110,13 @@ def get_commands():
     while exit_config == False:
         puts(colored.green('Enter Command: '))
         command = input()
+        
         if command == 'exit':
+            puts(colored.red('----------Leaving Settings Menu----------'))
             break
-        parse_command(command)
+        
+        else:
+            parse_command(command)
     
 def start_process():  
     puts(colored.green('-------Settings-------'))   

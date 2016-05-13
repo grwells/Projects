@@ -21,16 +21,14 @@ Processes a string and sees if it is a valid command, if successful recognized a
 '''
 def command_Processer(command):
     
-    if command == 'get information' or command == 'get help' or command == 'help':
-        
+    if command == 'get information' or command == 'get help' or command == 'help':        
         get_help()
         
             
     elif (command == 'start new process') or (command == 'startApp'):
         start_Process()
         
-    elif command == 'parse file':
-        
+    elif command == 'parse file':        
         file = input(colored.red('Enter Name of File: '))
         Parser.parse_file(file)
         
@@ -93,8 +91,9 @@ Loops through the commands entered by the user
 '''
 
 def task_manager():
+    puts(colored.red('Enter Command to Continue: '))
     
-    reply = input(colored.red('Enter Command to Continue: '))
+    reply = input()
     
     while reply != 'exit':
         

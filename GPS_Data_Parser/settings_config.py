@@ -112,14 +112,14 @@ def print_currentSettings():
     
     puts(colored.green('------Current Settings Configuration------'))
     limit_exists = ''
-    
+    '''
     if keep_time == '0':
         limit_exists = 'No'
         
     else:
         limit_exists = 'Yes'
-    
-    puts(colored.green('Time Data Collection: ') + colored.red(limit_exists))
+    '''
+    puts(colored.green('Time Data Collection: ') + colored.red(keep_time))
     
     puts(colored.green('Number of Lines To Be Collected: ') + colored.red(file_size))
     

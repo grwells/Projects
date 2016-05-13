@@ -119,7 +119,7 @@ def get_commands():
             parse_command(command)
     
 def start_process():  
-    puts(colored.green('-------Settings-------'))   
+    puts(colored.green('-------Settings Configuration Menu-------'))   
     parse_file()
     get_commands()
     update_file()    

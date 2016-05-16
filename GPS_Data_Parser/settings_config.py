@@ -5,51 +5,107 @@ Created on May 9, 2016
 '''
 from clint.textui import colored, puts
 
-global times_used
-global file_size
-global keep_time
-global time_limit
-global exit_config 
+times_used = '0'
+file_size = '0'
+keep_time = '0'
+time_limit = '0'
 
+def parse_file():
+    global times_used
+    global file_size
+    global keep_time
+    global time_limit
+    global exit_config 
 
-f = open('settings', 'r+')
-
-def update_file():
-    
-    count = 0
-    
+    f = open('settings', 'r')  
+    count = 0    
+      
     for line in f:
-            
+        line = line.rstrip('\n')
+        line = line.strip()
+                    
         if count == 0:
-            f.write(times_used)      
+            print(str(count))
+            times_used = line 
+            puts(colored.green('Times Used: ') + colored.red(line))     
         
         elif count == 1:
-            f.write(file_size)
+            print(str(count))
+            file_size = line
+            puts(colored.green('File Size Limit: ') +  colored.red(line))
             
         elif count == 2:
-            f.write(keep_time)
+            print(str(count))
+            keep_time = line
+            
+            if line == '0':
+                keep_thetime = 'No'
+                puts(colored.green('Time Data Sample: ') + colored.red(keep_thetime))
+            
+            elif line == '1':
+                keep_thetime = 'Yes'
+                puts(colored.green('Time Data Sample: ') + colored.red(keep_thetime))
+                
+            else:
+                puts(colored.red('---ERROR---'))
+                puts(colored.red(line))
             
         elif count == 3:
-            f.write(time_limit) 
+            print(str(count))
+            time_limit = line 
+            puts(colored.green('Time Limit(hrs): ') + colored.red(line))
             
         count += 1
+    
+    file_isClosed = False
+    while file_isClosed == False:
+        f.close()
+        file_isClosed = f.closed
+
+def update_file():
+    global times_used
+    global file_size
+    global keep_time
+    global time_limit
+    
+    f = open('settings', 'w')  
+    
+    f.write(str(times_used))
+    f.write('\n' + str(file_size))
+    f.write('\n' + str(keep_time))
+    f.write('\n' + str(time_limit))
+    
+    file_isClosed = False
+    while file_isClosed == False:
+        f.close()
+        file_isClosed = f.closed
             
-        
+          
 
 def config_time():
-    response = input(puts(colored.green('Time data collection?(y/n) ')))
+    global keep_time
+    global time_limit
     
+    puts(colored.green('Time data collection?(y/n): '))
+    response = input()
+        
     if response == 'y':
-        keep_time = '1'        
-        time_limit = input(puts(colored.green('Enter time limit in hours or a fraction of an hour: ')))
+        keep_time = '1'
+        puts(colored.green('Enter time limit in hours or a fraction of an hour: '))        
+        time_limit = input()
         
     elif response == 'n':
-        keep_time = '0'    
+        keep_time = '0'   
+        
+    else:
+        puts(colored.red('---ERROR---')) 
+        puts(colored.red(response))
         
     
     update_file()    
   
 def config_timesused():
+    global times_used
     response = input(colored.green('Reset times used to zero?(y/n): '))
     if response == 'y':
         times_used = '0'
@@ -57,6 +113,7 @@ def config_timesused():
     update_file()
        
 def config_size():
+    global file_size
     response = input(colored.green('Enter number of lines of data to be collected: '))
     file_size = response
     
@@ -88,42 +145,13 @@ def parse_command(command):
              colored.green('\n\"exit\"'))          
              
 
-def parse_file():
-    count = 0    
-      
-    for line in f:
-            
-        if count == 0:
-            times_used = line      
-        
-        elif count == 1:
-            file_size = line
-            
-        elif count == 2:
-            keep_time = line
-            
-        elif count == 3:
-            time_limit = line 
-            
-        count += 1
+
         
 def print_currentSettings():
-    parse_file()
-    
-    puts(colored.green('------Current Settings Configuration------'))
-    limit_exists = ''
-    '''
-    if keep_time == '0':
-        limit_exists = 'No'
-        
-    else:
-        limit_exists = 'Yes'
-    '''
-    puts(colored.green('Time Data Collection: ') + colored.red(keep_time))
-    
-    puts(colored.green('Number of Lines To Be Collected: ') + colored.red(file_size))
-    
-    puts(colored.green('Current Time Limit To Be Used: ') +  colored.red(time_limit))
+    print(times_used)
+    print(file_size)
+    print(keep_time)
+    print(time_limit)
         
 def get_commands():
     exit_config = False
@@ -140,11 +168,11 @@ def get_commands():
             parse_command(command)
     
 def start_process():  
-    puts(colored.green('-------Settings Configuration Menu-------'))   
+    puts(colored.green('-------Settings Configuration Menu-------')) 
     parse_file()
     get_commands()
     update_file()   
-    f.close() 
+     
 
             
         

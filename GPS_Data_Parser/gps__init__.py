@@ -90,6 +90,10 @@ def get_Data():
         
         
 def get_settings():
+    global times_used
+    global keep_time
+    global numberof_lines
+    global time_limit
     
     f = open('settings', 'r')
     
@@ -104,6 +108,8 @@ def get_settings():
     time_limit = 0
     
     for line in f:
+        line = line.rstrip('\n')
+        line = line.strip()
         
         if count == 0:
             
@@ -131,6 +137,8 @@ def get_settings():
             
             
     get_Data()
+    
+get_settings()
             
 
             

@@ -5,11 +5,19 @@ Created on May 9, 2016
 '''
 import subprocess
 import datetime
-from settings_config import record_data
-
+from settings_config import parse_file
+from clint.textui import colored, puts
+'''
+    global record_data
+    global times_used
+    global file_size
+    global keep_time
+    global time_limit
+'''
+record_data = '0'
 times_used = '0'
 keep_time = '0'
-numberof_lines = '0'
+file_size = '0'
 time_limit = '0'
 hours_elapsed = '0'
 last_timeStamp = '0'
@@ -59,7 +67,7 @@ def get_Data():
         if keep_time == False:
         
             for line in result.stdout:
-                if line_count < numberof_lines:
+                if line_count < file_size:
                     
                     line = "%s" %line
                     
@@ -95,6 +103,7 @@ def get_Data():
             
             
 def get_settings():
+    '''
     global record_data
     global times_used
     global keep_time
@@ -138,7 +147,8 @@ def get_settings():
         elif count == 4:
             record_data = line
             
-            
+    '''
+    parse_file()       
     get_Data()
     
 get_settings()

@@ -88,6 +88,7 @@ def update_file():
     f.write('\n' + str(file_size))
     f.write('\n' + str(keep_time))
     f.write('\n' + str(time_limit))
+    f.write('\n' + str(record_data))
     
     file_isClosed = False
     while file_isClosed == False:
@@ -180,10 +181,32 @@ def parse_command(command):
 
         
 def print_currentSettings():
-    print(times_used)
-    print(file_size)
-    print(keep_time)
-    print(time_limit)
+    global record_data
+    global times_used
+    global file_size
+    global keep_time
+    global time_limit
+    
+    puts(colored.green('Times Used: ') + colored.red(times_used))
+    
+    if record_data == '1':
+        puts(colored.green('Record Data: ') + colored.red('Yes'))
+    
+    elif record_data == '0':
+        puts(colored.green('Record Data: ') + colored.red('No'))
+        
+    if keep_time == '1':
+        puts(colored.green('Time Data Collection: ') + colored.red('Yes'))
+        puts(colored.green('Time Limit: ') + colored.red(time_limit))
+        
+    elif keep_time == '0':
+        puts(colored.green('Time Data Collection: ') + colored.red('No'))
+        puts(colored.green('File Size Limit: ') + colored.red(file_size))
+           
+    
+    
+    
+    
         
 def get_commands():
     exit_config = False

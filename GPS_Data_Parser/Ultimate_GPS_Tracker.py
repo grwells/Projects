@@ -68,23 +68,22 @@ def get_help():
     #Print Designer Credits
     puts(colored.green('-----------------------Help Menu-----------------------'))
         
-    print('The Ultimate GPS Tracker was designed April 1, 2016 by Garrett Wells')
-    print('For serious information and technical details enter "exit" on the line below.')
-        
-    #Print Command Options
-    if input() == 'exit':
+    puts(colored.green('The Ultimate GPS Tracker was designed April 1, 2016 by Garrett Wells'))
+    puts(colored.red('Valid Commands:') + colored.green('\n\"get help\" -- opens the help menu') +  
+            colored.green('\n\"start new process\" -- starts a new process' + colored.green('\n\"config settings\" -- allows the user to configure the settings')))   
+    
+    puts(colored.green('If the user wants to edit the program that runs on startup the settings file should be configurated using \'config settings\''))    
             
-        print('Okay! Sheesh, no need to get mad. Here is a list of basic \ncommands accepted by the Ultimate GPS Tracker as well as '
-        + 'descriptions of their impact on the functionality of the Ultimate GPS Tracker.')
-                
-        print('')
-                
-        puts(colored.red('Commands:') + colored.green('\n\"get help\" -- opens the help menu') +  
-            colored.green('\n\"start new process\" -- starts a new process' + colored.green('\n\"config settings\" -- allows the user to configure the settings')))       
+    puts(colored.red('Enter \'next\' To Leave Menu: '))
+    response = input()
+    
+    while response != 'next':
+        puts(colored.red('Enter \'next\' To Leave Menu: '))
+        response = input()
+        
+    task_manager()
         
         
-        task_manager()
-                
                     
 '''
 Loops through the commands entered by the user

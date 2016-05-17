@@ -5,12 +5,14 @@ Created on May 9, 2016
 '''
 from clint.textui import colored, puts
 
+record_data = 0
 times_used = '0'
 file_size = '0'
 keep_time = '0'
 time_limit = '0'
 
 def parse_file():
+    global record_data
     global times_used
     global file_size
     global keep_time
@@ -25,7 +27,6 @@ def parse_file():
         line = line.strip()
                     
         if count == 0:
-            print(str(count))
             times_used = line 
             puts(colored.green('Times Used: ') + colored.red(line))     
         
@@ -35,7 +36,6 @@ def parse_file():
             puts(colored.green('File Size Limit: ') +  colored.red(line))
             
         elif count == 2:
-            print(str(count))
             keep_time = line
             
             if line == '0':
@@ -51,9 +51,22 @@ def parse_file():
                 puts(colored.red(line))
             
         elif count == 3:
-            print(str(count))
             time_limit = line 
             puts(colored.green('Time Limit(hrs): ') + colored.red(line))
+            
+        elif count == 4:
+            if line == '1':
+                puts(colored.green('Record Data on Startup: ') + colored.red('Yes'))
+                record_data = '1'
+                
+            elif line == '0':
+                puts(colored.green('Record Data on Startup: ') + colored.red('No'))
+                record_data = line
+                
+            else:
+                puts(colored.red('---ERROR---'))
+                puts(colored.red('Found: ') + colored.red(line))
+        
             
         count += 1
     
@@ -63,6 +76,7 @@ def parse_file():
         file_isClosed = f.closed
 
 def update_file():
+    global record_data
     global times_used
     global file_size
     global keep_time
@@ -114,10 +128,24 @@ def config_timesused():
        
 def config_size():
     global file_size
-    response = input(colored.green('Enter number of lines of data to be collected: '))
+    puts(colored.green('Enter number of lines of data to be collected: '))
+    response = input()
     file_size = response
     
-    update_file()    
+    update_file() 
+    
+def config_recordData():
+    global record_data
+    puts(colored.green('Record Data On Startup?(y/n): ')) 
+    response = input() 
+    
+    if response == 'y':
+        record_data = '1'
+        
+    elif response == 'n':
+        record_data = '0'
+        
+    update_file()
 
 def parse_command(command):
     if command == 'config time limits':        
@@ -135,6 +163,9 @@ def parse_command(command):
     elif command == 'print settings':
         print_currentSettings()
         
+    elif command == 'config startup':
+        config_recordData()
+        
     else: 
         puts(colored.red(command) + colored.cyan(' is not a valid command, please enter a command from the list below') +
              colored.red('\nCommands:') + 
@@ -142,6 +173,7 @@ def parse_command(command):
              colored.green('\n\"config file size\"') +
              colored.green('\n\"config times used\"') +
              colored.green('\n\"print settings"') +
+             colored.green('\n\"config startup\"') +
              colored.green('\n\"exit\"'))          
              
 

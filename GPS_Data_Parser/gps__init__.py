@@ -5,19 +5,21 @@ Created on May 9, 2016
 '''
 import subprocess
 import datetime
+from settings_config import record_data
 
-global times_used
-global keep_time
-global numberof_lines
-global time_limit
-global hours_elapsed
-global last_timeStamp
+times_used = '0'
+keep_time = '0'
+numberof_lines = '0'
+time_limit = '0'
+hours_elapsed = '0'
+last_timeStamp = '0'
 
 '''
 Increments hours_elapsed and returns hours_elapsed
 '''
 
 def get_timeDelta(current_time, last_time):
+    global last_timeStamp
     current_minute = int(current_time[14:16])
     start_minute = int(last_time[14:16])
     
@@ -35,61 +37,65 @@ def get_timeDelta(current_time, last_time):
     
     return hours_elapsed
     
-    
-
 
 def get_Data():
+    global record_data
     
-    line_count = 0
+    if record_data == '1': 
     
-    subprocess.getoutput('stty -F /dev/ttyAMA0 raw 9600 cs8 clocal -cstopb')
-       
-    result = subprocess.Popen('cat /dev/ttyAMA0', shell=True, stdout=subprocess.PIPE)
-       
+        line_count = 0
+        
+        subprocess.getoutput('stty -F /dev/ttyAMA0 raw 9600 cs8 clocal -cstopb')
            
-    #Specify the file to write to        
-    file_toWrite = 'GPS_Data.txt'
-      
-        
-    f = open(file_toWrite, 'w')
-                            
-    if keep_time == False:
-    
-        for line in result.stdout:
-            if line_count < numberof_lines:
-                
-                line = "%s" %line
-                
-                if line[0 : 8] == "b\'$GPRMC":
-                    
-                    f.write("%s\n" %line)
-                    line_count += 1
-                           
-            else:
-                    
-                f.close()
-                break
+        result = subprocess.Popen('cat /dev/ttyAMA0', shell=True, stdout=subprocess.PIPE)
+           
+               
+        #Specify the file to write to        
+        file_toWrite = 'GPS_Data.txt'
+          
             
-    elif keep_time == True:
         f = open(file_toWrite, 'w')
+                                
+        if keep_time == False:
         
-        start_time = str(datetime.datetime.now())
-        last_timeStamp = start_time
-        
-        for line in result.stdout:                                        
-            if get_timeDelta(str(datetime.datetime.now()), last_timeStamp) <= time_limit:                           
-                line = "%s" %line
+            for line in result.stdout:
+                if line_count < numberof_lines:
                     
-                if line[0 : 8] == "b\'$GPRMC":                        
-                    f.write("%s\n" %line)
-                    line_count += 1
+                    line = "%s" %line
+                    
+                    if line[0 : 8] == "b\'$GPRMC":
+                        
+                        f.write("%s\n" %line)
+                        line_count += 1
                                
-            else:                        
-                f.close()
-                break
-        
-        
+                else:
+                        
+                    f.close()
+                    break
+                
+        elif keep_time == True:
+            f = open(file_toWrite, 'w')
+            
+            start_time = str(datetime.datetime.now())
+            last_timeStamp = start_time
+            
+            for line in result.stdout:                                        
+                if get_timeDelta(str(datetime.datetime.now()), last_timeStamp) <= time_limit:                           
+                    line = "%s" %line
+                        
+                    if line[0 : 8] == "b\'$GPRMC":                        
+                        f.write("%s\n" %line)
+                        line_count += 1
+                                   
+                else:                        
+                    f.close()
+                    break
+    elif record_data == '0':
+        print('GPS Data Collection on Startup Deactivated')
+            
+            
 def get_settings():
+    global record_data
     global times_used
     global keep_time
     global numberof_lines
@@ -111,29 +117,26 @@ def get_settings():
         line = line.rstrip('\n')
         line = line.strip()
         
-        if count == 0:
-            
+        if count == 0:            
             times_used = int(line)
             
-            if times_used < 1:
-                
+            if times_used < 1:                
                 print('Please configure the settings file to make sure that you are running the correct configuration.')
         
-        elif count == 1:
-                        
+        elif count == 1:                        
             numberof_lines = int(line)
             
-        elif count == 2:
-            
+        elif count == 2:            
             keep_time = str(line)
             
-            if keep_time == '1':
-                
+            if keep_time == '1':                
                 keep_time = True
                             
-        elif count == 3:
-            
+        elif count == 3:            
             time_limit = int(line)
+            
+        elif count == 4:
+            record_data = line
             
             
     get_Data()

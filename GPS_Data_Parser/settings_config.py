@@ -31,7 +31,6 @@ def parse_file():
             puts(colored.green('Times Used: ') + colored.red(line))     
         
         elif count == 1:
-            print(str(count))
             file_size = line
             puts(colored.green('File Size Limit: ') +  colored.red(line))
             

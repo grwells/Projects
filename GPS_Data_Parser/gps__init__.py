@@ -59,10 +59,10 @@ def get_Data():
            
                
         #Specify the file to write to        
-        file_toWrite = 'GPS_Data.txt'
+        file_toWrite = 'GPS_DataStartup.txt'
           
             
-        f = open(file_toWrite, 'w')
+        f = open(file_toWrite, 'r+')
                                 
         if keep_time == False:
         

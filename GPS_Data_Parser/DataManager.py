@@ -30,7 +30,7 @@ def write_tofile(fill_limit, save_tofile=False):
         
         continue_Writing = input()
         
-        if continue_Writing == 'yes':
+        if continue_Writing == 'yes' or continue_Writing == 'y' or continue_Writing == 'Yes':
             
             print('---Opening File---')
             f = open(file_toWrite, 'w')

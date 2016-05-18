@@ -72,7 +72,7 @@ def get_Data():
         if keep_time == '0':
         
             for line in result.stdout:
-                if line_count < file_size:
+                if line_count < int(file_size):
                     
                     line = "%s" %line
                     

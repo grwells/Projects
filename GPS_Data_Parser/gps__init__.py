@@ -45,6 +45,10 @@ def get_timeDelta(current_time, last_time):
 
 def get_Data():
     global record_data
+    global times_used
+    global file_size
+    global keep_time
+    global time_limit
     
     if record_data == '1': 
     

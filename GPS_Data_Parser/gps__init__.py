@@ -65,8 +65,11 @@ def get_Data():
           
             
         f = open(file_toWrite, 'r+')
+        print('file open')
+        
+        print(keep_time)
                                 
-        if keep_time == False:
+        if keep_time == '0':
         
             for line in result.stdout:
                 if line_count < file_size:
@@ -83,7 +86,7 @@ def get_Data():
                     f.close()
                     break
                 
-        elif keep_time == True:
+        elif keep_time == '1':
                        
             start_time = str(datetime.datetime.now())
             last_timeStamp = start_time

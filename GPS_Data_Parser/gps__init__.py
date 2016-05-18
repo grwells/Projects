@@ -94,11 +94,13 @@ def get_Data():
         elif keep_time == '1':
             print('Getting Start Time')           
             start_time = str(datetime.datetime.now())
+            print('Start Time: ' + start_time)
             last_timeStamp = start_time
             
             for line in result.stdout: 
                 print('Timing Operation')                                       
-                if get_timeDelta(str(datetime.datetime.now()), last_timeStamp) <= time_limit:                           
+                if get_timeDelta(str(datetime.datetime.now()), last_timeStamp) <= time_limit: 
+                    print('Hours Elapsed Since Start: ' + str(hours_elapsed))                          
                     line = "%s" %line
                         
                     if line[0 : 8] == "b\'$GPRMC":                        

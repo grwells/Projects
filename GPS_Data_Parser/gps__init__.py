@@ -16,7 +16,7 @@ times_used = '0'
 keep_time = '0'
 file_size = '0'
 time_limit = '0'
-hours_elapsed = '0'
+hours_elapsed = 0.0
 last_timeStamp = '0'
 
 '''
@@ -38,10 +38,10 @@ def get_timeDelta(current_time, last_time):
         portion_ofhour = (60 - start_minute) + current_minute
         
     portion_ofhour = portion_ofhour/60
-    hours_elapsed += portion_ofhour
+    hours_elapsed += float(portion_ofhour)
     last_timeStamp = current_time
     
-    return int(hours_elapsed)
+    return float(hours_elapsed)
     
 
 def get_Data():
@@ -151,7 +151,7 @@ def get_settings():
             keep_time = str(line)
                                                     
         elif count == 3:            
-            time_limit = int(line)
+            time_limit = float(line)
             
         elif count == 4:
             record_data = line

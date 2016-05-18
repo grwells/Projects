@@ -29,7 +29,7 @@ def get_timeDelta(current_time, last_time):
     current_minute = int(current_time[14:16])
     start_minute = int(last_time[14:16])
     
-    portion_ofhour = 0
+    portion_ofhour = 0.0
     
     if current_minute >= start_minute:
         portion_ofhour = current_minute - start_minute
@@ -41,8 +41,7 @@ def get_timeDelta(current_time, last_time):
     hours_elapsed += float(portion_ofhour)
     last_timeStamp = current_time
     
-    return float(hours_elapsed)
-    
+        
 
 def get_Data():
     global record_data
@@ -50,6 +49,8 @@ def get_Data():
     global file_size
     global keep_time
     global time_limit
+    global hours_elapsed
+    global last_timeStamp
     
     if record_data == '1': 
         print('Starting process')
@@ -92,14 +93,18 @@ def get_Data():
                     break
                 
         elif keep_time == '1':
-            print('Getting Start Time')           
+            print('Getting Start Time')  
+            #         
             start_time = str(datetime.datetime.now())
+            #
             print('Start Time: ' + start_time)
+            #
             last_timeStamp = start_time
             
             for line in result.stdout: 
-                print('Timing Operation')                                       
-                if get_timeDelta(str(datetime.datetime.now()), last_timeStamp) <= time_limit: 
+                print('Timing Operation') 
+                get_timeDelta(str(datetime.datetime.now()), last_timeStamp)                                      
+                if hours_elapsed <= time_limit: 
                     print('Hours Elapsed Since Start: ' + str(hours_elapsed))                          
                     line = "%s" %line
                         
@@ -112,6 +117,8 @@ def get_Data():
                     print('Closing File')                       
                     f.close()
                     print('File Closed')
+                    end_time = str(datetime.datetime.now())
+                    print('End Time: ' + end_time)
                     break
     elif record_data == '0':
         print('GPS Data Collection on Startup Deactivated')

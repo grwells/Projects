@@ -83,8 +83,9 @@ def get_Data():
                         print(str(line_count))
                                
                 else:
-                        
+                    print('Closing File')                        
                     f.close()
+                    print('File Closed')
                     break
                 
         elif keep_time == '1':
@@ -106,6 +107,7 @@ def get_Data():
     elif record_data == '0':
         print('GPS Data Collection on Startup Deactivated')
         print(record_data)
+        f.close()
         
     else:
         f.close()

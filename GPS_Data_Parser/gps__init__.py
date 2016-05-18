@@ -24,6 +24,7 @@ Increments hours_elapsed and returns hours_elapsed
 '''
 
 def get_timeDelta(current_time, last_time):
+    global hours_elapsed
     global last_timeStamp
     current_minute = int(current_time[14:16])
     start_minute = int(last_time[14:16])
@@ -40,7 +41,7 @@ def get_timeDelta(current_time, last_time):
     hours_elapsed += portion_ofhour
     last_timeStamp = current_time
     
-    return hours_elapsed
+    return int(hours_elapsed)
     
 
 def get_Data():

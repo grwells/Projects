@@ -67,7 +67,7 @@ def get_Data():
         f = open(file_toWrite, 'r+')
         print('file open')
         
-        print(keep_time)
+        print('Keep Time: ' + keep_time)
                                 
         if keep_time == '0':
         
@@ -91,20 +91,24 @@ def get_Data():
                     break
                 
         elif keep_time == '1':
-                       
+            print('Getting Start Time')           
             start_time = str(datetime.datetime.now())
             last_timeStamp = start_time
             
-            for line in result.stdout:                                        
+            for line in result.stdout: 
+                print('Timing Operation')                                       
                 if get_timeDelta(str(datetime.datetime.now()), last_timeStamp) <= time_limit:                           
                     line = "%s" %line
                         
                     if line[0 : 8] == "b\'$GPRMC":                        
                         f.write("%s\n" %line)
                         line_count += 1
+                        print(str(line_count))
                                    
-                else:                        
+                else: 
+                    print('Closing File')                       
                     f.close()
+                    print('File Closed')
                     break
     elif record_data == '0':
         print('GPS Data Collection on Startup Deactivated')

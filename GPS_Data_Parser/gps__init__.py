@@ -73,7 +73,7 @@ def get_Data():
         
             for line in result.stdout:
                 print('Line Count: ' + str(line_count))
-                print('File Size: ' + file_size)
+                print('File Size: ' + str(file_size))
                 if line_count < int(file_size):
                     
                     line = "%s" %line

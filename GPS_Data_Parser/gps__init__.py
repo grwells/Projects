@@ -51,6 +51,7 @@ def get_Data():
     global time_limit
     
     if record_data == '1': 
+        print('Starting process')
     
         line_count = 0
         
@@ -83,8 +84,7 @@ def get_Data():
                     break
                 
         elif keep_time == True:
-            f = open(file_toWrite, 'w')
-            
+                       
             start_time = str(datetime.datetime.now())
             last_timeStamp = start_time
             
@@ -102,6 +102,10 @@ def get_Data():
     elif record_data == '0':
         print('GPS Data Collection on Startup Deactivated')
         print(record_data)
+        
+    else:
+        f.close()
+        print("---ERROR---")
             
             
 def get_settings():

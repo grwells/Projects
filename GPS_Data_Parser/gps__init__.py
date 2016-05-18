@@ -1,8 +1,5 @@
-'''
-Created on May 9, 2016
 
-@author: deepg
-'''
+
 import subprocess
 import datetime
 from settings_config import parse_file
@@ -103,7 +100,7 @@ def get_Data():
             
             
 def get_settings():
-    '''
+    
     global record_data
     global times_used
     global keep_time
@@ -147,8 +144,8 @@ def get_settings():
         elif count == 4:
             record_data = line
             
-    '''
-    parse_file()       
+    
+    #parse_file()       
     get_Data()
     
 get_settings()

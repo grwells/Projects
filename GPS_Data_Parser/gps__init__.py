@@ -80,6 +80,7 @@ def get_Data():
                         
                         f.write("%s\n" %line)
                         line_count += 1
+                        print(str(line_count))
                                
                 else:
                         

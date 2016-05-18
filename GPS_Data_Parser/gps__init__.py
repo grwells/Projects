@@ -116,14 +116,7 @@ def get_settings():
     
     count = 0
     
-    numberof_lines = 100
-    
-    times_used = 0
-    
-    keep_time = False
-    
-    time_limit = 0
-    
+      
     for line in f:
         line = line.rstrip('\n')
         line = line.strip()
@@ -149,6 +142,8 @@ def get_settings():
         elif count == 4:
             record_data = line
             print('Record Data = ' + line)
+            
+        count += 1
             
     
     #parse_file()       

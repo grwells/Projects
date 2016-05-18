@@ -101,6 +101,7 @@ def get_Data():
                     break
     elif record_data == '0':
         print('GPS Data Collection on Startup Deactivated')
+        print(record_data)
             
             
 def get_settings():
@@ -147,6 +148,7 @@ def get_settings():
             
         elif count == 4:
             record_data = line
+            print('Record Data = ' + line)
             
     
     #parse_file()       

@@ -148,10 +148,7 @@ def get_settings():
             
         elif count == 2:            
             keep_time = str(line)
-            
-            if keep_time == '1':                
-                keep_time = True
-                            
+                                                    
         elif count == 3:            
             time_limit = int(line)
             

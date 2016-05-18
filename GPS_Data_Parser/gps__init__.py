@@ -121,7 +121,7 @@ def get_settings():
     global record_data
     global times_used
     global keep_time
-    global numberof_lines
+    global file_size
     global time_limit
     
     f = open('settings', 'r')
@@ -140,7 +140,7 @@ def get_settings():
                 print('Please configure the settings file to make sure that you are running the correct configuration.')
         
         elif count == 1:                        
-            numberof_lines = int(line)
+            file_size = int(line)
             
         elif count == 2:            
             keep_time = str(line)

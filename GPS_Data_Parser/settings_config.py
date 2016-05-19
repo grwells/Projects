@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 '''
 Created on May 9, 2016
 
@@ -11,6 +12,9 @@ file_size = '0'
 keep_time = '0'
 time_limit = '0'
 
+'''
+Pulls user preferences from the settings file, stores them in the global variables
+'''
 def parse_file():
     global record_data
     global times_used
@@ -73,7 +77,9 @@ def parse_file():
     while file_isClosed == False:
         f.close()
         file_isClosed = f.closed
-
+'''
+Writes the contents of the global variables to the settings file, called immediately after the user exits
+'''
 def update_file():
     global record_data
     global times_used
@@ -93,19 +99,20 @@ def update_file():
     while file_isClosed == False:
         f.close()
         file_isClosed = f.closed
-            
-          
-
+        
+'''
+Edits whether or not the data collection process is limited by time or number of lines
+'''
 def config_time():
     global keep_time
     global time_limit
     
-    puts(colored.green('Time data collection?(y/n): '))
+    puts(colored.magenta('Time data collection?(y/n): '))
     response = input()
         
     if response == 'y':
         keep_time = '1'
-        puts(colored.green('Enter time limit in hours or a fraction of an hour: '))        
+        puts(colored.magenta('Enter time limit in hours or a fraction of an hour: '))        
         time_limit = input()
         
     elif response == 'n':
@@ -116,27 +123,36 @@ def config_time():
         puts(colored.red(response))
         
     
-    update_file()    
-  
+    update_file()
+        
+'''
+Allows the user to reset the number of times that the app has been used
+'''
 def config_timesused():
     global times_used
-    response = input(colored.green('Reset times used to zero?(y/n): '))
+    response = input(colored.magenta('Reset times used to zero?(y/n): '))
     if response == 'y':
         times_used = '0'
         
     update_file()
-       
+
+'''
+Allows the user to change the number of lines that the raspberry pi will record
+'''       
 def config_size():
     global file_size
-    puts(colored.green('Enter number of lines of data to be collected: '))
+    puts(colored.magenta('Enter number of lines of data to be collected: '))
     response = input()
     file_size = response
     
-    update_file() 
-    
+    update_file()
+     
+'''
+Allows the user to change whether the data is recorded at startup or not
+''' 
 def config_recordData():
     global record_data
-    puts(colored.green('Record Data On Startup?(y/n): ')) 
+    puts(colored.magenta('Record Data On Startup?(y/n): ')) 
     response = input() 
     
     if response == 'y':
@@ -146,7 +162,10 @@ def config_recordData():
         record_data = '0'
         
     update_file()
-
+    
+'''
+Handles the arguments passed on by the user 
+'''
 def parse_command(command):
     if command == 'config time limits':        
         config_time()
@@ -168,13 +187,19 @@ def parse_command(command):
         
     else: 
         puts(colored.red(command) + colored.cyan(' is not a valid command, please enter a command from the list below') +
-             colored.red('\nCommands:') + 
-             colored.green('\n\"config time limits\"') + 
-             colored.green('\n\"config file size\"') +
-             colored.green('\n\"config times used\"') +
-             colored.green('\n\"print settings"') +
-             colored.green('\n\"config startup\"') +
-             colored.green('\n\"exit\"'))          
+             colored.red('\nValid Commands:') + 
+             colored.green('\n1. \"config time limits\"') + 
+             colored.cyan('\n      allows the user to change how long data is recorded') +
+             colored.green('\n2. \"config file size\"') +
+             colored.cyan('\n      allows the user to change how many lines of data are recorded') +
+             colored.green('\n3. \"config times used\"') +
+             colored.cyan('\n      allows the user to reset the count of how many times the settings have been changed') +
+             colored.green('\n4. \"print settings"') +
+             colored.cyan('\n      allows the user to display the settings that are about to be written into the file') +
+             colored.green('\n5. \"config startup\"') +
+             colored.cyan('\n      allows the user to choose whether or not data is recorded on startup') +
+             colored.green('\n6. \"exit\"') +
+             colored.cyan('\n      enter this command to go back to the main menu'))       
              
 
 
@@ -215,14 +240,14 @@ def get_commands():
         command = input()
         
         if command == 'exit':
-            puts(colored.red('----------Leaving Settings Menu----------'))
+            puts(colored.magenta('----------Leaving Settings Menu----------'))
             break
         
         else:
             parse_command(command)
     
 def start_process():  
-    puts(colored.green('-------Settings Configuration Menu-------')) 
+    puts(colored.magenta('-------Settings Configuration Menu-------')) 
     parse_file()
     get_commands()
     update_file()   

@@ -2,8 +2,6 @@
 
 import subprocess
 import datetime
-from settings_config import parse_file
-from clint.textui import colored, puts
 '''
     global record_data
     global times_used
@@ -169,7 +167,7 @@ def get_settings():
         count += 1
             
     
-    #parse_file()       
+      
     get_Data()
     
 get_settings()

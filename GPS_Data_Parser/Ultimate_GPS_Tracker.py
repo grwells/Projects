@@ -63,7 +63,7 @@ def start_Process():
         keep_time = input(colored.yellow('Set Time Limit for Data Collection?(y/n): '))
         
         if keep_time == 'yes' or keep_time == 'Yes' or keep_time == 'y':
-            DataManager.write_tofile(True, 0, True)            
+            DataManager.write_tofile( 0, True, True)            
                     
         else:
             size = input(colored.yellow('File Size(number of lines): '))

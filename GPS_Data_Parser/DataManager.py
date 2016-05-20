@@ -121,7 +121,7 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
     
     #Print data into the user interface    
     else:  
-        puts(colored.red('Press Ctrl + C to Terminate Program', bold=True))        
+        puts(colored.red('Press Ctrl + C to Terminate Program', bold=True)).sleep(10)        
         for line in result.stdout:
             if line_count < fill_limit:
                 Parser.identify_sentence("%s" %line)

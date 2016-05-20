@@ -40,10 +40,10 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
     puts(colored.green('---Process Starting---'))
     line_count = 0
     subprocess.getoutput('stty -F /dev/ttyAMA0 raw 9600 cs8 clocal -cstopb')
-    puts(colored.green('---Baud rate set---'))
+    puts(colored.green('---Baud Rate Set---'))
     
     result = subprocess.Popen('cat /dev/ttyAMA0', shell=True, stdout=subprocess.PIPE)
-    puts(colored.green('---PIPE IS OPEN---'))
+    puts(colored.green('-----Pipe Is Open-----'))
     
     if save_tofile:
         
@@ -82,6 +82,7 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
             for line in result.stdout: 
                 get_timeDelta(str(datetime.datetime.now()), last_timeStamp)                                      
                 if hours_elapsed <= time_limit: 
+                    Parser.identify_sentence("%s" %line)
                     line = "%s" %line                        
                     if line[0 : 8] == "b\'$GPRMC":                        
                         f.write("%s\n" %line)
@@ -96,7 +97,7 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
                     break
                 
             
-        else:        
+        else: 
             for line in result.stdout:
                 if line_count < fill_limit:
                     Parser.identify_sentence("%s" %line)
@@ -119,7 +120,8 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
                         
     
     #Print data into the user interface    
-    else:       
+    else:  
+        puts(colored.red('Press Ctrl + C to Terminate Program', bold=True))        
         for line in result.stdout:
             if line_count < fill_limit:
                 Parser.identify_sentence("%s" %line)

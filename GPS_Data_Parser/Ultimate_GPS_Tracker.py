@@ -60,12 +60,16 @@ def start_Process():
     user_reply = input(colored.yellow('Save data to file? (y/n): '))
            
     if (user_reply == 'yes') or (user_reply == 'y'):
-            
-        size = input(colored.yellow('File Size(number of lines): '))
-        DataManager.write_tofile(int(size), True)
+        keep_time = input(colored.yellow('Set Time Limit for Data Collection?(y/n): '))
+        
+        if keep_time == 'yes' or keep_time == 'Yes' or keep_time == 'y':
+            DataManager.write_tofile(True, 0, True)            
+                    
+        else:
+            size = input(colored.yellow('File Size(number of lines): '))
+            DataManager.write_tofile(int(size), True)
                 
-    elif user_reply == 'n' or user_reply == 'no':
-         
+    elif user_reply == 'n' or user_reply == 'no':         
         DataManager.write_tofile(200)
         
     else:

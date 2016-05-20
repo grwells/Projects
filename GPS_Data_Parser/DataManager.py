@@ -12,6 +12,7 @@ import Parser
 import datetime
 from clint.textui import puts, colored
 
+hours_elapsed = 0.0
 
 '''
 Increments hours_elapsed based on the time elapsed between current_time and last_time which are string versions of the times from the datetime lib
@@ -41,11 +42,11 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
     puts(colored.green('---Process Starting---'))
     line_count = 0
     subprocess.getoutput('stty -F /dev/ttyAMA0 raw 9600 cs8 clocal -cstopb')
-    puts(colored.green('---Baud Rate Set---'))
+    puts(colored.green('----Baud Rate Set----'))
     
     result = subprocess.Popen('cat /dev/ttyAMA0', shell=True, stdout=subprocess.PIPE)
     puts(colored.green('-----Pipe Is Open-----'))
-    
+    #Save to a file
     if save_tofile:
         
         #Specify the file to write to        
@@ -70,6 +71,7 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
         
         
         if keep_time == True:
+            global hours_elapsed
             time_limit = input(colored.green('Enter time limit in hours or a fraction of an hour: '))
             #
             time_limit = float(time_limit)
@@ -120,7 +122,7 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
          
                         
     
-    #Print data into the user interface    
+    #Don't Save to File   
     else:  
         puts(colored.red('Press Ctrl + C to Terminate Program', bold=True))
         time.sleep(2)        

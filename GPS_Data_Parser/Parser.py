@@ -71,7 +71,7 @@ def parse_RMC(sentence):
         puts(colored.cyan('Velocity(Knots): ') + colored.magenta(speed_knots))
         
         #Angle of Velocity
-        angle_ofvelocity = sentence[52:58]
+        angle_ofvelocity = sentence[52:57]
         puts(colored.cyan('Angle of Velocity: ') + colored.magenta(angle_ofvelocity))
                     
     

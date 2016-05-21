@@ -125,7 +125,6 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
     #Don't Save to File   
     else:
         if keep_time == True:
-            global hours_elapsed
             #
             time_limit = input(colored.green('Enter time limit in hours or a fraction of an hour: '))
             #
@@ -141,10 +140,7 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
                 get_timeDelta(str(datetime.datetime.now()), last_timeStamp)                                      
                 if hours_elapsed <= time_limit: 
                     Parser.identify_sentence("%s" %line)
-                    line = "%s" %line                        
-                    if line[0 : 8] == "b\'$GPRMC":                        
-                        f.write("%s\n" %line)
-                        line_count += 1
+                    
                                                                
                 else: 
                     puts(colored.green('---Closing File---'))                       

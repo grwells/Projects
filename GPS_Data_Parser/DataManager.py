@@ -46,9 +46,9 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
     
     result = subprocess.Popen('cat /dev/ttyAMA0', shell=True, stdout=subprocess.PIPE)
     puts(colored.green('-----Pipe Is Open-----'))
+    
     #Save to a file
-    if save_tofile:
-        
+    if save_tofile:        
         #Specify the file to write to        
         puts(colored.red('Please enter the name of the file that you would like to save the data to in the line below: '))
         file_toWrite = input()
@@ -115,26 +115,56 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
                     f.close()
                     puts(colored.green('---File Closed---'))
                     break
-                    
-            
+                        
                 
+                    
         
          
                         
     
     #Don't Save to File   
-    else:  
-        puts(colored.red('Press Ctrl + C to Terminate Program', bold=True))
-        time.sleep(2)        
-        for line in result.stdout:
-            if line_count < fill_limit:
-                Parser.identify_sentence("%s" %line)
-                line_count += 1
-                 
-            else:
-                puts(colored.green('---Limit Reached---'))
-                puts(colored.green('---Ending Process---'))
-                break
+    else:
+        if keep_time == True:
+            global hours_elapsed
+            #
+            time_limit = input(colored.green('Enter time limit in hours or a fraction of an hour: '))
+            #
+            time_limit = float(time_limit)
+            #         
+            start_time = str(datetime.datetime.now())
+            #
+            puts(colored.green('Starting Data Collection At: ' + start_time))
+            #
+            last_timeStamp = start_time
+            #
+            for line in result.stdout: 
+                get_timeDelta(str(datetime.datetime.now()), last_timeStamp)                                      
+                if hours_elapsed <= time_limit: 
+                    Parser.identify_sentence("%s" %line)
+                    line = "%s" %line                        
+                    if line[0 : 8] == "b\'$GPRMC":                        
+                        f.write("%s\n" %line)
+                        line_count += 1
+                                                               
+                else: 
+                    puts(colored.green('---Closing File---'))                       
+                    f.close()
+                    puts(colored.green('---File Closed---'))
+                    end_time = str(datetime.datetime.now())
+                    puts(colored.green('Stopped Data Collection At: ' + end_time))
+                    break  
+        else:
+            puts(colored.red('Press Ctrl + C to Terminate Program', bold=True))
+            time.sleep(2)        
+            for line in result.stdout:
+                if line_count < fill_limit:
+                    Parser.identify_sentence("%s" %line)
+                    line_count += 1
+                     
+                else:
+                    puts(colored.green('---Limit Reached---'))
+                    puts(colored.green('---Ending Process---'))
+                    break
     
     
     puts(colored.green('---Process Ended---'))

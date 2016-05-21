@@ -67,11 +67,19 @@ def start_Process():
                     
         else:
             size = input(colored.yellow('File Size(number of lines): '))
-            DataManager.write_tofile(int(size), True)
+            DataManager.write_tofile(int(size), False, True)
                 
-    elif user_reply == 'n' or user_reply == 'no':         
-        DataManager.write_tofile(200)
+    elif user_reply == 'n' or user_reply == 'no':
+        keep_time = input(colored.yellow('Set Time Limit for Data Collection?(y/n): '))
         
+        if keep_time == 'yes' or keep_time == 'Yes' or keep_time == 'y':
+            DataManager.write_tofile( 0, True, False)            
+                    
+        else:
+            size = input(colored.yellow('File Size(number of lines): '))
+            DataManager.write_tofile(300, False, False)
+                         
+                
     else:
         puts(colored.red('---Invalid Input---'))
     

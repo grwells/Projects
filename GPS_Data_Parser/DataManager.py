@@ -65,9 +65,9 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
             puts(colored.cyan('---File Open---'))
                 
         elif continue_Writing == 'n' or continue_Writing == 'no' or continue_Writing == 'No':
-            print('---Opening File---')
+            puts(colored.cyan('---Opening File---'))
             f = open(file_toWrite, 'a')
-            print('---File Open---')
+            puts(colored.cyan('---File Open---'))
         
         
         if keep_time == True:

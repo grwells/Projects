@@ -132,8 +132,6 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
             #         
             start_time = str(datetime.datetime.now())
             #
-            puts(colored.green('Starting Data Collection At: ' + start_time))
-            #
             last_timeStamp = start_time
             #
             for line in result.stdout: 
@@ -143,11 +141,7 @@ def write_tofile(fill_limit, keep_time=False,  save_tofile=False):
                     
                                                                
                 else: 
-                    puts(colored.green('---Closing File---'))                       
-                    f.close()
-                    puts(colored.green('---File Closed---'))
                     end_time = str(datetime.datetime.now())
-                    puts(colored.green('Stopped Data Collection At: ' + end_time))
                     break  
         else:
             puts(colored.red('Press Ctrl + C to Terminate Program', bold=True))

@@ -77,7 +77,7 @@ def start_Process():
                     
         else:
             size = input(colored.yellow('File Size(number of lines): '))
-            DataManager.write_tofile(300, False, False)
+            DataManager.write_tofile(int(size), False, False)
                          
                 
     else:

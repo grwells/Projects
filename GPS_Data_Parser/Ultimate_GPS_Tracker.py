@@ -92,30 +92,37 @@ def get_help():
     #Print Designer Credits
     puts(colored.magenta('---------------------------Help Menu---------------------------'))
         
-    puts(colored.green('The Ultimate GPS Tracker was designed April 1, 2016 by Garrett Wells as an AP Comp Sci project'))
+    puts(colored.green('The Wells Global Positioning System was designed April 1, 2016 by Garrett Wells as an AP Comp Sci project'))
     
     puts(
-            colored.green('Valid Commands:') + 
-            colored.green('\n1. \"get help\" or \"help\" or \"get information\"') + 
-            colored.cyan('\n      opens the help menu and provides information on the app') +
-            colored.green('\n2. \"start new process\" or \"startApp\"') + 
-            colored.cyan('\n      displays incoming data from the gps and allows the user to record incoming data') +
-            colored.green('\n3. \"config settings\" or \"open settings\" or \"config auto start\"') +
-            colored.cyan('\n      allows the user to change whether or not data is recorded automatically when the pi boots up') +
-            colored.green('\n4. \"exit\"') + 
-            colored.cyan('\n      exits out of the Ultimate GPS Tracker')            
-            ) 
-         
-    puts(colored.red('Enter \"next\" To Leave Help Menu: '))
-    response = input()
+        colored.green('Valid Commands:') + 
+        colored.green('\n') +
+        colored.green('\n1. \"get help\" or \"help\" or \"get information\"') + 
+        colored.cyan('\n      opens the help menu and provides information on the app') +
+        colored.green('\n2. \"start new process\" or \"startApp\"') + 
+        colored.cyan('\n      displays incoming data from the gps and allows the user to record incoming data') +
+        colored.green('\n3. \"config settings\" or \"open settings\" or \"config auto start\"') +
+        colored.cyan('\n      allows the user to change whether or not data is recorded automatically when the pi boots up') +
+        colored.green('\n4. \"exit\"') + 
+        colored.cyan('\n      exits out of the Ultimate GPS Tracker')            
+        ) 
     
-    while response != 'next':
-        puts(colored.green('Enter \'next\' To Leave Menu: '))
-        response = input()
-        
-    task_manager()
-        
-        
+    puts(
+        colored.yellow('\nstartApp Functionality:') +
+        colored.yellow('\n') +
+        colored.yellow('\nstartApp activates the data collection process directly from the main menu. The user can choose to save the collected data, storage location of the ')+
+        colored.yellow('\ndata and whether or not the data should be limited by time or number of NMEA sentences.')
+        )
+    
+    puts(
+        colored.magenta('\n\nSettings Menu Details:') +
+        colored.magenta('\n') +
+        colored.magenta('\nThe settings menu can be used to setup the automatic startup process for the WGPS. The user can turn it on or off and can also')+
+        colored.magenta('\nchange how much data is collected as well as how the data is recorded.') +
+        colored.magenta('\n')
+        )
+         
+    
                     
 '''
 Loops through the commands entered by the user

@@ -2,6 +2,7 @@
 
 import subprocess
 import datetime
+from settings_config import data_Destination
 '''
 Variable names used in settings_config
     global record_data
@@ -17,6 +18,7 @@ file_size = '0'
 time_limit = '0'
 hours_elapsed = 0.0
 last_timeStamp = '0'
+data_Destination = ''
 
 
 '''
@@ -55,6 +57,7 @@ def get_Data():
     global time_limit
     global hours_elapsed
     global last_timeStamp
+    global data_Destination
     
     if record_data == '1': 
         #print('Starting process')
@@ -67,7 +70,7 @@ def get_Data():
            
                
         #Specify the file to write to        
-        file_toWrite = 'GPS_DataStartup.txt'
+        file_toWrite = data_Destination
           
             
         f = open(file_toWrite, 'a')
@@ -145,6 +148,7 @@ def get_settings():
     global keep_time
     global file_size
     global time_limit
+    global data_Destination
     
     f = open('settings', 'r')
     
@@ -173,6 +177,9 @@ def get_settings():
         elif count == 4:
             record_data = line
             #print('Record Data = ' + line)
+            
+        elif count == 5:
+            data_Destination = line
             
         count += 1
             

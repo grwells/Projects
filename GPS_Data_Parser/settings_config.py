@@ -11,6 +11,7 @@ times_used = '0'
 file_size = '0'
 keep_time = '0'
 time_limit = '0'
+data_Destination = ''
 
 '''
 Pulls user preferences from the settings file, stores them in the global variables
@@ -22,6 +23,7 @@ def parse_file():
     global keep_time
     global time_limit
     global exit_config 
+    global data_destination
 
     f = open('settings', 'r')  
     count = 0    
@@ -69,6 +71,10 @@ def parse_file():
             else:
                 puts(colored.red('---ERROR---'))
                 puts(colored.red('Found: ') + colored.red(line))
+                
+        elif count == 5:
+            puts(colored.green("Data Destination File: " + line))
+            data_Destination = line
         
             
         count += 1
@@ -86,6 +92,7 @@ def update_file():
     global file_size
     global keep_time
     global time_limit
+    global data_Destination
     
     f = open('settings', 'w')  
     
@@ -94,11 +101,14 @@ def update_file():
     f.write('\n' + str(keep_time))
     f.write('\n' + str(time_limit))
     f.write('\n' + str(record_data))
+    f.write('\n' + str(data_Destination))
     
     file_isClosed = False
     while file_isClosed == False:
         f.close()
         file_isClosed = f.closed
+        
+    puts(colored.green('---------File Updated--------'))
         
 '''
 Edits whether or not the data collection process is limited by time or number of lines
@@ -163,6 +173,23 @@ def config_recordData():
         
     update_file()
     
+def config_dataDestination():
+    global data_Destination
+    
+    puts(colored.green('Current Data Storage File: ' + data_Destination))
+    
+    puts(colored.green('Change data destination?(y/n):'))
+    
+    response = input()
+    
+    if response == 'y':
+        
+        puts(colored.green('Enter the name of the new file the data is to be recorded to:'))
+        
+        data_Destination = input()
+        
+        update_file()
+    
 '''
 Handles the arguments passed on by the user 
 '''
@@ -185,6 +212,9 @@ def parse_command(command):
     elif command == 'config startup':
         config_recordData()
         
+    elif command == 'config data storage file':
+        config_dataDestination()
+        
     else: 
         puts(colored.red(command) + colored.cyan(' is not a valid command, please enter a command from the list below') +
              colored.red('\nValid Commands:') + 
@@ -198,6 +228,8 @@ def parse_command(command):
              colored.cyan('\n      allows the user to display the settings that are about to be written into the file') +
              colored.green('\n5. \"config startup\"') +
              colored.cyan('\n      allows the user to choose whether or not data is recorded on startup') +
+             colored.green('\n6. \"config data storage file"') +
+             colored.cyan('\n      allows the user to change the file that the data is recorded to') + 
              colored.green('\n6. \"exit\"') +
              colored.cyan('\n      enter this command to go back to the main menu'))       
              

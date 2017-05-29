@@ -1,0 +1,877 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Version 1.0.2 &#8212; IMAPClient 1.0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="IMAPClient 1.0.2 documentation" href="index.html" />
+    <link rel="prev" title="IMAPClient" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="index.html" title="IMAPClient"
+             accesskey="P">previous</a></li>
+        <li class="nav-item nav-item-0"><a href="index.html">IMAPClient 1.0.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Version 1.0.2</a></li>
+<li><a class="reference internal" href="#version-1-0-1">Version 1.0.1</a></li>
+<li><a class="reference internal" href="#version-1-0-0">Version 1.0.0</a></li>
+<li><a class="reference internal" href="#version-0-13">Version 0.13</a></li>
+<li><a class="reference internal" href="#version-0-12">Version 0.12</a></li>
+<li><a class="reference internal" href="#version-0-11-1">Version 0.11.1</a></li>
+<li><a class="reference internal" href="#version-0-11">Version 0.11</a></li>
+<li><a class="reference internal" href="#version-0-10-2">Version 0.10.2</a></li>
+<li><a class="reference internal" href="#version-0-10-1">Version 0.10.1</a></li>
+<li><a class="reference internal" href="#version-0-10">Version 0.10</a></li>
+<li><a class="reference internal" href="#version-0-9-2">Version 0.9.2</a></li>
+<li><a class="reference internal" href="#version-0-9-1">Version 0.9.1</a></li>
+<li><a class="reference internal" href="#version-0-9">Version 0.9</a></li>
+<li><a class="reference internal" href="#version-0-8-1">Version 0.8.1</a></li>
+<li><a class="reference internal" href="#version-0-8">Version 0.8</a></li>
+<li><a class="reference internal" href="#version-0-7">Version 0.7</a></li>
+<li><a class="reference internal" href="#version-0-6-2">Version 0.6.2</a></li>
+<li><a class="reference internal" href="#version-0-6-1">Version 0.6.1</a></li>
+<li><a class="reference internal" href="#version-0-6">Version 0.6</a></li>
+<li><a class="reference internal" href="#version-0-5-2">Version 0.5.2</a></li>
+<li><a class="reference internal" href="#version-0-5-1">Version 0.5.1</a></li>
+<li><a class="reference internal" href="#version-0-5">Version 0.5</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">IMAPClient</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/releases.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="version-1-0-2">
+<h1>Version 1.0.2<a class="headerlink" href="#version-1-0-2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="new">
+<h2>New<a class="headerlink" href="#new" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Documented the livetest/interact INI file format.</li>
+<li>Documented handling of RFC2822 group syntax.</li>
+</ul>
+</div>
+<div class="section" id="changed">
+<h2>Changed<a class="headerlink" href="#changed" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Explicitly check that the required pyOpenSSL version is installed</li>
+<li>Start testing against Python 3.5</li>
+<li>Update doc links from readthedocs.org to readthedocs.io</li>
+<li>Rearranged README so that project essentials are right at the top.</li>
+</ul>
+</div>
+<div class="section" id="fixed">
+<h2>Fixed<a class="headerlink" href="#fixed" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Allow installation from alternate directories</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-1-0-1">
+<h1>Version 1.0.1<a class="headerlink" href="#version-1-0-1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>Changed<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Minimum backports.ssl dependency is now 0.0.9 (an important
+performance issue was addressed)</li>
+<li>setuptools 18.8.1 now used due to strange zip file error for 17.1</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>Fixed<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Unit test for version strings were updated to now always include the
+patch version.</li>
+<li>Fresh capabilities now retrieved between STARTTLS and authentication
+(#195).</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-1-0-0">
+<h1>Version 1.0.0<a class="headerlink" href="#version-1-0-0" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="enhanced-tls-support-api">
+<h2>Enhanced TLS support [API]<a class="headerlink" href="#enhanced-tls-support-api" title="Permalink to this headline">¶</a></h2>
+<p>The way that IMAPClient establishes TLS/SSL connections has been
+completely reworked. By default IMAPClient will attempt certificate
+verification, certificate hostname checking, and will not use
+known-insecure TLS settings and protocols. In addition, TLS parameters
+are now highly configurable.</p>
+<p>By leveraging pyOpenSSL and backports.ssl, all Python versions
+supported by IMAPClient enjoy the same TLS functionality and
+API.</p>
+<p>These packages mean that IMAPClient now has a number of new
+dependencies. These should be installed automatically as required but
+there will no doubt be complications.</p>
+<p>Compatibility breaks:</p>
+<ol class="arabic simple">
+<li>Due to lack of support in some of the dependent libraries,
+IMAPClient no longer supports Python 3.2.</li>
+<li>The passthrough keyword arguments that the IMAPClient constructor
+took in past versions are no longer accepted. These were in place
+to provide access to imaplib&#8217;s SSL arguments which are no longer
+relevant. Please pass a SSL context object instead.</li>
+<li>When using the default SSL context that IMAPClient creates
+(recommended), certificate verification is enabled. This means that
+IMAPClient connections to servers that used to work before,
+may fail now (especially if a self-signed certificate is used by
+the server). Refer to the documentation for details of how to
+supply alternate CA certificates or disable verification.</li>
+<li>There are some new exceptions that might be raised in response to
+network issues or TLS protocol failures. Refer to the
+<a class="reference external" href="http://imapclient.readthedocs.io/en/latest/#exceptions">Exceptions</a> section of the manual for more details.</li>
+</ol>
+<p>Please refer to the &#8220;TLS/SSL&#8221; section of the manual for more details
+on all of the above.</p>
+<p>Many thanks to Chris Arndt and Marc-Antoine Parent for their input
+into these TLS improvements.</p>
+</div>
+<div class="section" id="starttls-support-new">
+<h2>STARTTLS support [NEW]<a class="headerlink" href="#starttls-support-new" title="Permalink to this headline">¶</a></h2>
+<p>When the server supports it, IMAPClient can now establish an encrypted
+connection after initially starting with an unencrypted connection
+using the STARTTLS command. The starttls method takes an SSL context
+object for controlling the parameters of the TLS negotiation.</p>
+<p>Many thanks to Chris Arndt for his extensive initial work on this.</p>
+</div>
+<div class="section" id="more-robust-criteria-handling-for-search-sort-and-thread-api">
+<h2>More robust criteria handling for search, sort and thread [API]<a class="headerlink" href="#more-robust-criteria-handling-for-search-sort-and-thread-api" title="Permalink to this headline">¶</a></h2>
+<p>IMAPClient&#8217;s methods that accept search criteria (search, sort,
+thread, gmail_search) have been changed to provide take criteria in
+a more straightforward and robust way. In addition, the way the
+<em>charset</em> argument interacts with search criteria has been
+improved. These changes make it easier to pass search criteria and
+have them handled correctly but unfortunately also mean that small
+changes may be required to existing code that uses IMAPClient.</p>
+<div class="section" id="search-criteria">
+<h3>Search criteria<a class="headerlink" href="#search-criteria" title="Permalink to this headline">¶</a></h3>
+<p>The preferred way to specify criteria now is as a list of strings,
+ints and dates (where relevant). The list should be flat with all the
+criteria parts run together. Where a criteria takes an argument, just
+provide it as the next element in the list.</p>
+<p>Some valid examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;DELETED&#39;</span><span class="p">])</span>
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;NOT&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETED&#39;</span><span class="p">])</span>
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;FLAGGED&#39;</span><span class="p">,</span> <span class="s1">&#39;SUBJECT&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;BODY&#39;</span><span class="p">,</span> <span class="s1">&#39;hello world&#39;</span><span class="p">])</span>
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;NOT&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETED&#39;</span><span class="p">,</span> <span class="s1">&#39;SMALLER&#39;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">])</span>
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;SINCE&#39;</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">2006</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>IMAPClient will perform all required conversion, quoting and
+encoding. Callers do not need to and should not attempt to do this
+themselves. IMAPClient will automatically send criteria parts as IMAP
+literals when required (i.e. when the encoded part is 8-bit).</p>
+<p>Some previously accepted ways of passing search criteria will not work
+as they did in previous versions of IMAPClient. Small changes will be
+required in these cases.  Here are some examples of how to update code
+written against older versions of IMAPClient:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;NOT DELETED&#39;</span><span class="p">])</span>    <span class="c1"># Before</span>
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;NOT&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETED&#39;</span><span class="p">])</span> <span class="c1"># After</span>
+
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;TEXT &quot;foo&quot;&#39;</span><span class="p">])</span>     <span class="c1"># Before</span>
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;TEXT&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">])</span>    <span class="c1"># After (IMAPClient will add the quotes)</span>
+
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;DELETED&#39;</span><span class="p">,</span> <span class="s1">&#39;TEXT &quot;foo&quot;&#39;</span><span class="p">])</span>    <span class="c1"># Before</span>
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;DELETED&#39;</span><span class="p">,</span> <span class="s1">&#39;TEXT&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">])</span>   <span class="c1"># After</span>
+
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;SMALLER 1000&#39;</span><span class="p">])</span>    <span class="c1"># Before</span>
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;SMALLER&#39;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">])</span>   <span class="c1"># After</span>
+</pre></div>
+</div>
+<p>It is also possible to pass a single string as the search
+criteria. IMAPClient will not attempt quoting in this case, allowing
+the caller to specify search criteria at a lower level. Specifying
+criteria using a sequence of strings is preferable however. The
+following examples (equivalent to those further above) are valid:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;DELETED&#39;</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;NOT DELETED&#39;</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;FLAGGED SUBJECT &quot;foo&quot; BODY &quot;hello world&quot;&#39;</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;NOT DELETED SMALLER 1000&#39;</span><span class="p">)</span>
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;SINCE 03-May-2006&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="search-charset">
+<h3>Search charset<a class="headerlink" href="#search-charset" title="Permalink to this headline">¶</a></h3>
+<p>The way that the search <em>charset</em> argument is handled has also
+changed.</p>
+<p>Any unicode criteria arguments will now be encoded by IMAPClient using
+the supplied charset. The charset must refer to an encoding that is
+capable of handling the criteria&#8217;s characters or an error will
+occur. The charset must obviously also be one that the server
+supports! (UTF-8 is common)</p>
+<p>Any criteria given as bytes will not be changed by IMAPClient, but the
+provided charset will still be passed to the IMAP server. This allows
+already encoding criteria to be passed through as-is. The encoding
+referred to by <em>charset</em> should match the actual encoding used for the
+criteria.</p>
+<p>The following are valid examples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;TEXT&#39;</span><span class="p">,</span> <span class="s1">u&#39;</span><span class="se">\u263a</span><span class="s1">&#39;</span><span class="p">],</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>         <span class="c1"># IMAPClient will apply UTF-8 encoding</span>
+<span class="n">c</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="n">b</span><span class="s1">&#39;TEXT&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\xe2\x98\xba</span><span class="s1">&#39;</span><span class="p">],</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>  <span class="c1"># Caller has already applied UTF-8 encoding</span>
+</pre></div>
+</div>
+<p>The documentation and tests for search, gmail_search, sort and thread
+has updated to account for these changes and have also been generally
+improved.</p>
+</div>
+</div>
+<div class="section" id="socket-timeout-support-new">
+<h2>Socket timeout support [NEW]<a class="headerlink" href="#socket-timeout-support-new" title="Permalink to this headline">¶</a></h2>
+<p>IMAPClient now accepts a timeout at creation time. The timeout applies
+while establishing the connection and for all operations on the socket
+connected to the IMAP server.</p>
+</div>
+<div class="section" id="semantic-versioning">
+<h2>Semantic versioning<a class="headerlink" href="#semantic-versioning" title="Permalink to this headline">¶</a></h2>
+<p>In order to better indicate version compatibility to users, IMAPClient
+will now strictly adhere to the <a class="reference external" href="http://semver.org">Semantic Versioning</a> scheme.</p>
+</div>
+<div class="section" id="performance-optimisation-for-parsing-message-id-lists">
+<h2>Performance optimisation for parsing message id lists<a class="headerlink" href="#performance-optimisation-for-parsing-message-id-lists" title="Permalink to this headline">¶</a></h2>
+<p>A short circuit is now used when parsing a list of message ids which
+greatly speeds up parsing time.</p>
+</div>
+<div class="section" id="other">
+<h2>Other<a class="headerlink" href="#other" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>Perform quoting of Gmail labels. Thanks to Pawel Sz for the fix.</li>
+<li>The type of the various flag constants was fixed. Thanks to Thomi
+Richards for pointing this out.</li>
+<li>Now using mock 1.3.0. Thanks to Thomi Richards for the patch.</li>
+<li>Fixed handling of very long numeric only folder names. Thanks to
+Paweł Gorzelany for the patch.</li>
+<li>The default charset for gmail_search is now UTF-8. This makes it
+easier to use any unicode string as a search string and is safe
+because Gmail supports UTF-8 search criteria.</li>
+<li>PEP8 compliance fixed (except for some occasional long lines)</li>
+<li>Added a &#8220;shutdown&#8221; method.</li>
+<li>The embedded six package has been removed in favour of using an
+externally installed instance.</li>
+<li>Fixed handling of literals in STATUS responses.</li>
+<li>Only use the untagged post-login CAPABILITY response once (if sent
+by server).</li>
+<li>Release history made part of the main documentation.</li>
+<li>Clarified how message ids work in the docs.</li>
+<li>Livetest infrastructure now works with Yahoo&#8217;s OAUTH2</li>
+<li>Fixed bytes handling in Address.__str__</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="version-0-13">
+<h1>Version 0.13<a class="headerlink" href="#version-0-13" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="added-support-for-the-id-command-new">
+<h2>Added support for the ID command [NEW]<a class="headerlink" href="#added-support-for-the-id-command-new" title="Permalink to this headline">¶</a></h2>
+<p>As per RFC2971. Thanks to Eben Freeman from Nylas.</p>
+</div>
+<div class="section" id="fix-exception-with-nil-address-in-envelope-address-list">
+<h2>Fix exception with NIL address in envelope address list<a class="headerlink" href="#fix-exception-with-nil-address-in-envelope-address-list" title="Permalink to this headline">¶</a></h2>
+<p>Thanks to Thomas Steinacher for this fix.</p>
+</div>
+<div class="section" id="fixed-handling-of-nil-in-search-response">
+<h2>Fixed handling of NIL in SEARCH response<a class="headerlink" href="#fixed-handling-of-nil-in-search-response" title="Permalink to this headline">¶</a></h2>
+<p>Fixed a regression in the handling of NIL/None SEARCH
+responses. Thanks again to Thomas Steinacher.</p>
+</div>
+<div class="section" id="date-parsing-fixes">
+<h2>Date parsing fixes<a class="headerlink" href="#date-parsing-fixes" title="Permalink to this headline">¶</a></h2>
+<p>Don&#8217;t traceback when an unparsable date is seen in ENVELOPE
+responses. None is returned instead.</p>
+<p>Support quirky timestamp strings which use dots for the time
+separator.</p>
+<p>Removed horrible INTERNALDATE parsing code (use parse_to_datetime
+instead).</p>
+<p>datetime_to_imap has been moved to the datetime_util module and is now
+called datetime_to_INTERNALDATE. This will only affect you in the
+unlikely case that you were importing this function out of the
+IMAPClient package.</p>
+</div>
+<div class="section" id="id4">
+<h2>Other<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li>The docs for various IMAPClient methods, and the HACKING.rst file
+have been updated.</li>
+<li>CONDSTORE live test is now more reliable (especially when running
+against Gmail)</li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="version-0-12">
+<h1>Version 0.12<a class="headerlink" href="#version-0-12" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="fixed-unicode-handling-api-change">
+<h2>Fixed unicode handling [API CHANGE]<a class="headerlink" href="#fixed-unicode-handling-api-change" title="Permalink to this headline">¶</a></h2>
+<p>During the work to support Python 3, IMAPClient was changed to do
+return unicode for most responses. This was a bad decision, especially
+because it effectively breaks content that uses multiple encodings
+(e.g. RFC822 responses). This release includes major changes so that
+most responses are returned as bytes (Python 3) or str (Python
+2). This means that correct handling of response data is now possible
+by code using IMAPClient.</p>
+<p>Folder name handling has also been cleaned up as part of this work. If
+the <code class="docutils literal"><span class="pre">folder_encode</span></code> attribute is <code class="docutils literal"><span class="pre">True</span></code> (the default) then folder
+names will <strong>always</strong> be returned as unicode. If <code class="docutils literal"><span class="pre">folder_encode</span></code> is
+False then folder names will always be returned as bytes/strs.</p>
+<p>Code using IMAPClient will most likely need to be updated to account
+these unicode handling changes.</p>
+<p>Many thanks to Inbox (now Nilas, <a class="reference external" href="https://nilas.com/">https://nilas.com/</a>) for sponsoring this
+work.</p>
+</div>
+<div class="section" id="extra-init-keyword-args-are-passed-through-new">
+<h2>Extra __init__ keyword args are passed through [NEW]<a class="headerlink" href="#extra-init-keyword-args-are-passed-through-new" title="Permalink to this headline">¶</a></h2>
+<p>Any unused keyword arguments passed to the IMAPClient initialiser will
+now be passed through to the underlying imaplib IMAP4, IMAP4_SSL or
+IMAP4_stream class. This is specifically to allow the use of imaplib
+features that control certificate validation (if available with the
+version of Python being used).</p>
+<p>Thanks to Chris Arndt for this change.</p>
+</div>
+<div class="section" id="modseq-parts-in-search-responses-are-now-handled">
+<h2>MODSEQ parts in SEARCH responses are now handled<a class="headerlink" href="#modseq-parts-in-search-responses-are-now-handled" title="Permalink to this headline">¶</a></h2>
+<p>If the CONDSTORE extension is supported by a server and a MODSEQ
+criteria was used with search(), a TypeError could occur. This has now
+been fixed and the MODSEQ value returned by the server is now
+available via an attribute on the returned list of ids.</p>
+</div>
+<div class="section" id="minor-changes">
+<h2>Minor Changes<a class="headerlink" href="#minor-changes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Small tweaks to support Python 3.4.</li>
+<li>The deprecated get_folder_delimiter() method has been removed.</li>
+<li>More control over OAUTH2 parameters. Thanks to Phil Peterson for
+this.</li>
+<li>Fixed livetest/interact OAUTH handling under Python 3.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-11-1">
+<h1>Version 0.11.1<a class="headerlink" href="#version-0-11-1" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Close folders during livetest cleanup so that livetests work with
+newer Dovecot servers (#131)</li>
+</ul>
+</div>
+<div class="section" id="version-0-11">
+<h1>Version 0.11<a class="headerlink" href="#version-0-11" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="support-for-raw-gmail-searching-new">
+<h2>Support for raw Gmail searching [NEW]<a class="headerlink" href="#support-for-raw-gmail-searching-new" title="Permalink to this headline">¶</a></h2>
+<p>The new gmail_search methods allows direct Gmail queries using the
+X-GM-RAW search extension. Thanks to John Louis del Rosario for the
+patch.</p>
+</div>
+<div class="section" id="envelope-fetch-response-parsing-new-api-change">
+<h2>ENVELOPE FETCH response parsing [NEW, API CHANGE]<a class="headerlink" href="#envelope-fetch-response-parsing-new-api-change" title="Permalink to this headline">¶</a></h2>
+<p>ENVELOPE FETCH responses are now returned as Envelope instances. These
+objects are namedtuples providing convenient attribute and positional
+based access to envelope fields. The Date field is also now converted
+to a datetime instance.</p>
+<p>As part of this change various date and time related utilities were
+moved to a new module at imapclient.datetime_util.</p>
+<p>Thanks to Naveen Nathan for the work on this feature.</p>
+</div>
+<div class="section" id="correct-nested-bodystructure-handling-api-change">
+<h2>Correct nested BODYSTRUCTURE handling [API CHANGE]<a class="headerlink" href="#correct-nested-bodystructure-handling-api-change" title="Permalink to this headline">¶</a></h2>
+<p>BODY and BODYSTRUCTURE responses are now processed recusively so
+multipart sections within other multipart sections are returned
+correctly. This also means that each the part of the response now has
+a is_multipart property available.</p>
+<p>NOTE: code that expects the old (broken) behaviour will need to be
+updated.</p>
+<p>Thanks to Brandon Rhodes for the bug report.</p>
+</div>
+<div class="section" id="select-response-bug-fix">
+<h2>SELECT response bug fix<a class="headerlink" href="#select-response-bug-fix" title="Permalink to this headline">¶</a></h2>
+<p>Handle square brackets in flags returned in SELECT response.
+Previously these would cause parsing errors. Thanks to Benjamin
+Morrise for the bug report.</p>
+</div>
+<div class="section" id="id5">
+<h2>Minor Changes<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>Copyright date update for 2014.</p>
+</div>
+</div>
+<div class="section" id="version-0-10-2">
+<h1>Version 0.10.2<a class="headerlink" href="#version-0-10-2" title="Permalink to this headline">¶</a></h1>
+<p>Switch back to setuptools now that distribute and setuptools have
+merged back. Some users were reporting problems with distribute and
+the newer versions of setuptools.</p>
+</div>
+<div class="section" id="version-0-10-1">
+<h1>Version 0.10.1<a class="headerlink" href="#version-0-10-1" title="Permalink to this headline">¶</a></h1>
+<p>Fixed regressions in several cases when binary data (i.e. normal
+strings under Python 2) are used as arguments to some methods. Also
+refactored input normalisation functions somewhat.</p>
+<p>Fixed buggy method for extracting flags and Gmail labels from STORE
+responses.</p>
+</div>
+<div class="section" id="version-0-10">
+<h1>Version 0.10<a class="headerlink" href="#version-0-10" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="python-3-support-22-api-change">
+<h2>Python 3 support (#22) [API CHANGE]<a class="headerlink" href="#python-3-support-22-api-change" title="Permalink to this headline">¶</a></h2>
+<p>Python 3.2 and 3.3 are now officially supported. This release also
+means that Python versions older than 2.6 are no longer supported.</p>
+<p>A single source approach has been used, with no conversion step required.</p>
+<p>A big thank you to Mathieu Agopian for his massive contribution to
+getting the Python 3 port finished. His changes and ideas feature
+heavily in this release.</p>
+<p><strong>IMPORTANT</strong>: Under Python 2, all strings returned by IMAPClient are now
+returned as unicode objects. With the exception of folder names, these
+unicode objects will only contain characters in the ASCII range so
+this shouldn&#8217;t break existing code, however there is always a chance
+that there will be a problem. Please test your existing applications
+thoroughly with this verison of IMAPClient before deploying to
+production situations.</p>
+</div>
+<div class="section" id="id6">
+<h2>Minor Changes<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>&#8220;python setup.py test&#8221; now runs the unit tests</li>
+<li>Mock library is now longer included (listed as external test dependency)</li>
+<li>live tests that aren&#8217;t UID related are now only run once</li>
+<li>live tests now perform far less logins to the server under test</li>
+<li>Unit tests can now be run for all supported Python versions using <code class="docutils literal"><span class="pre">tox</span></code>.</li>
+<li>Improved documentation regarding working on the project.</li>
+<li>Many documentation fixes and improvements.</li>
+</ul>
+</div>
+<div class="section" id="minor-bug-fixes">
+<h2>Minor Bug Fixes<a class="headerlink" href="#minor-bug-fixes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>HIGHESTMODSEQ in SELECT response is now parsed correctly</li>
+<li>Fixed daylight saving handling in FixedOffset class</li>
+<li>Fixed &#8211;port command line bug in imapclient.interact when SSL
+connections are made.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-9-2">
+<h1>Version 0.9.2<a class="headerlink" href="#version-0-9-2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="thread-support-new">
+<h2>THREAD support [NEW]<a class="headerlink" href="#thread-support-new" title="Permalink to this headline">¶</a></h2>
+<p>The IMAP THREAD command is now supported. Thanks to Lukasz Mierzwa for
+the patches.</p>
+</div>
+<div class="section" id="enhanced-capability-querying-new">
+<h2>Enhanced capability querying [NEW]<a class="headerlink" href="#enhanced-capability-querying-new" title="Permalink to this headline">¶</a></h2>
+<p>Previously only the pre-authentication server capabilities were
+returned by the capabilities() method. Now, if the connection is
+authenticated, the post-authentication capabilities will be returned.
+If the server sent an untagged CAPABILITY response after authentication,
+that will be used, avoiding an unnecessary CAPABILITY command call.</p>
+<p>All this ensures that the client sees all available server
+capabilities.</p>
+</div>
+<div class="section" id="minor-features">
+<h2>Minor Features<a class="headerlink" href="#minor-features" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Better documentation for contributers (see HACKING file)</li>
+<li>Copyright date update for 2013.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-9-1">
+<h1>Version 0.9.1<a class="headerlink" href="#version-0-9-1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="stream-support-new">
+<h2>Stream support [NEW]<a class="headerlink" href="#stream-support-new" title="Permalink to this headline">¶</a></h2>
+<p>It is now possible to have IMAPClient run an external command to
+establish a connection to the IMAP server via a new <em>stream</em> keyword
+argument to the initialiser. This is useful for exotic connection or
+authentication setups. The <em>host</em> argument is used as the command to
+run.</p>
+<p>Thanks to Dave Eckhardt for the original patch.</p>
+</div>
+<div class="section" id="oauth2-support-new">
+<h2>OAUTH2 Support [NEW]<a class="headerlink" href="#oauth2-support-new" title="Permalink to this headline">¶</a></h2>
+<p>OAUTH2 authentication (as supported by Gmail&#8217;s IMAP) is now available
+via the new oauth2_login method. Thanks to Zac Witte for the original
+patch.</p>
+</div>
+<div class="section" id="livetest-now-handles-gmail-s-new-message-handling">
+<h2>livetest now handles Gmail&#8217;s new message handling<a class="headerlink" href="#livetest-now-handles-gmail-s-new-message-handling" title="Permalink to this headline">¶</a></h2>
+<p>Gmail&#8217;s IMAP implementation recently started requiring a NOOP command
+before new messages become visible after delivery or an APPEND. The
+livetest suite has been updated to deal with this.</p>
+</div>
+</div>
+<div class="section" id="version-0-9">
+<h1>Version 0.9<a class="headerlink" href="#version-0-9" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="gmail-label-support">
+<h2>Gmail Label Support<a class="headerlink" href="#gmail-label-support" title="Permalink to this headline">¶</a></h2>
+<p>New methods have been added for interacting with Gmail&#8217;s label API:
+get_gmail_labels, add_gmail_labels, set_gmail_labels,
+remove_gmail_labels. Thanks to Brian Neal for the patches.</p>
+</div>
+<div class="section" id="removed-code-duplication-9">
+<h2>Removed Code Duplication (#9)<a class="headerlink" href="#removed-code-duplication-9" title="Permalink to this headline">¶</a></h2>
+<p>A signficant amount of duplicated code has been removed by abstracting
+out common command handling code. This will make the Python 3 port and
+future maintenance easier.</p>
+</div>
+<div class="section" id="livetest-can-now-be-run-against-non-dummy-accounts-108">
+<h2>livetest can now be run against non-dummy accounts (#108)<a class="headerlink" href="#livetest-can-now-be-run-against-non-dummy-accounts-108" title="Permalink to this headline">¶</a></h2>
+<p>Up until this release the tests in imapclient.livetest could only be
+run against a dummy IMAP account (all data in the account would be
+lost during testing). The tests are now limited to a sub-folder
+created by the tests so it is ok to run them against an account that
+contains real messages. These messages will be left alone.</p>
+</div>
+<div class="section" id="id7">
+<h2>Minor Features<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Don&#8217;t traceback when an IMAP server returns a all-digit folder name
+without quotes. Thanks to Rhett Garber for the bug report. (#107)</li>
+<li>More tests for ACL related methods (#89)</li>
+<li>More tests for namespace()</li>
+<li>Added test for read-only select_folder()</li>
+</ul>
+</div>
+<div class="section" id="id8">
+<h2>Minor Bug Fixes<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Fixed rename live test so that it uses folder namespaces (#100).</li>
+<li>Parse STATUS responses robustly - fixes folder_status() with MS
+Exchange.</li>
+<li>Numerous livetest fixes to work around oddities with the MS
+Exchange IMAP implementation.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-8-1">
+<h1>Version 0.8.1<a class="headerlink" href="#version-0-8-1" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>IMAPClient wasn&#8217;t installing on Windows due to an extra trailing
+slash in MANIFEST.in (#102). This is a bug in distutils.</li>
+<li>MANIFEST.in was fixed so that the main documentation index file
+is included the source distribution.</li>
+<li>distribute_setup.py was updated to the 0.6.24 version.</li>
+<li>This release also contains some small documentation fixes.</li>
+</ul>
+</div>
+<div class="section" id="version-0-8">
+<h1>Version 0.8<a class="headerlink" href="#version-0-8" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="oauth-support-54-new">
+<h2>OAUTH Support (#54) [NEW]<a class="headerlink" href="#oauth-support-54-new" title="Permalink to this headline">¶</a></h2>
+<p>OAUTH authentication is now supported using the oauth_login
+method. This requires the 3rd party oauth2 package is
+installed. Thanks to Johannes Heckel for contributing the patch to
+this.</p>
+</div>
+<div class="section" id="idle-support-50-new">
+<h2>IDLE Support (#50) [NEW]<a class="headerlink" href="#idle-support-50-new" title="Permalink to this headline">¶</a></h2>
+<p>The IDLE extension is now supported through the new idle(),
+idle_check() and idle_done() methods. See the example in
+imapclient/examples/idle_example.py.</p>
+</div>
+<div class="section" id="noop-support-74-new">
+<h2>NOOP Support (#74) [NEW]<a class="headerlink" href="#noop-support-74-new" title="Permalink to this headline">¶</a></h2>
+<p>The NOOP command is now supported. It returns parsed untagged server
+responses in the same format as idle_check() and idle_done().</p>
+</div>
+<div class="section" id="sphinx-based-docs-5-new">
+<h2>Sphinx Based Docs (#5) [NEW]<a class="headerlink" href="#sphinx-based-docs-5-new" title="Permalink to this headline">¶</a></h2>
+<p>Full documentation is now available under doc/html in the source
+distribution and at <a class="reference external" href="http://imapclient.readthedocs.io/">http://imapclient.readthedocs.io/</a> online.</p>
+</div>
+<div class="section" id="added-rename-folder-77-new">
+<h2>Added rename_folder (#77) [NEW]<a class="headerlink" href="#added-rename-folder-77-new" title="Permalink to this headline">¶</a></h2>
+<p>Renaming of folders was an obvious omission!</p>
+</div>
+<div class="section" id="id9">
+<h2>Minor Features<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>interact.py can now read livetest.py INI files (#66)</li>
+<li>interact.py can now embed shells from ipython 0.10 and 0.11 (#98)</li>
+<li>interact.py and livetest.py are now inside the imapclient package so
+they can be used even when IMAClient has been installed from PyPI
+(#82)</li>
+<li>Added &#8220;debug&#8221; propety and setting of a log file (#90)</li>
+<li>&#8220;normalise_times&#8221; attribute allows caller to select whether
+datetimes returned by fetch() are native or not (#96) (Thanks Andrew
+Scheller)</li>
+<li>Added imapclient.version_info - a tuple that contains the IMAPClient
+version number broken down into it&#8217;s parts.</li>
+</ul>
+</div>
+<div class="section" id="id10">
+<h2>Minor Bug Fixes<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>getacl() was using wrong lexing class (#85) (Thanks josephhh)</li>
+<li>Removed special handling for response tuples without whitespace
+between them.  Post-process BODY/BODYSTRUCTURE responses
+instead. This should not affect the external API. (#91) (Thanks
+daishi)</li>
+<li>Fix incorrect msg_id for UID fetch when use_uid is False (#99)</li>
+</ul>
+</div>
+</div>
+<div class="section" id="version-0-7">
+<h1>Version 0.7<a class="headerlink" href="#version-0-7" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="body-and-bodystructure-parsing-fixes-58-api-change">
+<h2>BODY and BODYSTRUCTURE parsing fixes (#58) [API CHANGE]<a class="headerlink" href="#body-and-bodystructure-parsing-fixes-58-api-change" title="Permalink to this headline">¶</a></h2>
+<p>The response values for BODY and BODYSTRUCTURE responses may include a
+sequence of tuples which are not separated by whitespace. These should
+be treated as a single item (a list of multiple arbitrarily nested
+tuples) but IMAPClient was treating them as separate items. IMAPClient
+now returns these tuples in a list to allow for consistent parsing.</p>
+<p>A BODYSTRUCTURE response for a multipart email with 2 parts would have
+previously looked something like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">((</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;html&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;charset&#39;</span><span class="p">,</span> <span class="s1">&#39;us-ascii&#39;</span><span class="p">),</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;quoted-printable&#39;</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+ <span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;plain&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;charset&#39;</span><span class="p">,</span> <span class="s1">&#39;us-ascii&#39;</span><span class="p">),</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;7bit&#39;</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+ <span class="s1">&#39;mixed&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;boundary&#39;</span><span class="p">,</span> <span class="s1">&#39;===============1534046211==&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The response is now returned like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">([</span>
+   <span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;html&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;charset&#39;</span><span class="p">,</span> <span class="s1">&#39;us-ascii&#39;</span><span class="p">),</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;quoted-printable&#39;</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+   <span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="s1">&#39;plain&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;charset&#39;</span><span class="p">,</span> <span class="s1">&#39;us-ascii&#39;</span><span class="p">),</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;7bit&#39;</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+ <span class="p">],</span>
+ <span class="s1">&#39;mixed&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;boundary&#39;</span><span class="p">,</span> <span class="s1">&#39;===============1534046211==&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The behaviour for single part messages is unchanged. In this case the
+first element of the tuple is a string specifying the major content
+type of the message (eg &#8220;text&#8221;).</p>
+<p>An is_multipart boolean property now exists on BODY and BODYSTRUCTURE
+responses to allow the caller to easily determine whether the response
+is for a multipart message.</p>
+<p>Code that expects the previous response handling behaviour needs to be
+updated.</p>
+</div>
+<div class="section" id="live-tests-converted-to-use-unittest2-4">
+<h2>Live tests converted to use unittest2 (#4)<a class="headerlink" href="#live-tests-converted-to-use-unittest2-4" title="Permalink to this headline">¶</a></h2>
+<p>livetest.py now uses the unittest2 package to run the tests. This
+provides much more flexibility that the custom approach that was used
+before. Dependencies between tests are gone - each test uses a fresh
+IMAP connection and is preceeded by the same setup.</p>
+<p>unittest2.main() is used to provide a number of useful command line
+options and the ability to run a subset of tests.</p>
+<p>IMAP account parameters are now read using a configuration file
+instead of command line arguments. See livetest-sample.ini for an
+example.</p>
+</div>
+<div class="section" id="added-namespace-support-63-api-change">
+<h2>Added NAMESPACE support (#63) [API CHANGE]<a class="headerlink" href="#added-namespace-support-63-api-change" title="Permalink to this headline">¶</a></h2>
+<p>namespace() method added and get_folder_delimiter() has been
+deprecated.</p>
+</div>
+<div class="section" id="added-support-for-fetch-modifiers-62-new">
+<h2>Added support for FETCH modifiers (#62) [NEW]<a class="headerlink" href="#added-support-for-fetch-modifiers-62-new" title="Permalink to this headline">¶</a></h2>
+<p>The fetch method now takes optional modifiers as the last
+argument. These are required for extensions such as RFC 4551
+(conditional store). Thanks to Thomas Jost for the patch.</p>
+</div>
+</div>
+<div class="section" id="version-0-6-2">
+<h1>Version 0.6.2<a class="headerlink" href="#version-0-6-2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="square-brackets-in-responses-now-parsed-correctly-55">
+<h2>Square brackets in responses now parsed correctly (#55)<a class="headerlink" href="#square-brackets-in-responses-now-parsed-correctly-55" title="Permalink to this headline">¶</a></h2>
+<p>This fixes response handling for FETCH items such as
+<code class="docutils literal"><span class="pre">BODY[HEADER.FIELDS</span> <span class="pre">(from</span> <span class="pre">subject)]</span></code>.</p>
+</div>
+<div class="section" id="example-moved-56">
+<h2>Example moved (#56)<a class="headerlink" href="#example-moved-56" title="Permalink to this headline">¶</a></h2>
+<p>The example has been moved to imapclient/examples directory and is
+included when the IMAPClient is installed from PyPI.</p>
+</div>
+<div class="section" id="distribute-57">
+<h2>Distribute (#57)<a class="headerlink" href="#distribute-57" title="Permalink to this headline">¶</a></h2>
+<p>The project is now packaged using Distribute instead of
+setuptools. There should be no real functional change.</p>
+</div>
+</div>
+<div class="section" id="version-0-6-1">
+<h1>Version 0.6.1<a class="headerlink" href="#version-0-6-1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="python-ssl-bug-patch">
+<h2>Python SSL bug patch<a class="headerlink" href="#python-ssl-bug-patch" title="Permalink to this headline">¶</a></h2>
+<p>Automatically patch a bug in imaplib which can cause hangs when using
+SSL (Python Issue 5949). The patch is only applied when the running
+Python version is known to be affected by the problem.</p>
+</div>
+<div class="section" id="doc-update">
+<h2>Doc update<a class="headerlink" href="#doc-update" title="Permalink to this headline">¶</a></h2>
+<p>Updated the README to better reflect the current state of the project.</p>
+</div>
+</div>
+<div class="section" id="version-0-6">
+<h1>Version 0.6<a class="headerlink" href="#version-0-6" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="new-response-parser-1-45">
+<h2>New response parser (#1, #45)<a class="headerlink" href="#new-response-parser-1-45" title="Permalink to this headline">¶</a></h2>
+<p>Command response lexing and parsing code rewritten from stratch to
+deal with various bugs that surfaced when dealing with more complex
+responses (eg. BODYSTRUCTURE and ENVELOPE). This change also fixes
+various problems when interacting with Gmail and MS Exchange.</p>
+</div>
+<div class="section" id="xlist-extension-support-25-new">
+<h2>XLIST extension support (#25) [NEW]<a class="headerlink" href="#xlist-extension-support-25-new" title="Permalink to this headline">¶</a></h2>
+<p>Where the server supports it, xlist_folders() will return a mapping of
+various common folder names to the actual server folder names. Gmail&#8217;s
+IMAP server supports this.</p>
+</div>
+<div class="section" id="added-copy-command-support-36-new">
+<h2>Added COPY command support (#36) [NEW]<a class="headerlink" href="#added-copy-command-support-36-new" title="Permalink to this headline">¶</a></h2>
+<p>New copy() method.</p>
+</div>
+<div class="section" id="added-interact-py-new">
+<h2>Added interact.py [NEW]<a class="headerlink" href="#added-interact-py-new" title="Permalink to this headline">¶</a></h2>
+<p>A script for interactive IMAPClient sessions. Useful for debugging and
+exploration. Uses IPython if installed.</p>
+</div>
+<div class="section" id="full-select-response-24-api-change">
+<h2>Full SELECT response (#24) [API CHANGE]<a class="headerlink" href="#full-select-response-24-api-change" title="Permalink to this headline">¶</a></h2>
+<p>select_folder() now returns a dictionary with the full (parsed) SELECT
+command response instead of just the message count.</p>
+</div>
+<div class="section" id="full-list-responses-24-api-change">
+<h2>Full list responses (#24) [API CHANGE]<a class="headerlink" href="#full-list-responses-24-api-change" title="Permalink to this headline">¶</a></h2>
+<p>The return value from list_folders(), list_sub_folders() and
+xlist_folders() now include the IMAP folder flags and delimiter.</p>
+</div>
+<div class="section" id="folder-name-character-encoding-21-api-change">
+<h2>Folder name character encoding (#21) [API CHANGE]<a class="headerlink" href="#folder-name-character-encoding-21-api-change" title="Permalink to this headline">¶</a></h2>
+<p>Bytes that are greater than 0x7f in folder names are will cause an
+exception when passed to methods that accept folder name arguments
+because there is no unambigous way to handle these. Callers should
+encode such folder names to unicode objects first.</p>
+<p>Folder names are now always returned as unicode objects.</p>
+</div>
+<div class="section" id="message-sequence-number-now-always-returned-in-fetch-responses">
+<h2>Message sequence number now always returned in FETCH responses<a class="headerlink" href="#message-sequence-number-now-always-returned-in-fetch-responses" title="Permalink to this headline">¶</a></h2>
+<p>Fetch responses now include a &#8220;SEQ&#8221; element which gives the message
+(non-UID) sequence number. This allows for easy mapping between UIDs
+and standard sequence IDs.</p>
+</div>
+<div class="section" id="folder-name-handling-fixes-28-42">
+<h2>Folder name handling fixes (#28, #42)<a class="headerlink" href="#folder-name-handling-fixes-28-42" title="Permalink to this headline">¶</a></h2>
+<p>Various folder name handling bugs fixed.</p>
+</div>
+</div>
+<div class="section" id="version-0-5-2">
+<h1>Version 0.5.2<a class="headerlink" href="#version-0-5-2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="folder-name-quoting-and-escaping-fixes-28">
+<h2>Folder name quoting and escaping fixes (#28)<a class="headerlink" href="#folder-name-quoting-and-escaping-fixes-28" title="Permalink to this headline">¶</a></h2>
+<p>Correctly handle double quotes and backslashes in folder names when
+parsing LIST and LSUB responses.</p>
+</div>
+<div class="section" id="fixed-fetch-literal-handling-33">
+<h2>Fixed fetch literal handling (#33)<a class="headerlink" href="#fixed-fetch-literal-handling-33" title="Permalink to this headline">¶</a></h2>
+<p>Fixed problem with parsing responses where a literal followed another
+literal.</p>
+</div>
+</div>
+<div class="section" id="version-0-5-1">
+<h1>Version 0.5.1<a class="headerlink" href="#version-0-5-1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="license-change">
+<h2>License change<a class="headerlink" href="#license-change" title="Permalink to this headline">¶</a></h2>
+<p>Changed license from GPL to new BSD.</p>
+</div>
+</div>
+<div class="section" id="version-0-5">
+<h1>Version 0.5<a class="headerlink" href="#version-0-5" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="ssl-support">
+<h2>SSL support<a class="headerlink" href="#ssl-support" title="Permalink to this headline">¶</a></h2>
+<p>Support for SSL based connections by passing ssl=True when
+constructing an IMAPClient instance.</p>
+</div>
+<div class="section" id="transparent-folder-encoding">
+<h2>Transparent folder encoding<a class="headerlink" href="#transparent-folder-encoding" title="Permalink to this headline">¶</a></h2>
+<p>Folder names are now encoded and decoded transparently if required
+(using modified UTF-7). This means that any methods that return folder
+names may return unicode objects as well as normal strings [API
+CHANGE]. Additionally, any method that takes a folder name now accepts
+unicode object too. Use the folder_encode attribute to control whether
+encode/decoding is performed.</p>
+</div>
+<div class="section" id="unquoted-folder-name-handling-fix">
+<h2>Unquoted folder name handling fix<a class="headerlink" href="#unquoted-folder-name-handling-fix" title="Permalink to this headline">¶</a></h2>
+<p>Unquoted folder names in server responses are now handled
+correctly. Thanks to Neil Martinsen-Burrell for reporting this bug.</p>
+</div>
+<div class="section" id="fixed-handling-of-unusual-characters-in-folder-names">
+<h2>Fixed handling of unusual characters in folder names<a class="headerlink" href="#fixed-handling-of-unusual-characters-in-folder-names" title="Permalink to this headline">¶</a></h2>
+<p>Fixed a bug with handling of unusual characters in folder names.</p>
+</div>
+<div class="section" id="timezone-handling-api-change">
+<h2>Timezone handling [API CHANGE]<a class="headerlink" href="#timezone-handling-api-change" title="Permalink to this headline">¶</a></h2>
+<p>Timezones are now handled correctly for datetimes passed as input and for
+server responses. This fixes a number of bugs with timezones. Returned
+datetimes are always in the client&#8217;s local timezone.</p>
+</div>
+<div class="section" id="more-unit-tests">
+<h2>More unit tests<a class="headerlink" href="#more-unit-tests" title="Permalink to this headline">¶</a></h2>
+<p>Many more unit tests added, some using Michael Foord&#8217;s excellent
+mock.py.  (<a class="reference external" href="http://www.voidspace.org.uk/python/mock/">http://www.voidspace.org.uk/python/mock/</a>)</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="index.html" title="IMAPClient"
+             >previous</a></li>
+        <li class="nav-item nav-item-0"><a href="index.html">IMAPClient 1.0.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Menno Smits.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
+    </div>
+  </body>
+</html>

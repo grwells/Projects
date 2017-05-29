@@ -1,0 +1,1345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>IMAPClient &#8212; IMAPClient 1.0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="IMAPClient 1.0.2 documentation" href="#" />
+    <link rel="next" title="Version 1.0.2" href="releases.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="releases.html" title="Version 1.0.2"
+             accesskey="N">next</a></li>
+        <li class="nav-item nav-item-0"><a href="#">IMAPClient 1.0.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">IMAPClient</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#a-simple-example">A Simple Example</a></li>
+<li><a class="reference internal" href="#concepts">Concepts</a><ul>
+<li><a class="reference internal" href="#message-identifiers">Message Identifiers</a></li>
+<li><a class="reference internal" href="#message-flags">Message Flags</a></li>
+<li><a class="reference internal" href="#folder-name-encoding">Folder Name Encoding</a></li>
+<li><a class="reference internal" href="#tls-ssl">TLS/SSL</a><ul>
+<li><a class="reference internal" href="#old-pyopenssl-versions">Old pyOpenSSL Versions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-gevent-with-imapclient">Using gevent with IMAPClient</a></li>
+<li><a class="reference internal" href="#exceptions">Exceptions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#api-reference">API Reference</a><ul>
+<li><a class="reference internal" href="#imapclient-class">IMAPClient Class</a></li>
+<li><a class="reference internal" href="#fetch-response-types">Fetch Response Types</a></li>
+<li><a class="reference internal" href="#module-imapclient.tls">TLS Support</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#interactive-sessions">Interactive Sessions</a></li>
+<li><a class="reference internal" href="#configuration-file-format">Configuration File Format</a></li>
+<li><a class="reference internal" href="#external-documentation">External Documentation</a></li>
+<li><a class="reference internal" href="#release-history">Release History</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="releases.html"
+                        title="next chapter">Version 1.0.2</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="imapclient">
+<h1>IMAPClient<a class="headerlink" href="#imapclient" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Author:</th><td class="field-body"><a class="reference external" href="http://freshfoo.com">Menno Smits</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body">1.0.2</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Date:</th><td class="field-body">Aug 22, 2016</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Homepage:</th><td class="field-body"><a class="reference external" href="http://imapclient.freshfoo.com">http://imapclient.freshfoo.com</a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Download:</th><td class="field-body"><a class="reference external" href="http://pypi.python.org/pypi/IMAPClient/">http://pypi.python.org/pypi/IMAPClient/</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Documentation:</th><td class="field-body"><a class="reference external" href="http://imapclient.readthedocs.io/">http://imapclient.readthedocs.io/</a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">License:</th><td class="field-body"><a class="reference external" href="http://en.wikipedia.org/wiki/BSD_licenses">New BSD License</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Support:</th><td class="field-body"><a class="reference external" href="https://groups.io/g/imapclient">Mailing List</a></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>IMAPClient is an easy-to-use, Pythonic and complete IMAP client
+library.</p>
+<p>Although IMAPClient actually uses the imaplib module from the Python
+standard library under the hood, it provides a different API. Instead
+of requiring that the caller performs extra parsing work, return
+values are full parsed, readily usable and use sensible Python
+types. Exceptions are raised when problems occur (no error checking of
+return values is required).</p>
+<p>IMAPClient is straight forward it use, but it can be useful to have at
+least a general understanding of the IMAP protocol. <span class="target" id="index-0"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc3501.html"><strong>RFC 3501</strong></a>
+explains IMAP in detail. Other RFCs also apply to various extensions
+to the base protocol. These are referred to in the documentation below
+where relevant.</p>
+<p>Python versions 2.6, 2.7, 3.3 and 3.4 are officially supported.</p>
+</div>
+<div class="section" id="a-simple-example">
+<h2>A Simple Example<a class="headerlink" href="#a-simple-example" title="Permalink to this headline">¶</a></h2>
+<p>The core of the IMAPClient API is the IMAPClient class. Instantiating
+this class, creates a connection to an IMAP account. Calling methods
+on the IMAPClient instance interacts with the server.</p>
+<p>The following example shows a simple interaction with an IMAP
+server. It displays the message ID, size and IMAP flags of all
+non-deleted messages in the INBOX folder.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2014, Menno Smits</span>
+<span class="c1"># Released subject to the New BSD License</span>
+<span class="c1"># Please see http://en.wikipedia.org/wiki/BSD_licenses</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">unicode_literals</span>
+
+<span class="kn">from</span> <span class="nn">imapclient</span> <span class="k">import</span> <span class="n">IMAPClient</span>
+
+<span class="n">HOST</span> <span class="o">=</span> <span class="s1">&#39;imap.host.com&#39;</span>
+<span class="n">USERNAME</span> <span class="o">=</span> <span class="s1">&#39;someuser&#39;</span>
+<span class="n">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;secret&#39;</span>
+<span class="n">ssl</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">IMAPClient</span><span class="p">(</span><span class="n">HOST</span><span class="p">,</span> <span class="n">use_uid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ssl</span><span class="o">=</span><span class="n">ssl</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">PASSWORD</span><span class="p">)</span>
+
+<span class="n">select_info</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">select_folder</span><span class="p">(</span><span class="s1">&#39;INBOX&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1"> messages in INBOX&#39;</span> <span class="o">%</span> <span class="n">select_info</span><span class="p">[</span><span class="s1">&#39;EXISTS&#39;</span><span class="p">])</span>
+
+<span class="n">messages</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">search</span><span class="p">([</span><span class="s1">&#39;NOT&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETED&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> messages that aren&#39;t deleted&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Messages:&quot;</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">,</span> <span class="s1">&#39;RFC822.SIZE&#39;</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">msgid</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;   ID </span><span class="si">%d</span><span class="s1">: </span><span class="si">%d</span><span class="s1"> bytes, flags=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">msgid</span><span class="p">,</span>
+                                            <span class="n">data</span><span class="p">[</span><span class="n">b</span><span class="s1">&#39;RFC822.SIZE&#39;</span><span class="p">],</span>
+                                            <span class="n">data</span><span class="p">[</span><span class="n">b</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>The output from this example could look something like this</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">96</span> <span class="n">messages</span> <span class="ow">in</span> <span class="n">INBOX</span>
+<span class="mi">75</span> <span class="n">messages</span> <span class="n">that</span> <span class="n">aren</span><span class="s1">&#39;t deleted</span>
+
+<span class="n">Messages</span><span class="p">:</span>
+   <span class="n">ID</span> <span class="mi">38273</span><span class="p">:</span> <span class="mi">1775</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;NonJunk&#39;</span><span class="p">,)</span>
+   <span class="n">ID</span> <span class="mi">36459</span><span class="p">:</span> <span class="mi">2833</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Flagged&#39;</span><span class="p">,</span> <span class="n">v</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Seen&#39;</span><span class="p">)</span>
+   <span class="n">ID</span> <span class="mi">34693</span><span class="p">:</span> <span class="mi">2874</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Flagged&#39;</span><span class="p">,</span> <span class="n">v</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Seen&#39;</span><span class="p">)</span>
+   <span class="n">ID</span> <span class="mi">38066</span><span class="p">:</span> <span class="mi">5368</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Flagged&#39;</span><span class="p">,</span> <span class="n">v</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Seen&#39;</span><span class="p">)</span>
+   <span class="n">ID</span> <span class="mi">38154</span><span class="p">:</span> <span class="mi">9079</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Seen&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;NonJunk&#39;</span><span class="p">)</span>
+   <span class="n">ID</span> <span class="mi">14099</span><span class="p">:</span> <span class="mi">3322</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Flagged&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Seen&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;$Label1&#39;</span><span class="p">)</span>
+   <span class="n">ID</span> <span class="mi">34196</span><span class="p">:</span> <span class="mi">9163</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Answered&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Seen&#39;</span><span class="p">)</span>
+   <span class="n">ID</span> <span class="mi">35349</span><span class="p">:</span> <span class="mi">4266</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Flagged&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Seen&#39;</span><span class="p">)</span>
+   <span class="n">ID</span> <span class="mi">29335</span><span class="p">:</span> <span class="mi">5617</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Flagged&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Seen&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;NonJunk&#39;</span><span class="p">)</span>
+   <span class="n">ID</span> <span class="mi">38041</span><span class="p">:</span> <span class="mi">7649</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Seen&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;NonJunk&#39;</span><span class="p">)</span>
+   <span class="n">ID</span> <span class="mi">22310</span><span class="p">:</span> <span class="mi">976108</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Flagged&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Seen&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;$Label1&#39;</span><span class="p">)</span>
+   <span class="n">ID</span> <span class="mi">6439</span><span class="p">:</span> <span class="mi">3792</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Flagged&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">Seen&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;$Label1&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;Junk&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="concepts">
+<h2>Concepts<a class="headerlink" href="#concepts" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="message-identifiers">
+<h3>Message Identifiers<a class="headerlink" href="#message-identifiers" title="Permalink to this headline">¶</a></h3>
+<p>In the IMAP protocol, messages are identified using an integer. These
+message ids are specific to a given folder.</p>
+<p>There are two types of message identifiers in the IMAP protocol.</p>
+<p>One type is the message sequence number where the messages in a folder
+are numbered from 1 to N where N is the number of messages in the
+folder. These numbers don&#8217;t persist between sessions and may be
+reassigned after some operations such as an expunge.</p>
+<p>A more convenient approach is Unique Identifiers (UIDs). Unique
+Identifiers are integers assigned to each message by the IMAP server
+that will persist across sessions. They do not change when folders are
+expunged. Almost all IMAP servers support UIDs.</p>
+<p>Each call to the IMAP server can use either message sequence numbers
+or UIDs in the command arguments and return values. The client
+specifies to the server which type of identifier should be used. You
+can set whether IMAPClient should use UIDs or message sequence number
+via the <em>use_uid</em> argument passed when an IMAPClient instance is
+created and the <em>use_uid</em> attribute. The <em>use_uid</em> attribute can be
+used to change the message id type between calls to the
+server. IMAPClient uses UIDs by default.</p>
+<p>Any method that accepts message ids takes either a sequence containing
+message ids (eg. <code class="docutils literal"><span class="pre">[1,2,3]</span></code>), or a single message id integer, or a
+string representing sets and ranges of messages as supported by the
+IMAP protocol (e.g. <code class="docutils literal"><span class="pre">'50-65'</span></code>, <code class="docutils literal"><span class="pre">'2:*'</span></code> or <code class="docutils literal"><span class="pre">'2,4:7,9,12:*'</span></code>).</p>
+</div>
+<div class="section" id="message-flags">
+<h3>Message Flags<a class="headerlink" href="#message-flags" title="Permalink to this headline">¶</a></h3>
+<p>An IMAP server keeps zero or more flags for each message. These
+indicate certain properties of the message or can be used by IMAP
+clients to keep track of data related to a message.</p>
+<p>The IMAPClient package has constants for a number of commmonly used flags:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">DELETED</span> <span class="o">=</span> <span class="n">br</span><span class="s1">&#39;\Deleted&#39;</span>
+<span class="n">SEEN</span> <span class="o">=</span> <span class="n">br</span><span class="s1">&#39;\Seen&#39;</span>
+<span class="n">ANSWERED</span> <span class="o">=</span> <span class="n">br</span><span class="s1">&#39;\Answered&#39;</span>
+<span class="n">FLAGGED</span> <span class="o">=</span> <span class="n">br</span><span class="s1">&#39;\Flagged&#39;</span>
+<span class="n">DRAFT</span> <span class="o">=</span> <span class="n">br</span><span class="s1">&#39;\Draft&#39;</span>
+<span class="n">RECENT</span> <span class="o">=</span> <span class="n">br</span><span class="s1">&#39;\Recent&#39;</span>         <span class="c1"># This flag is read-only</span>
+</pre></div>
+</div>
+<p>Any method that accepts message flags takes either a sequence
+containing message flags (eg. <code class="docutils literal"><span class="pre">[DELETED,</span> <span class="pre">'foo',</span> <span class="pre">'Bar']</span></code>) or a single
+message flag (eg.  <code class="docutils literal"><span class="pre">'Foo'</span></code>).</p>
+</div>
+<div class="section" id="folder-name-encoding">
+<h3>Folder Name Encoding<a class="headerlink" href="#folder-name-encoding" title="Permalink to this headline">¶</a></h3>
+<p>Any method that takes a folder name will accept a standard string or a
+unicode string. Unicode strings will be transparently encoded using
+modified UTF-7 as specified by <span class="target" id="index-1"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc3501.html#section-5.1.3"><strong>RFC 3501#section-5.1.3</strong></a>.  This allows
+for arbitrary unicode characters (eg. non-English characters) to be
+used in folder names.</p>
+<p>The ampersand character (&#8220;&amp;&#8221;) has special meaning in IMAP folder
+names. IMAPClient automatically escapes and unescapes this character
+so that the caller doesn&#8217;t have to.</p>
+<p>Automatic folder name encoding and decoding can be enabled or disabled
+with the <em>folder_encode</em> attribute. It defaults to True.</p>
+<p>If <em>folder_encode</em> is True, all folder names returned by IMAPClient
+are always returned as unicode strings. If <em>folder_encode</em> is False,
+folder names are returned as str (Python 2) or bytes (Python 3).</p>
+</div>
+<div class="section" id="tls-ssl">
+<h3>TLS/SSL<a class="headerlink" href="#tls-ssl" title="Permalink to this headline">¶</a></h3>
+<p>IMAPClient uses sensible TLS parameter defaults for encrypted
+connections and also allows for a high level of control of TLS
+parameters if required. To provide a consistent API and capabilities
+across Python versions the <a class="reference external" href="https://github.com/alekstorm/backports.ssl">backports.ssl</a>
+library is used instead of the standard library ssl
+package. backports.ssl provides an API that aims to mimic the Python
+3.4 ssl package so it should be familiar to developers that have used
+the ssl package in recent versions of Python.</p>
+<p>TLS parameters are controlled by passing a <code class="docutils literal"><span class="pre">backports.ssl.SSLContext</span></code>
+when creating an IMAPClient instance. When <code class="docutils literal"><span class="pre">ssl=True</span></code> is used
+without passing a SSLContext, a default context is used. The default
+context avoids the use of known insecure ciphers and SSL protocol
+versions, with certificate verification and hostname verification
+turned on. The default context will use system installed certificate
+authority trust chains, if available.</p>
+<p><code class="xref py py-func docutils literal"><span class="pre">IMAPClient.tls.create_default_context()</span></code> returns IMAPClient&#8217;s
+default context. When constructing a custom context it is usually best
+to start with the default context and modify it to suit your needs.</p>
+<p>The following example shows how to to disable certification
+verification and certificate host name checks if required.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2015, Menno Smits</span>
+<span class="c1"># Released subject to the New BSD License</span>
+<span class="c1"># Please see http://en.wikipedia.org/wiki/BSD_licenses</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">unicode_literals</span>
+<span class="kn">import</span> <span class="nn">imapclient</span>
+<span class="kn">from</span> <span class="nn">backports</span> <span class="k">import</span> <span class="n">ssl</span>
+
+<span class="n">HOST</span> <span class="o">=</span> <span class="s1">&#39;imap.host.com&#39;</span>
+<span class="n">USERNAME</span> <span class="o">=</span> <span class="s1">&#39;someuser&#39;</span>
+<span class="n">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;secret&#39;</span>
+
+<span class="n">context</span> <span class="o">=</span> <span class="n">imapclient</span><span class="o">.</span><span class="n">create_default_context</span><span class="p">()</span>
+
+<span class="c1"># don&#39;t check if certificate hostname doesn&#39;t match target hostname</span>
+<span class="n">context</span><span class="o">.</span><span class="n">check_hostname</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># don&#39;t check if the certificate is trusted by a certificate authority</span>
+<span class="n">context</span><span class="o">.</span><span class="n">verify_mode</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">CERT_NONE</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">imapclient</span><span class="o">.</span><span class="n">IMAPClient</span><span class="p">(</span><span class="n">HOST</span><span class="p">,</span> <span class="n">use_uid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ssl</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ssl_context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">PASSWORD</span><span class="p">)</span>
+<span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>The next example shows how to create a context that will use custom CA
+certificate. This is required to perform verification of a self-signed
+certificate used by the IMAP server.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Copyright (c) 2015, Menno Smits</span>
+<span class="c1"># Released subject to the New BSD License</span>
+<span class="c1"># Please see http://en.wikipedia.org/wiki/BSD_licenses</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">unicode_literals</span>
+<span class="kn">import</span> <span class="nn">imapclient</span>
+
+<span class="n">HOST</span> <span class="o">=</span> <span class="s1">&#39;imap.host.com&#39;</span>
+<span class="n">USERNAME</span> <span class="o">=</span> <span class="s1">&#39;someuser&#39;</span>
+<span class="n">PASSWORD</span> <span class="o">=</span> <span class="s1">&#39;secret&#39;</span>
+
+<span class="n">context</span> <span class="o">=</span> <span class="n">imapclient</span><span class="o">.</span><span class="n">create_default_context</span><span class="p">(</span><span class="n">cafile</span><span class="o">=</span><span class="s2">&quot;/path/to/cacert.pem&quot;</span><span class="p">)</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">imapclient</span><span class="o">.</span><span class="n">IMAPClient</span><span class="p">(</span><span class="n">HOST</span><span class="p">,</span> <span class="n">use_uid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ssl</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ssl_context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span>
+<span class="n">server</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">PASSWORD</span><span class="p">)</span>
+<span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>The above examples show some of the most common TLS parameter
+customisations but there are many other tweaks are possible. Consult
+the Python 3 <a class="reference external" href="https://docs.python.org/3/library/ssl.html#module-ssl" title="(in Python v3.5)"><code class="xref py py-mod docutils literal"><span class="pre">ssl</span></code></a> package documentation for further options.</p>
+<div class="section" id="old-pyopenssl-versions">
+<h4>Old pyOpenSSL Versions<a class="headerlink" href="#old-pyopenssl-versions" title="Permalink to this headline">¶</a></h4>
+<p>IMAPClient&#8217;s TLS functionality will not behaviour correctly if an
+out-of-date version of pyOpenSSL is used. On some systems
+(particularly OS X) the system installed version of pyOpenSSL will
+take precedence over any user installed version. Use of virtualenvs is
+strongly encouraged to work around this.</p>
+<p>IMAPClient checks the installed pyOpenSSL version at import time and
+will fail early if an old pyOpenSSL version is found.</p>
+</div>
+</div>
+<div class="section" id="using-gevent-with-imapclient">
+<h3>Using gevent with IMAPClient<a class="headerlink" href="#using-gevent-with-imapclient" title="Permalink to this headline">¶</a></h3>
+<p>Some extra monkey patching is required so that the <a class="reference external" href="http://www.gevent.org/">gevent</a> package can
+work with pyOpenSSL (used by IMAPClient for TLS support). The
+<a class="reference external" href="https://pypi.python.org/pypi/gevent_openssl/">gevent_openssl</a> package performs this patching. Please use
+gevent_openssl 1.2 or later.</p>
+<p>Here&#8217;s an example of how gevent_openssl can be used with IMAPClient:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gevent</span> <span class="k">import</span> <span class="n">monkey</span><span class="p">;</span> <span class="n">monkey</span><span class="o">.</span><span class="n">patch_all</span><span class="p">()</span>
+<span class="kn">import</span> <span class="nn">gevent_openssl</span><span class="p">;</span> <span class="n">gevent_openssl</span><span class="o">.</span><span class="n">monkey_patch</span><span class="p">()</span>
+
+<span class="kn">import</span> <span class="nn">imapclient</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">imapclient</span><span class="o">.</span><span class="n">IMAPClient</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="exceptions">
+<h3>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h3>
+<p>The following exceptions may be raised by IMAPClient directly. They
+are attached to the IMAPClient class.</p>
+<ul class="simple">
+<li>IMAPClient.Error: the base class for IMAPClient&#8217;s exceptions and the
+most commonly used error.</li>
+<li>IMAPClient.AbortError: raised if a serious error has occurred that
+means the IMAP connection is no longer usable. The connection should
+be dropped without logout if this occurs.</li>
+<li>IMAPClient.ReadOnlyError: raised if a modifying operation was
+attempted on a read-only folder.</li>
+</ul>
+<p>Exceptions from lower network layers are also possible, in particular:</p>
+<ul class="simple">
+<li>socket.error</li>
+<li>socket.timeout: raised if a timeout was specified when creating the
+IMAPClient instance and a network operation takes too long.</li>
+<li>backports.ssl.SSLError: the base class for network or SSL protocol
+errors when ssl=True or starttls() is used.</li>
+<li>backports.ssl.CertificateError: raised when TLS certification
+verification fails. This is <em>not</em> a subclass of SSLError.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="imapclient-class">
+<h3>IMAPClient Class<a class="headerlink" href="#imapclient-class" title="Permalink to this headline">¶</a></h3>
+<p>The primary class used by the imapclient package is the IMAPClient
+class. All interaction with a remote IMAP server is performed via an
+IMAPClient instance.</p>
+<dl class="class">
+<dt id="imapclient.IMAPClient">
+<em class="property">class </em><code class="descclassname">imapclient.</code><code class="descname">IMAPClient</code><span class="sig-paren">(</span><em>host</em>, <em>port=None</em>, <em>use_uid=True</em>, <em>ssl=False</em>, <em>stream=False</em>, <em>ssl_context=None</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>A connection to the IMAP server specified by <em>host</em> is made when
+this class is instantiated.</p>
+<p><em>port</em> defaults to 143, or 993 if <em>ssl</em> is <code class="docutils literal"><span class="pre">True</span></code>.</p>
+<p>If <em>use_uid</em> is <code class="docutils literal"><span class="pre">True</span></code> unique message UIDs be used for all calls
+that accept message ids (defaults to <code class="docutils literal"><span class="pre">True</span></code>).</p>
+<p>If <em>ssl</em> is <code class="docutils literal"><span class="pre">True</span></code> an SSL connection will be made (defaults to
+<code class="docutils literal"><span class="pre">False</span></code>).</p>
+<p>If <em>ssl</em> is <code class="docutils literal"><span class="pre">True</span></code> the optional <em>ssl_context</em> argument can be
+used to provide a <code class="docutils literal"><span class="pre">backports.ssl.SSLContext</span></code> instance used to
+control SSL/TLS connection parameters. If this is not provided a
+sensible default context will be used.</p>
+<p>If <em>stream</em> is <code class="docutils literal"><span class="pre">True</span></code> then <em>host</em> is used as the command to run
+to establish a connection to the IMAP server (defaults to
+<code class="docutils literal"><span class="pre">False</span></code>). This is useful for exotic connection or authentication
+setups.</p>
+<p>Use <em>timeout</em> to specify a timeout for the socket connected to the
+IMAP server. The timeout applies during the initial connection to
+the server and for all future socket reads and writes. The default
+is for no timeout to be used.</p>
+<p>The <em>normalise_times</em> attribute specifies whether datetimes
+returned by <code class="docutils literal"><span class="pre">fetch()</span></code> are normalised to the local system time
+and include no timezone information (native), or are datetimes
+that include timezone information (aware). By default
+<em>normalise_times</em> is True (times are normalised to the local
+system time). This attribute can be changed between <code class="docutils literal"><span class="pre">fetch()</span></code>
+calls if required.</p>
+<p>The <em>debug</em> property can be used to enable debug logging. It can
+be set to an integer from 0 to 5 where 0 disables debug output and
+5 enables full output with wire logging and parsing logs. <code class="docutils literal"><span class="pre">True</span></code>
+and <code class="docutils literal"><span class="pre">False</span></code> can also be assigned where <code class="docutils literal"><span class="pre">True</span></code> sets debug level
+4.</p>
+<p>By default, debug output goes to stderr. The <em>log_file</em> attribute
+can be assigned to an alternate file handle for writing debug
+output to.</p>
+<dl class="method">
+<dt id="imapclient.IMAPClient.add_flags">
+<code class="descname">add_flags</code><span class="sig-paren">(</span><em>messages</em>, <em>flags</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.add_flags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.add_flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add <em>flags</em> to <em>messages</em> in the currently selected folder.</p>
+<p><em>flags</em> should be a sequence of strings.</p>
+<p>Returns the flags set for each modified message (see
+<em>get_flags</em>).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.add_gmail_labels">
+<code class="descname">add_gmail_labels</code><span class="sig-paren">(</span><em>messages</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.add_gmail_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.add_gmail_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add <em>labels</em> to <em>messages</em> in the currently selected folder.</p>
+<p><em>labels</em> should be a sequence of strings.</p>
+<p>Returns the label set for each modified message (see
+<em>get_gmail_labels</em>).</p>
+<p>This only works with IMAP servers that support the X-GM-LABELS
+attribute (eg. Gmail).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.append">
+<code class="descname">append</code><span class="sig-paren">(</span><em>folder</em>, <em>msg</em>, <em>flags=()</em>, <em>msg_time=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a message to <em>folder</em>.</p>
+<p><em>msg</em> should be a string contains the full message including
+headers.</p>
+<p><em>flags</em> should be a sequence of message flags to set. If not
+specified no flags will be set.</p>
+<p><em>msg_time</em> is an optional datetime instance specifying the
+date and time to set on the message. The server will set a
+time if it isn&#8217;t specified. If <em>msg_time</em> contains timezone
+information (tzinfo), this will be honoured. Otherwise the
+local machine&#8217;s time zone sent to the server.</p>
+<p>Returns the APPEND response as returned by the server.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.capabilities">
+<code class="descname">capabilities</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.capabilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.capabilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the server capability list.</p>
+<p>If the session is authenticated and the server has returned an
+untagged CAPABILITY response at authentication time, this
+response will be returned. Otherwise, the CAPABILITY command
+will be issued to the server, with the results cached for
+future calls.</p>
+<p>If the session is not yet authenticated, the capabilities
+requested at connection time will be returned.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.close_folder">
+<code class="descname">close_folder</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.close_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.close_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the currently selected folder, returning the server
+response string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><em>messages</em>, <em>folder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy one or more messages from the current folder to
+<em>folder</em>. Returns the COPY response string returned by the
+server.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.create_folder">
+<code class="descname">create_folder</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.create_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.create_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create <em>folder</em> on the server returning the server response string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.delete_folder">
+<code class="descname">delete_folder</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.delete_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.delete_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete <em>folder</em> on the server returning the server response string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.delete_messages">
+<code class="descname">delete_messages</code><span class="sig-paren">(</span><em>messages</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.delete_messages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.delete_messages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete one or more <em>messages</em> from the currently selected
+folder.</p>
+<p>Returns the flags set for each modified message (see
+<em>get_flags</em>).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.expunge">
+<code class="descname">expunge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.expunge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.expunge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove any messages from the currently selected folder that
+have the <code class="docutils literal"><span class="pre">\Deleted</span></code> flag set.</p>
+<p>The return value is the server response message
+followed by a list of expunge responses. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s1">&#39;Expunge completed.&#39;</span><span class="p">,</span>
+ <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;EXPUNGE&#39;</span><span class="p">),</span>
+  <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;EXPUNGE&#39;</span><span class="p">),</span>
+  <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;RECENT&#39;</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>In this case, the responses indicate that the message with
+sequence numbers 2 and 1 where deleted, leaving no recent
+messages in the folder.</p>
+<p>See <span class="target" id="index-2"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc3501.html#section-6.4.3"><strong>RFC 3501#section-6.4.3</strong></a> section 6.4.3 and
+<span class="target" id="index-3"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc3501.html#section-7.4.1"><strong>RFC 3501#section-7.4.1</strong></a> section 7.4.1 for more details.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.fetch">
+<code class="descname">fetch</code><span class="sig-paren">(</span><em>messages</em>, <em>data</em>, <em>modifiers=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.fetch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.fetch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve selected <em>data</em> associated with one or more
+<em>messages</em> in the currently selected folder.</p>
+<p><em>data</em> should be specified as a sequnce of strings, one item
+per data selector, for example <code class="docutils literal"><span class="pre">['INTERNALDATE',</span>
+<span class="pre">'RFC822']</span></code>.</p>
+<p><em>modifiers</em> are required for some extensions to the IMAP
+protocol (eg. <span class="target" id="index-4"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc4551.html"><strong>RFC 4551</strong></a>). These should be a sequnce of strings
+if specified, for example <code class="docutils literal"><span class="pre">['CHANGEDSINCE</span> <span class="pre">123']</span></code>.</p>
+<p>A dictionary is returned, indexed by message number. Each item
+in this dictionary is also a dictionary, with an entry
+corresponding to each item in <em>data</em>. Returned values will be
+appropriately typed. For example, integer values will be returned as
+Python integers, timestamps will be returned as datetime
+instances and ENVELOPE responses will be returned as
+<a class="reference internal" href="#imapclient.response_types.Envelope" title="imapclient.response_types.Envelope"><code class="xref py py-class docutils literal"><span class="pre">Envelope</span></code></a> instances.</p>
+<p>String data will generally be returned as bytes (Python 3) or
+str (Python 2).</p>
+<p>In addition to an element for each <em>data</em> item, the dict
+returned for each message also contains a <em>SEQ</em> key containing
+the sequence number for the message. This allows for mapping
+between the UID and sequence number (when the <em>use_uid</em>
+property is <code class="docutils literal"><span class="pre">True</span></code>).</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;</span> <span class="n">c</span><span class="o">.</span><span class="n">fetch</span><span class="p">([</span><span class="mi">3293</span><span class="p">,</span> <span class="mi">3230</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;INTERNALDATE&#39;</span><span class="p">,</span> <span class="s1">&#39;FLAGS&#39;</span><span class="p">])</span>
+<span class="p">{</span><span class="mi">3230</span><span class="p">:</span> <span class="p">{</span><span class="n">b</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">b</span><span class="s1">&#39;\Seen&#39;</span><span class="p">,),</span>
+        <span class="n">b</span><span class="s1">&#39;INTERNALDATE&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span>
+        <span class="n">b</span><span class="s1">&#39;SEQ&#39;</span><span class="p">:</span> <span class="mi">84</span><span class="p">},</span>
+ <span class="mi">3293</span><span class="p">:</span> <span class="p">{</span><span class="n">b</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">:</span> <span class="p">(),</span>
+        <span class="n">b</span><span class="s1">&#39;INTERNALDATE&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">36</span><span class="p">),</span>
+        <span class="n">b</span><span class="s1">&#39;SEQ&#39;</span><span class="p">:</span> <span class="mi">110</span><span class="p">}}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.folder_exists">
+<code class="descname">folder_exists</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.folder_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.folder_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <code class="docutils literal"><span class="pre">True</span></code> if <em>folder</em> exists on the server.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.folder_status">
+<code class="descname">folder_status</code><span class="sig-paren">(</span><em>folder</em>, <em>what=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.folder_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.folder_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the status of <em>folder</em>.</p>
+<p><em>what</em> should be a sequence of status items to query. This
+defaults to <code class="docutils literal"><span class="pre">('MESSAGES',</span> <span class="pre">'RECENT',</span> <span class="pre">'UIDNEXT',</span> <span class="pre">'UIDVALIDITY',</span>
+<span class="pre">'UNSEEN')</span></code>.</p>
+<p>Returns a dictionary of the status items for the folder with
+keys matching <em>what</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.get_flags">
+<code class="descname">get_flags</code><span class="sig-paren">(</span><em>messages</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.get_flags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.get_flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the flags set for each message in <em>messages</em> from
+the currently selected folder.</p>
+<p>The return value is a dictionary structured like this: <code class="docutils literal"><span class="pre">{</span>
+<span class="pre">msgid1:</span> <span class="pre">(flag1,</span> <span class="pre">flag2,</span> <span class="pre">...</span> <span class="pre">),</span> <span class="pre">}</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.get_gmail_labels">
+<code class="descname">get_gmail_labels</code><span class="sig-paren">(</span><em>messages</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.get_gmail_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.get_gmail_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the label set for each message in <em>messages</em> in the
+currently selected folder.</p>
+<p>The return value is a dictionary structured like this: <code class="docutils literal"><span class="pre">{</span>
+<span class="pre">msgid1:</span> <span class="pre">(label1,</span> <span class="pre">label2,</span> <span class="pre">...</span> <span class="pre">),</span> <span class="pre">}</span></code>.</p>
+<p>This only works with IMAP servers that support the X-GM-LABELS
+attribute (eg. Gmail).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.getacl">
+<code class="descname">getacl</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.getacl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.getacl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of <code class="docutils literal"><span class="pre">(who,</span> <span class="pre">acl)</span></code> tuples describing the
+access controls for <em>folder</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.gmail_search">
+<code class="descname">gmail_search</code><span class="sig-paren">(</span><em>query</em>, <em>charset=u'UTF-8'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.gmail_search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.gmail_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search using Gmail&#8217;s X-GM-RAW attribute.</p>
+<p><em>query</em> should be a valid Gmail search query string. For
+example: <code class="docutils literal"><span class="pre">has:attachment</span> <span class="pre">in:unread</span></code>. The search string may
+be unicode and will be encoded using the specified <em>charset</em>
+(defaulting to UTF-8).</p>
+<p>This method only works for IMAP servers that support X-GM-RAW,
+which is only likely to be Gmail.</p>
+<p>See <a class="reference external" href="https://developers.google.com/gmail/imap_extensions#extension_of_the_search_command_x-gm-raw">https://developers.google.com/gmail/imap_extensions#extension_of_the_search_command_x-gm-raw</a>
+for more info.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.has_capability">
+<code class="descname">has_capability</code><span class="sig-paren">(</span><em>capability</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.has_capability"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.has_capability" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <code class="docutils literal"><span class="pre">True</span></code> if the IMAP server has the given <em>capability</em>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.id_">
+<code class="descname">id_</code><span class="sig-paren">(</span><em>parameters=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.id_"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.id_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Issue the ID command, returning a dict of server implementation
+fields.</p>
+<p><em>parameters</em> should be specified as a dictionary of field/value pairs,
+for example: <code class="docutils literal"><span class="pre">{&quot;name&quot;:</span> <span class="pre">&quot;IMAPClient&quot;,</span> <span class="pre">&quot;version&quot;:</span> <span class="pre">&quot;0.12&quot;}</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.idle">
+<code class="descname">idle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.idle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.idle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Put the server into IDLE mode.</p>
+<p>In this mode the server will return unsolicited responses
+about changes to the selected mailbox. This method returns
+immediately. Use <code class="docutils literal"><span class="pre">idle_check()</span></code> to look for IDLE responses
+and <code class="docutils literal"><span class="pre">idle_done()</span></code> to stop IDLE mode.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Any other commmands issued while the server is in IDLE
+mode will fail.</p>
+</div>
+<p>See <span class="target" id="index-5"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc2177.html"><strong>RFC 2177</strong></a> for more information about the IDLE extension.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.idle_check">
+<code class="descname">idle_check</code><span class="sig-paren">(</span><em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.idle_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.idle_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for any IDLE responses sent by the server.</p>
+<p>This method should only be called if the server is in IDLE
+mode (see <code class="docutils literal"><span class="pre">idle()</span></code>).</p>
+<p>By default, this method will block until an IDLE response is
+received. If <em>timeout</em> is provided, the call will block for at
+most this many seconds while waiting for an IDLE response.</p>
+<p>The return value is a list of received IDLE responses. These
+will be parsed with values converted to appropriate types. For
+example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[(</span><span class="n">b</span><span class="s1">&#39;OK&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;Still here&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;EXISTS&#39;</span><span class="p">),</span>
+ <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;FETCH&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">b</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">b</span><span class="s1">&#39;\NotJunk&#39;</span><span class="p">,)))]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.idle_done">
+<code class="descname">idle_done</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.idle_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.idle_done" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take the server out of IDLE mode.</p>
+<p>This method should only be called if the server is already in
+IDLE mode.</p>
+<p>The return value is of the form <code class="docutils literal"><span class="pre">(command_text,</span>
+<span class="pre">idle_responses)</span></code> where <em>command_text</em> is the text sent by the
+server when the IDLE command finished (eg. <code class="docutils literal"><span class="pre">b'Idle</span>
+<span class="pre">terminated'</span></code>) and <em>idle_responses</em> is a list of parsed idle
+responses received since the last call to <code class="docutils literal"><span class="pre">idle_check()</span></code> (if
+any). These are returned in parsed form as per
+<code class="docutils literal"><span class="pre">idle_check()</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.list_folders">
+<code class="descname">list_folders</code><span class="sig-paren">(</span><em>directory=u''</em>, <em>pattern=u'*'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.list_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.list_folders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a listing of folders on the server as a list of
+<code class="docutils literal"><span class="pre">(flags,</span> <span class="pre">delimiter,</span> <span class="pre">name)</span></code> tuples.</p>
+<p>Specifying <em>directory</em> will limit returned folders to the
+given base directory. The directory and any child directories
+will returned.</p>
+<p>Specifying <em>pattern</em> will limit returned folders to those with
+matching names. The wildcards are supported in
+<em>pattern</em>. <code class="docutils literal"><span class="pre">*</span></code> matches zero or more of any character and
+<code class="docutils literal"><span class="pre">%</span></code> matches 0 or more characters except the folder
+delimiter.</p>
+<p>Calling list_folders with no arguments will recursively list
+all folders available for the logged in user.</p>
+<p>Folder names are always returned as unicode strings, and
+decoded from modified UTF-7, except if folder_decode is not
+set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.list_sub_folders">
+<code class="descname">list_sub_folders</code><span class="sig-paren">(</span><em>directory=u''</em>, <em>pattern=u'*'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.list_sub_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.list_sub_folders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of subscribed folders on the server as
+<code class="docutils literal"><span class="pre">(flags,</span> <span class="pre">delimiter,</span> <span class="pre">name)</span></code> tuples.</p>
+<p>The default behaviour will list all subscribed folders. The
+<em>directory</em> and <em>pattern</em> arguments are as per list_folders().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.login">
+<code class="descname">login</code><span class="sig-paren">(</span><em>username</em>, <em>password</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Login using <em>username</em> and <em>password</em>, returning the
+server response.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.logout">
+<code class="descname">logout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.logout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.logout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logout, returning the server response.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.namespace">
+<code class="descname">namespace</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.namespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.namespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the namespace for the account as a (personal, other,
+shared) tuple.</p>
+<p>Each element may be None if no namespace of that type exists,
+or a sequence of (prefix, separator) pairs.</p>
+<p>For convenience the tuple elements may be accessed
+positionally or using attributes named <em>personal</em>, <em>other</em> and
+<em>shared</em>.</p>
+<p>See <span class="target" id="index-6"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc2342.html"><strong>RFC 2342</strong></a> for more details.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.noop">
+<code class="descname">noop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.noop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.noop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the NOOP command.</p>
+<p>This command returns immediately, returning any server side
+status updates. It can also be used to reset any auto-logout
+timers.</p>
+<p>The return value is the server command response message
+followed by a list of status responses. For example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;NOOP completed.&#39;</span><span class="p">,</span>
+ <span class="p">[(</span><span class="mi">4</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;EXISTS&#39;</span><span class="p">),</span>
+  <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;FETCH&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">b</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">b</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;sne&#39;</span><span class="p">))),</span>
+  <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;FETCH&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">b</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">b</span><span class="s1">&#39;sne&#39;</span><span class="p">,)))])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.oauth2_login">
+<code class="descname">oauth2_login</code><span class="sig-paren">(</span><em>user</em>, <em>access_token</em>, <em>mech=u'XOAUTH2'</em>, <em>vendor=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.oauth2_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.oauth2_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Authenticate using the OAUTH2 method.</p>
+<p>Gmail and Yahoo both support the &#8216;XOAUTH2&#8217; mechanism, but Yahoo requires
+the &#8216;vendor&#8217; portion in the payload.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.oauth_login">
+<code class="descname">oauth_login</code><span class="sig-paren">(</span><em>url</em>, <em>oauth_token</em>, <em>oauth_token_secret</em>, <em>consumer_key=u'anonymous'</em>, <em>consumer_secret=u'anonymous'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.oauth_login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.oauth_login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Authenticate using the OAUTH method.</p>
+<p>This only works with IMAP servers that support OAUTH (e.g. Gmail).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.remove_flags">
+<code class="descname">remove_flags</code><span class="sig-paren">(</span><em>messages</em>, <em>flags</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.remove_flags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.remove_flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove one or more <em>flags</em> from <em>messages</em> in the currently
+selected folder.</p>
+<p><em>flags</em> should be a sequence of strings.</p>
+<p>Returns the flags set for each modified message (see
+<em>get_flags</em>).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.remove_gmail_labels">
+<code class="descname">remove_gmail_labels</code><span class="sig-paren">(</span><em>messages</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.remove_gmail_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.remove_gmail_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove one or more <em>labels</em> from <em>messages</em> in the
+currently selected folder.</p>
+<p><em>labels</em> should be a sequence of strings.</p>
+<p>Returns the label set for each modified message (see
+<em>get_gmail_labels</em>).</p>
+<p>This only works with IMAP servers that support the X-GM-LABELS
+attribute (eg. Gmail).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.rename_folder">
+<code class="descname">rename_folder</code><span class="sig-paren">(</span><em>old_name</em>, <em>new_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.rename_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.rename_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the name of a folder on the server.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.search">
+<code class="descname">search</code><span class="sig-paren">(</span><em>criteria=u'ALL'</em>, <em>charset=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of messages ids from the currently selected
+folder matching <em>criteria</em>.</p>
+<p><em>criteria</em> should be a sequence of one or more criteria
+items. Each criteria item may be either unicode or
+bytes. Example values:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="s1">u&#39;UNSEEN&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s1">u&#39;SMALLER&#39;</span><span class="p">,</span> <span class="mi">500</span><span class="p">]</span>
+<span class="p">[</span><span class="n">b</span><span class="s1">&#39;NOT&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;DELETED&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s1">u&#39;TEXT&#39;</span><span class="p">,</span> <span class="s1">u&#39;foo bar&#39;</span><span class="p">,</span> <span class="s1">u&#39;FLAGGED&#39;</span><span class="p">,</span> <span class="s1">u&#39;SUBJECT&#39;</span><span class="p">,</span> <span class="s1">u&#39;baz&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s1">u&#39;SINCE&#39;</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">2005</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>IMAPClient will perform conversion and quoting as
+required. The caller shouldn&#8217;t do this.</p>
+<p>It is also possible (but not recommended) to pass the combined
+criteria as a single string. In this case IMAPClient won&#8217;t
+perform quoting, allowing lower-level specification of
+criteria. Examples of this style:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s1">u&#39;UNSEEN&#39;</span>
+<span class="s1">u&#39;SMALLER 500&#39;</span>
+<span class="n">b</span><span class="s1">&#39;NOT DELETED&#39;</span>
+<span class="s1">u&#39;TEXT &quot;foo bar&quot; FLAGGED SUBJECT &quot;baz&quot;&#39;</span>
+<span class="n">b</span><span class="s1">&#39;SINCE 03-Apr-2005&#39;</span>
+</pre></div>
+</div>
+<p><em>charset</em> specifies the character set of the criteria. It
+defaults to US-ASCII as this is the only charset that a server
+is required to support by the RFC. UTF-8 is commonly supported
+however.</p>
+<p>Any criteria specified using unicode will be encoded as per
+<em>charset</em>. Specifying a unicode criteria that can not be
+encoded using <em>charset</em> will result in an error.</p>
+<p>Any criteria specified using bytes will be sent as-is but
+should use an encoding that matches <em>charset</em> (the character
+set given is still passed on to the server).</p>
+<p>See <span class="target" id="index-7"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc3501.html#section-6.4.4"><strong>RFC 3501#section-6.4.4</strong></a> for more details.</p>
+<p>Note that criteria arguments that are 8-bit will be
+transparently sent by IMAPClient as IMAP literals to ensure
+adherence to IMAP standards.</p>
+<p>The returned list of message ids will have a special <em>modseq</em>
+attribute. This is set if the server included a MODSEQ value
+to the search response (i.e. if a MODSEQ criteria was included
+in the search).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.select_folder">
+<code class="descname">select_folder</code><span class="sig-paren">(</span><em>folder</em>, <em>readonly=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.select_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.select_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the current folder on the server.</p>
+<p>Future calls to methods such as search and fetch will act on
+the selected folder.</p>
+<p>Returns a dictionary containing the <code class="docutils literal"><span class="pre">SELECT</span></code> response. At least
+the <code class="docutils literal"><span class="pre">b'EXISTS'</span></code>, <code class="docutils literal"><span class="pre">b'FLAGS'</span></code> and <code class="docutils literal"><span class="pre">b'RECENT'</span></code> keys are guaranteed
+to exist. An example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">b</span><span class="s1">&#39;EXISTS&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+ <span class="n">b</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">b</span><span class="s1">&#39;\Answered&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;\Flagged&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;\Deleted&#39;</span><span class="p">,</span> <span class="o">...</span> <span class="p">),</span>
+ <span class="n">b</span><span class="s1">&#39;RECENT&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+ <span class="n">b</span><span class="s1">&#39;PERMANENTFLAGS&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">b</span><span class="s1">&#39;\Answered&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;\Flagged&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;\Deleted&#39;</span><span class="p">,</span> <span class="o">...</span> <span class="p">),</span>
+ <span class="n">b</span><span class="s1">&#39;READ-WRITE&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+ <span class="n">b</span><span class="s1">&#39;UIDNEXT&#39;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+ <span class="n">b</span><span class="s1">&#39;UIDVALIDITY&#39;</span><span class="p">:</span> <span class="mi">1239278212</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.set_flags">
+<code class="descname">set_flags</code><span class="sig-paren">(</span><em>messages</em>, <em>flags</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.set_flags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.set_flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the <em>flags</em> for <em>messages</em> in the currently selected
+folder.</p>
+<p><em>flags</em> should be a sequence of strings.</p>
+<p>Returns the flags set for each modified message (see
+<em>get_flags</em>).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.set_gmail_labels">
+<code class="descname">set_gmail_labels</code><span class="sig-paren">(</span><em>messages</em>, <em>labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.set_gmail_labels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.set_gmail_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the <em>labels</em> for <em>messages</em> in the currently selected
+folder.</p>
+<p><em>labels</em> should be a sequence of strings.</p>
+<p>Returns the label set for each modified message (see
+<em>get_gmail_labels</em>).</p>
+<p>This only works with IMAP servers that support the X-GM-LABELS
+attribute (eg. Gmail).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.setacl">
+<code class="descname">setacl</code><span class="sig-paren">(</span><em>folder</em>, <em>who</em>, <em>what</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.setacl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.setacl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set an ACL (<em>what</em>) for user (<em>who</em>) for a folder.</p>
+<p>Set <em>what</em> to an empty string to remove an ACL. Returns the
+server response string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.shutdown">
+<code class="descname">shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close the connection to the IMAP server (without logging out)</p>
+<p>In most cases, <a class="reference internal" href="#imapclient.IMAPClient.logout" title="imapclient.IMAPClient.logout"><code class="xref py py-meth docutils literal"><span class="pre">logout()</span></code></a> should be used instead of
+this. The logout method also shutdown down the connection.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.sort">
+<code class="descname">sort</code><span class="sig-paren">(</span><em>sort_criteria</em>, <em>criteria=u'ALL'</em>, <em>charset=u'UTF-8'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.sort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of message ids from the currently selected
+folder, sorted by <em>sort_criteria</em> and optionally filtered by
+<em>criteria</em>.</p>
+<p><em>sort_criteria</em> may be specified as a sequence of strings or a
+single string. IMAPClient will take care any required
+conversions. Valid <em>sort_criteria</em> values:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="s1">&#39;ARRIVAL&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s1">&#39;SUBJECT&#39;</span><span class="p">,</span> <span class="s1">&#39;ARRIVAL&#39;</span><span class="p">]</span>
+<span class="s1">&#39;ARRIVAL&#39;</span>
+<span class="s1">&#39;REVERSE SIZE&#39;</span>
+</pre></div>
+</div>
+<p>The <em>criteria</em> and <em>charset</em> arguments are as per
+<a class="reference internal" href="#imapclient.IMAPClient.search" title="imapclient.IMAPClient.search"><code class="xref py py-meth docutils literal"><span class="pre">search()</span></code></a>.</p>
+<p>See <span class="target" id="index-8"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc5256.html"><strong>RFC 5256</strong></a> for full details.</p>
+<p>Note that SORT is an extension to the IMAP4 standard so it may
+not be supported by all IMAP servers.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.starttls">
+<code class="descname">starttls</code><span class="sig-paren">(</span><em>ssl_context=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.starttls"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.starttls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch to an SSL encrypted connection by sending a STARTTLS command.</p>
+<p>The <em>ssl_context</em> argument is optional and should be a
+<code class="xref py py-class docutils literal"><span class="pre">backports.ssl.SSLContext</span></code> object. If no SSL context
+is given, a SSL context with reasonable default settings will be used.</p>
+<p>You can enable checking of the hostname in the certificate presented
+by the server  against the hostname which was used for connecting, by
+setting the <em>check_hostname</em> attribute of the SSL context to <code class="docutils literal"><span class="pre">True</span></code>.
+The default SSL context has this setting enabled.</p>
+<p>Raises <code class="xref py py-exc docutils literal"><span class="pre">Error</span></code> if the SSL connection could not be established.</p>
+<p>Raises <code class="xref py py-exc docutils literal"><span class="pre">AbortError</span></code> if the server does not support STARTTLS
+or an SSL connection is already established.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.subscribe_folder">
+<code class="descname">subscribe_folder</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.subscribe_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.subscribe_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subscribe to <em>folder</em>, returning the server response string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.thread">
+<code class="descname">thread</code><span class="sig-paren">(</span><em>algorithm=u'REFERENCES'</em>, <em>criteria=u'ALL'</em>, <em>charset=u'UTF-8'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of messages threads from the currently
+selected folder which match <em>criteria</em>.</p>
+<p>Each returned thread is a list of messages ids. An example
+return value containing three message threads:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The optional <em>algorithm</em> argument specifies the threading
+algorithm to use.</p>
+<p>The <em>criteria</em> and <em>charset</em> arguments are as per
+<a class="reference internal" href="#imapclient.IMAPClient.search" title="imapclient.IMAPClient.search"><code class="xref py py-meth docutils literal"><span class="pre">search()</span></code></a>.</p>
+<p>See <span class="target" id="index-9"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc5256.html"><strong>RFC 5256</strong></a> for more details.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.unsubscribe_folder">
+<code class="descname">unsubscribe_folder</code><span class="sig-paren">(</span><em>folder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.unsubscribe_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.unsubscribe_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unsubscribe to <em>folder</em>, returning the server response string.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="imapclient.IMAPClient.xlist_folders">
+<code class="descname">xlist_folders</code><span class="sig-paren">(</span><em>directory=u''</em>, <em>pattern=u'*'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/imapclient.html#IMAPClient.xlist_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.IMAPClient.xlist_folders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the XLIST command, returning <code class="docutils literal"><span class="pre">(flags,</span> <span class="pre">delimiter,</span>
+<span class="pre">name)</span></code> tuples.</p>
+<p>This method returns special flags for each folder and a
+localized name for certain folders (e.g. the name of the
+inbox may be localized and the flags can be used to
+determine the actual inbox, even if the name has been
+localized.</p>
+<p>A <code class="docutils literal"><span class="pre">XLIST</span></code> response could look something like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[((</span><span class="n">b</span><span class="s1">&#39;\HasNoChildren&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;\Inbox&#39;</span><span class="p">),</span> <span class="n">b</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">u&#39;Inbox&#39;</span><span class="p">),</span>
+ <span class="p">((</span><span class="n">b</span><span class="s1">&#39;\Noselect&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;\HasChildren&#39;</span><span class="p">),</span> <span class="n">b</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">u&#39;[Gmail]&#39;</span><span class="p">),</span>
+ <span class="p">((</span><span class="n">b</span><span class="s1">&#39;\HasNoChildren&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;\AllMail&#39;</span><span class="p">),</span> <span class="n">b</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">u&#39;[Gmail]/All Mail&#39;</span><span class="p">),</span>
+ <span class="p">((</span><span class="n">b</span><span class="s1">&#39;\HasNoChildren&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;\Drafts&#39;</span><span class="p">),</span> <span class="n">b</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">u&#39;[Gmail]/Drafts&#39;</span><span class="p">),</span>
+ <span class="p">((</span><span class="n">b</span><span class="s1">&#39;\HasNoChildren&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;\Important&#39;</span><span class="p">),</span> <span class="n">b</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">u&#39;[Gmail]/Important&#39;</span><span class="p">),</span>
+ <span class="p">((</span><span class="n">b</span><span class="s1">&#39;\HasNoChildren&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;\Sent&#39;</span><span class="p">),</span> <span class="n">b</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">u&#39;[Gmail]/Sent Mail&#39;</span><span class="p">),</span>
+ <span class="p">((</span><span class="n">b</span><span class="s1">&#39;\HasNoChildren&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;\Spam&#39;</span><span class="p">),</span> <span class="n">b</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">u&#39;[Gmail]/Spam&#39;</span><span class="p">),</span>
+ <span class="p">((</span><span class="n">b</span><span class="s1">&#39;\HasNoChildren&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;\Starred&#39;</span><span class="p">),</span> <span class="n">b</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">u&#39;[Gmail]/Starred&#39;</span><span class="p">),</span>
+ <span class="p">((</span><span class="n">b</span><span class="s1">&#39;\HasNoChildren&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;\Trash&#39;</span><span class="p">),</span> <span class="n">b</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">u&#39;[Gmail]/Trash&#39;</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>This is a <em>deprecated</em> Gmail-specific IMAP extension (See
+<a class="reference external" href="https://developers.google.com/gmail/imap_extensions#xlist_is_deprecated">https://developers.google.com/gmail/imap_extensions#xlist_is_deprecated</a>
+for more information). It is the responsibility of the caller
+to either check for <code class="docutils literal"><span class="pre">XLIST</span></code> in the server capabilites, or to
+handle the error if the server doesn&#8217;t support this extension.</p>
+<p>The <em>directory</em> and <em>pattern</em> arguments are as per
+list_folders().</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="fetch-response-types">
+<h3>Fetch Response Types<a class="headerlink" href="#fetch-response-types" title="Permalink to this headline">¶</a></h3>
+<p>Various types may be used in the data structures returned by
+<a class="reference internal" href="#imapclient.IMAPClient.fetch" title="imapclient.IMAPClient.fetch"><code class="xref py py-meth docutils literal"><span class="pre">IMAPClient.fetch()</span></code></a> when certain response types
+are encountered during parsing.</p>
+<span class="target" id="module-imapclient.response_types"></span><dl class="class">
+<dt id="imapclient.response_types.Address">
+<em class="property">class </em><code class="descclassname">imapclient.response_types.</code><code class="descname">Address</code><a class="reference internal" href="_modules/imapclient/response_types.html#Address"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.response_types.Address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents electronic mail addresses. Used to store addresses in
+<a class="reference internal" href="#imapclient.response_types.Envelope" title="imapclient.response_types.Envelope"><code class="xref py py-class docutils literal"><span class="pre">Envelope</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> &#8211; The address &#8220;personal name&#8221;.</li>
+<li><strong>route</strong> &#8211; SMTP source route (rarely used).</li>
+<li><a class="reference external" href="https://docs.python.org/3/library/mailbox.html#module-mailbox" title="(in Python v3.5)"><strong>mailbox</strong></a> &#8211; Mailbox name (what comes just before the &#64; sign).</li>
+<li><strong>host</strong> &#8211; The host/domain name.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>As an example, an address header that looks like:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Mary</span> <span class="n">Smith</span> <span class="o">&lt;</span><span class="n">mary</span><span class="nd">@foo</span><span class="o">.</span><span class="n">com</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>would be represented as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Address</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">u&#39;Mary Smith&#39;</span><span class="p">,</span> <span class="n">route</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mailbox</span><span class="o">=</span><span class="s1">u&#39;mary&#39;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">u&#39;foo.com&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <span class="target" id="index-10"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc2822.html"><strong>RFC 2822</strong></a> for more detail.</p>
+<p>See also <a class="reference internal" href="#imapclient.response_types.Envelope" title="imapclient.response_types.Envelope"><code class="xref py py-class docutils literal"><span class="pre">Envelope</span></code></a> for information about handling of
+&#8220;group syntax&#8221;.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="imapclient.response_types.BodyData">
+<em class="property">class </em><code class="descclassname">imapclient.response_types.</code><code class="descname">BodyData</code><a class="reference internal" href="_modules/imapclient/response_types.html#BodyData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.response_types.BodyData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returned when parsing BODY and BODYSTRUCTURE responses.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="imapclient.response_types.Envelope">
+<em class="property">class </em><code class="descclassname">imapclient.response_types.</code><code class="descname">Envelope</code><a class="reference internal" href="_modules/imapclient/response_types.html#Envelope"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.response_types.Envelope" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents envelope structures of messages. Returned when parsing
+ENVELOPE responses.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>date</strong> &#8211; A datetime instance that represents the &#8220;Date&#8221; header.</li>
+<li><strong>subject</strong> &#8211; A string that contains the &#8220;Subject&#8221; header.</li>
+<li><strong>from_</strong> &#8211; A tuple of Address objects that represent on or more
+addresses from the &#8220;From&#8221; header, or None if header does not exist.</li>
+<li><strong>sender</strong> &#8211; As for from_ but represents the &#8220;Sender&#8221; header.</li>
+<li><strong>reply_to</strong> &#8211; As for from_ but represents the &#8220;Reply-To&#8221; header.</li>
+<li><strong>to</strong> &#8211; As for from_ but represents the &#8220;To&#8221; header.</li>
+<li><strong>cc</strong> &#8211; As for from_ but represents the &#8220;Cc&#8221; header.</li>
+<li><strong>bcc</strong> &#8211; As for from_ but represents the &#8220;Bcc&#8221; recipients.</li>
+<li><strong>in_reply_to</strong> &#8211; A string that contains the &#8220;In-Reply-To&#8221; header.</li>
+<li><strong>message_id</strong> &#8211; A string that contains the &#8220;Message-Id&#8221; header.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>A particular issue to watch out for is IMAP&#8217;s handling of &#8220;group
+syntax&#8221; in address fields. This is often encountered as a
+recipient header of the form:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">undisclosed</span><span class="o">-</span><span class="n">recipients</span><span class="p">:;</span>
+</pre></div>
+</div>
+<p>but can also be expressed per this more general example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">A</span> <span class="n">group</span><span class="p">:</span> <span class="n">a</span><span class="nd">@example</span><span class="o">.</span><span class="n">com</span><span class="p">,</span> <span class="n">B</span> <span class="o">&lt;</span><span class="n">b</span><span class="nd">@example</span><span class="o">.</span><span class="n">org</span><span class="o">&gt;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This example would yield the following Address tuples:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Address</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mailbox</span><span class="o">=</span><span class="s1">u&#39;A group&#39;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">Address</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mailbox</span><span class="o">=</span><span class="s1">u&#39;a&#39;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">u&#39;example.com&#39;</span><span class="p">)</span>
+<span class="n">Address</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">u&#39;B&#39;</span><span class="p">,</span> <span class="n">route</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mailbox</span><span class="o">=</span><span class="s1">u&#39;b&#39;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">u&#39;example.org&#39;</span><span class="p">)</span>
+<span class="n">Address</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">route</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mailbox</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first Address, where <code class="docutils literal"><span class="pre">host</span></code> is <code class="docutils literal"><span class="pre">None</span></code>, indicates the start
+of the group. The <code class="docutils literal"><span class="pre">mailbox</span></code> field contains the group name. The
+final Address, where both <code class="docutils literal"><span class="pre">mailbox</span></code> and <code class="docutils literal"><span class="pre">host</span></code> are <code class="docutils literal"><span class="pre">None</span></code>,
+indicates the end of the group.</p>
+<p>See <span class="target" id="index-11"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc3501.html#section-7.4.2"><strong>RFC 3501#section-7.4.2</strong></a> and <span class="target" id="index-12"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc2822.html"><strong>RFC 2822</strong></a> for further details.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="imapclient.response_types.SearchIds">
+<em class="property">class </em><code class="descclassname">imapclient.response_types.</code><code class="descname">SearchIds</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/response_types.html#SearchIds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.response_types.SearchIds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains a list of message ids as returned by IMAPClient.search().</p>
+<p>The <em>modseq</em> attribute will contain the MODSEQ value returned by
+the server (only if the SEARCH command sent involved the MODSEQ
+criteria). See <span class="target" id="index-13"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc4551.html"><strong>RFC 4551</strong></a> for more details.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-imapclient.tls">
+<span id="tls-support"></span><h3>TLS Support<a class="headerlink" href="#module-imapclient.tls" title="Permalink to this headline">¶</a></h3>
+<p>This module contains IMAPClient&#8217;s functionality related to Transport
+Layer Security (TLS a.k.a. SSL).</p>
+<p>It uses <code class="docutils literal"><span class="pre">backports.ssl</span></code> to provide consistent TLS functionality
+across Python versions.</p>
+<dl class="function">
+<dt id="imapclient.tls.create_default_context">
+<code class="descclassname">imapclient.tls.</code><code class="descname">create_default_context</code><span class="sig-paren">(</span><em>cafile=None</em>, <em>capath=None</em>, <em>cadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/imapclient/tls.html#create_default_context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#imapclient.tls.create_default_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a backports.ssl.SSLContext object configured with sensible
+default settings.</p>
+<p>The optional <em>cafile</em> argument is path to a file of concatenated
+CA certificates in PEM format.</p>
+<p>The optional <em>capath</em> argument is a path to a directory containing
+several CA certificates in PEM format, following an OpenSSL
+specific layout.</p>
+<p>The optional <em>cadata</em> argument is either an ASCII string of one or
+more PEM-encoded certificates or a bytes-like object of
+DER-encoded certificates.</p>
+<p>If <em>cafile</em>, <em>capath</em> and <em>cadata</em> are all None then
+system-installed CA certificates will be loaded (if available).</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="interactive-sessions">
+<h2>Interactive Sessions<a class="headerlink" href="#interactive-sessions" title="Permalink to this headline">¶</a></h2>
+<p>When developing program using IMAPClient is it sometimes useful to
+have an interactive shell to play with. IMAPClient ships with a module
+that lets you fire up an interactive shell with an IMAPClient instance
+connected to an IMAP server.</p>
+<p>Start a session like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">imapclient</span><span class="o">.</span><span class="n">interact</span> <span class="o">-</span><span class="n">H</span> <span class="o">&lt;</span><span class="n">host</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">u</span> <span class="o">&lt;</span><span class="n">user</span><span class="o">&gt;</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>Various options are available to specify the IMAP server details. See
+the help (&#8211;help) for more details. You&#8217;ll be prompted for a username
+and password if one isn&#8217;t provided on the command line.</p>
+<p>It is also possible to pass connection details as a configuration file
+like this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">imapclient</span><span class="o">.</span><span class="n">interact</span> <span class="o">-</span><span class="n">f</span> <span class="o">&lt;</span><span class="n">config</span> <span class="n">file</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>See below for details of the <a class="reference internal" href="#conf-files"><span class="std std-ref">configuration file format</span></a>.</p>
+<p>If installed, IPython will be used as the embedded shell. Otherwise
+the basic built-in Python shell will be used.</p>
+<p>The connected IMAPClient instance is available as the variable
+&#8220;c&#8221;. Here&#8217;s an example session:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ python -m imapclient.interact -H &lt;host&gt; -u &lt;user&gt; ...
+Connecting...
+Connected.
+
+IMAPClient instance is &quot;c&quot;
+In [1]: c.select_folder(&#39;inbox&#39;)
+Out[1]:
+{b&#39;EXISTS&#39;: 2,
+ b&#39;FLAGS&#39;: (b&#39;\\Answered&#39;,
+     b&#39;\\Flagged&#39;,
+     b&#39;\\Deleted&#39;,
+     b&#39;\\Seen&#39;,
+     b&#39;\\Draft&#39;),
+ b&#39;PERMANENTFLAGS&#39;: (b&#39;\\Answered&#39;,
+     b&#39;\\Flagged&#39;,
+     b&#39;\\Deleted&#39;,
+     b&#39;\\Seen&#39;,
+     b&#39;\\Draft&#39;),
+ b&#39;READ-WRITE&#39;: True,
+ b&#39;RECENT&#39;: 0,
+ b&#39;UIDNEXT&#39;: 1339,
+ b&#39;UIDVALIDITY&#39;: 1239278212}
+
+In [2]: c.search()
+Out[2]: [1123, 1233]
+
+In [3]: c.logout()
+Out[3]: b&#39;Logging out&#39;
+</pre></div>
+</div>
+</div>
+<div class="section" id="configuration-file-format">
+<span id="conf-files"></span><h2>Configuration File Format<a class="headerlink" href="#configuration-file-format" title="Permalink to this headline">¶</a></h2>
+<p>Both the IMAPClient interactive shell and the live tests take
+configuration files which specify how to to connect to an IMAP
+server. The configuration file format is the same for both.</p>
+<p>Configuration files use the INI format and must always have a section
+called <code class="docutils literal"><span class="pre">DEFAULT</span></code>. Here&#8217;s a simple example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">DEFAULT</span><span class="p">]</span>
+<span class="n">host</span> <span class="o">=</span> <span class="n">imap</span><span class="o">.</span><span class="n">mailserver</span><span class="o">.</span><span class="n">com</span>
+<span class="n">username</span> <span class="o">=</span> <span class="n">bob</span>
+<span class="n">password</span> <span class="o">=</span> <span class="n">sekret</span>
+<span class="n">ssl</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>The supported options are:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="6%" />
+<col width="77%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>host</td>
+<td>string</td>
+<td>IMAP hostname to connect to.</td>
+</tr>
+<tr class="row-odd"><td>username</td>
+<td>string</td>
+<td>The username to authenticate as.</td>
+</tr>
+<tr class="row-even"><td>password</td>
+<td>string</td>
+<td>The password to use with <code class="docutils literal"><span class="pre">username</span></code>.</td>
+</tr>
+<tr class="row-odd"><td>port</td>
+<td>int</td>
+<td>Server port to connect to. Defaults to 143 unless <code class="docutils literal"><span class="pre">ssl</span></code> is True.</td>
+</tr>
+<tr class="row-even"><td>ssl</td>
+<td>bool</td>
+<td>Use SSL/TLS to connect.</td>
+</tr>
+<tr class="row-odd"><td>starttls</td>
+<td>bool</td>
+<td>Use STARTTLS to connect.</td>
+</tr>
+<tr class="row-even"><td>ssl_check_hostname</td>
+<td>bool</td>
+<td>If true and SSL is in use, check that certificate matches the hostname (defaults to true)</td>
+</tr>
+<tr class="row-odd"><td>ssl_verify_cert</td>
+<td>bool</td>
+<td>If true and SSL is in use, check that the certifcate is valid (defaults to true).</td>
+</tr>
+<tr class="row-even"><td>ssl_ca_file</td>
+<td>string</td>
+<td>If SSL is true, use this to specify certificate authority certs to validate with.</td>
+</tr>
+<tr class="row-odd"><td>timeout</td>
+<td>int</td>
+<td>Time out I/O operations after this many seconds.</td>
+</tr>
+<tr class="row-even"><td>oauth2</td>
+<td>bool</td>
+<td>If true, use OAUTH2 to authenticate (<code class="docutils literal"><span class="pre">username</span></code> and <code class="docutils literal"><span class="pre">password</span></code> are ignored).</td>
+</tr>
+<tr class="row-odd"><td>oauth2_client_id</td>
+<td>string</td>
+<td>OAUTH2 client id.</td>
+</tr>
+<tr class="row-even"><td>oauth2_client_secret</td>
+<td>string</td>
+<td>OAUTH2 client secret.</td>
+</tr>
+<tr class="row-odd"><td>oauth2_refresh_token</td>
+<td>string</td>
+<td>OAUTH2 token for refreshing the secret.</td>
+</tr>
+</tbody>
+</table>
+<p>Acceptable boolean values are &#8220;1&#8221;, &#8220;yes&#8221;, &#8220;true&#8221;, and &#8220;on&#8221;, for true;
+and &#8220;0&#8221;, &#8220;no&#8221;, &#8220;false&#8221;, and &#8220;off&#8221;, for false.</p>
+</div>
+<div class="section" id="external-documentation">
+<h2>External Documentation<a class="headerlink" href="#external-documentation" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="http://www.imapwiki.org/">Unofficial IMAP Protocol Wiki</a> is
+very useful when writing IMAP related software and is highly
+recommended.</p>
+</div>
+<div class="section" id="release-history">
+<h2>Release History<a class="headerlink" href="#release-history" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="releases.html">Version 1.0.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-1-0-1">Version 1.0.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-1-0-0">Version 1.0.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-13">Version 0.13</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-12">Version 0.12</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-11-1">Version 0.11.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-11">Version 0.11</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-10-2">Version 0.10.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-10-1">Version 0.10.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-10">Version 0.10</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-9-2">Version 0.9.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-9-1">Version 0.9.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-9">Version 0.9</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-8-1">Version 0.8.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-8">Version 0.8</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-7">Version 0.7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-6-2">Version 0.6.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-6-1">Version 0.6.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-6">Version 0.6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-5-2">Version 0.5.2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-5-1">Version 0.5.1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releases.html#version-0-5">Version 0.5</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="releases.html" title="Version 1.0.2"
+             >next</a></li>
+        <li class="nav-item nav-item-0"><a href="#">IMAPClient 1.0.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Menno Smits.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
+    </div>
+  </body>
+</html>

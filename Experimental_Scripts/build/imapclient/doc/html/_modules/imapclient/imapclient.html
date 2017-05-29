@@ -1,0 +1,1498 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>imapclient.imapclient &#8212; IMAPClient 1.0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="IMAPClient 1.0.2 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="nav-item nav-item-0"><a href="../../index.html">IMAPClient 1.0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for imapclient.imapclient</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2015, Menno Smits</span>
+<span class="c1"># Released subject to the New BSD License</span>
+<span class="c1"># Please see http://en.wikipedia.org/wiki/BSD_licenses</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">unicode_literals</span>
+
+<span class="kn">import</span> <span class="nn">imaplib</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">select</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">date</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="k">import</span> <span class="n">itemgetter</span>
+
+<span class="kn">from</span> <span class="nn">six</span> <span class="k">import</span> <span class="n">moves</span><span class="p">,</span> <span class="n">iteritems</span><span class="p">,</span> <span class="n">text_type</span><span class="p">,</span> <span class="n">integer_types</span><span class="p">,</span> <span class="n">PY3</span><span class="p">,</span> <span class="n">binary_type</span><span class="p">,</span> <span class="n">iterbytes</span>
+
+<span class="c1"># Confusingly, this module is for OAUTH v1, not v2</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">oauth2</span> <span class="k">as</span> <span class="nn">oauth_module</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">oauth_module</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">imap4</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">response_lexer</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">tls</span>
+<span class="kn">from</span> <span class="nn">.datetime_util</span> <span class="k">import</span> <span class="n">datetime_to_INTERNALDATE</span><span class="p">,</span> <span class="n">format_criteria_date</span>
+<span class="kn">from</span> <span class="nn">.imap_utf7</span> <span class="k">import</span> <span class="n">encode</span> <span class="k">as</span> <span class="n">encode_utf7</span><span class="p">,</span> <span class="n">decode</span> <span class="k">as</span> <span class="n">decode_utf7</span>
+<span class="kn">from</span> <span class="nn">.response_parser</span> <span class="k">import</span> <span class="n">parse_response</span><span class="p">,</span> <span class="n">parse_message_list</span><span class="p">,</span> <span class="n">parse_fetch_response</span>
+<span class="kn">from</span> <span class="nn">.util</span> <span class="k">import</span> <span class="n">to_bytes</span><span class="p">,</span> <span class="n">to_unicode</span>
+<span class="n">xrange</span> <span class="o">=</span> <span class="n">moves</span><span class="o">.</span><span class="n">xrange</span>
+
+<span class="k">if</span> <span class="n">PY3</span><span class="p">:</span>
+    <span class="n">long</span> <span class="o">=</span> <span class="nb">int</span>  <span class="c1"># long is just int in python3</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;IMAPClient&#39;</span><span class="p">,</span> <span class="s1">&#39;DELETED&#39;</span><span class="p">,</span> <span class="s1">&#39;SEEN&#39;</span><span class="p">,</span> <span class="s1">&#39;ANSWERED&#39;</span><span class="p">,</span> <span class="s1">&#39;FLAGGED&#39;</span><span class="p">,</span> <span class="s1">&#39;DRAFT&#39;</span><span class="p">,</span> <span class="s1">&#39;RECENT&#39;</span><span class="p">]</span>
+
+
+<span class="c1"># We also offer the gmail-specific XLIST command...</span>
+<span class="k">if</span> <span class="s1">&#39;XLIST&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">imaplib</span><span class="o">.</span><span class="n">Commands</span><span class="p">:</span>
+    <span class="n">imaplib</span><span class="o">.</span><span class="n">Commands</span><span class="p">[</span><span class="s1">&#39;XLIST&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">imaplib</span><span class="o">.</span><span class="n">Commands</span><span class="p">[</span><span class="s1">&#39;LIST&#39;</span><span class="p">]</span>
+
+<span class="c1"># ...and IDLE</span>
+<span class="k">if</span> <span class="s1">&#39;IDLE&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">imaplib</span><span class="o">.</span><span class="n">Commands</span><span class="p">:</span>
+    <span class="n">imaplib</span><span class="o">.</span><span class="n">Commands</span><span class="p">[</span><span class="s1">&#39;IDLE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">imaplib</span><span class="o">.</span><span class="n">Commands</span><span class="p">[</span><span class="s1">&#39;APPEND&#39;</span><span class="p">]</span>
+
+<span class="c1"># ..and STARTTLS</span>
+<span class="k">if</span> <span class="s1">&#39;STARTTLS&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">imaplib</span><span class="o">.</span><span class="n">Commands</span><span class="p">:</span>
+    <span class="n">imaplib</span><span class="o">.</span><span class="n">Commands</span><span class="p">[</span><span class="s1">&#39;STARTTLS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NONAUTH&#39;</span><span class="p">,)</span>
+
+<span class="c1"># ...and ID. RFC2971 says that this command is valid in all states,</span>
+<span class="c1"># but not that some servers (*cough* FastMail *cough*) don&#39;t seem to</span>
+<span class="c1"># accept it in state NONAUTH.</span>
+<span class="k">if</span> <span class="s1">&#39;ID&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">imaplib</span><span class="o">.</span><span class="n">Commands</span><span class="p">:</span>
+    <span class="n">imaplib</span><span class="o">.</span><span class="n">Commands</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;NONAUTH&#39;</span><span class="p">,</span> <span class="s1">&#39;AUTH&#39;</span><span class="p">,</span> <span class="s1">&#39;SELECTED&#39;</span><span class="p">)</span>
+
+
+<span class="c1"># System flags</span>
+<span class="n">DELETED</span> <span class="o">=</span> <span class="n">br</span><span class="s1">&#39;\Deleted&#39;</span>
+<span class="n">SEEN</span> <span class="o">=</span> <span class="n">br</span><span class="s1">&#39;\Seen&#39;</span>
+<span class="n">ANSWERED</span> <span class="o">=</span> <span class="n">br</span><span class="s1">&#39;\Answered&#39;</span>
+<span class="n">FLAGGED</span> <span class="o">=</span> <span class="n">br</span><span class="s1">&#39;\Flagged&#39;</span>
+<span class="n">DRAFT</span> <span class="o">=</span> <span class="n">br</span><span class="s1">&#39;\Draft&#39;</span>
+<span class="n">RECENT</span> <span class="o">=</span> <span class="n">br</span><span class="s1">&#39;\Recent&#39;</span>         <span class="c1"># This flag is read-only</span>
+
+
+<span class="k">class</span> <span class="nc">Namespace</span><span class="p">(</span><span class="nb">tuple</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">personal</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">shared</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="p">(</span><span class="n">personal</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">shared</span><span class="p">))</span>
+
+    <span class="n">personal</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">other</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">shared</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="IMAPClient"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient">[docs]</a><span class="k">class</span> <span class="nc">IMAPClient</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A connection to the IMAP server specified by *host* is made when</span>
+<span class="sd">    this class is instantiated.</span>
+
+<span class="sd">    *port* defaults to 143, or 993 if *ssl* is ``True``.</span>
+
+<span class="sd">    If *use_uid* is ``True`` unique message UIDs be used for all calls</span>
+<span class="sd">    that accept message ids (defaults to ``True``).</span>
+
+<span class="sd">    If *ssl* is ``True`` an SSL connection will be made (defaults to</span>
+<span class="sd">    ``False``).</span>
+
+<span class="sd">    If *ssl* is ``True`` the optional *ssl_context* argument can be</span>
+<span class="sd">    used to provide a ``backports.ssl.SSLContext`` instance used to</span>
+<span class="sd">    control SSL/TLS connection parameters. If this is not provided a</span>
+<span class="sd">    sensible default context will be used.</span>
+
+<span class="sd">    If *stream* is ``True`` then *host* is used as the command to run</span>
+<span class="sd">    to establish a connection to the IMAP server (defaults to</span>
+<span class="sd">    ``False``). This is useful for exotic connection or authentication</span>
+<span class="sd">    setups.</span>
+
+<span class="sd">    Use *timeout* to specify a timeout for the socket connected to the</span>
+<span class="sd">    IMAP server. The timeout applies during the initial connection to</span>
+<span class="sd">    the server and for all future socket reads and writes. The default</span>
+<span class="sd">    is for no timeout to be used.</span>
+
+<span class="sd">    The *normalise_times* attribute specifies whether datetimes</span>
+<span class="sd">    returned by ``fetch()`` are normalised to the local system time</span>
+<span class="sd">    and include no timezone information (native), or are datetimes</span>
+<span class="sd">    that include timezone information (aware). By default</span>
+<span class="sd">    *normalise_times* is True (times are normalised to the local</span>
+<span class="sd">    system time). This attribute can be changed between ``fetch()``</span>
+<span class="sd">    calls if required.</span>
+
+<span class="sd">    The *debug* property can be used to enable debug logging. It can</span>
+<span class="sd">    be set to an integer from 0 to 5 where 0 disables debug output and</span>
+<span class="sd">    5 enables full output with wire logging and parsing logs. ``True``</span>
+<span class="sd">    and ``False`` can also be assigned where ``True`` sets debug level</span>
+<span class="sd">    4.</span>
+
+<span class="sd">    By default, debug output goes to stderr. The *log_file* attribute</span>
+<span class="sd">    can be assigned to an alternate file handle for writing debug</span>
+<span class="sd">    output to.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Error</span> <span class="o">=</span> <span class="n">imaplib</span><span class="o">.</span><span class="n">IMAP4</span><span class="o">.</span><span class="n">error</span>
+    <span class="n">AbortError</span> <span class="o">=</span> <span class="n">imaplib</span><span class="o">.</span><span class="n">IMAP4</span><span class="o">.</span><span class="n">abort</span>
+    <span class="n">ReadOnlyError</span> <span class="o">=</span> <span class="n">imaplib</span><span class="o">.</span><span class="n">IMAP4</span><span class="o">.</span><span class="n">readonly</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_uid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ssl</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">ssl_context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">stream</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">port</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;can&#39;t set &#39;port&#39; when &#39;stream&#39; True&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ssl</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;can&#39;t use &#39;ssl&#39; when &#39;stream&#39; is True&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">port</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">port</span> <span class="o">=</span> <span class="n">ssl</span> <span class="ow">and</span> <span class="mi">993</span> <span class="ow">or</span> <span class="mi">143</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssl</span> <span class="o">=</span> <span class="n">ssl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssl_context</span> <span class="o">=</span> <span class="n">ssl_context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream</span> <span class="o">=</span> <span class="n">stream</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_uid</span> <span class="o">=</span> <span class="n">use_uid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder_encode</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalise_times</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_starttls_done</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cached_capabilities</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_IMAP4</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_mesg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log</span>    <span class="c1"># patch in custom debug log method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_idle_tag</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_timeout</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_create_IMAP4</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">imaplib</span><span class="o">.</span><span class="n">IMAP4_stream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tls</span><span class="o">.</span><span class="n">IMAP4_TLS</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_context</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">imap4</span><span class="o">.</span><span class="n">IMAP4WithTimeout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_sock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># In py2, imaplib has sslobj (for SSL connections), and sock for non-SSL.</span>
+        <span class="c1"># In the py3 version it&#39;s just sock.</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="p">,</span> <span class="s1">&#39;sslobj&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">sock</span><span class="p">)</span>
+
+<div class="viewcode-block" id="IMAPClient.starttls"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.starttls">[docs]</a>    <span class="k">def</span> <span class="nf">starttls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ssl_context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Switch to an SSL encrypted connection by sending a STARTTLS command.</span>
+
+<span class="sd">        The *ssl_context* argument is optional and should be a</span>
+<span class="sd">        :py:class:`backports.ssl.SSLContext` object. If no SSL context</span>
+<span class="sd">        is given, a SSL context with reasonable default settings will be used.</span>
+
+<span class="sd">        You can enable checking of the hostname in the certificate presented</span>
+<span class="sd">        by the server  against the hostname which was used for connecting, by</span>
+<span class="sd">        setting the *check_hostname* attribute of the SSL context to ``True``.</span>
+<span class="sd">        The default SSL context has this setting enabled.</span>
+
+<span class="sd">        Raises :py:exc:`Error` if the SSL connection could not be established.</span>
+
+<span class="sd">        Raises :py:exc:`AbortError` if the server does not support STARTTLS</span>
+<span class="sd">        or an SSL connection is already established.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_starttls_done</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">AbortError</span><span class="p">(</span><span class="s1">&#39;TLS session already established&#39;</span><span class="p">)</span>
+
+        <span class="n">typ</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_simple_command</span><span class="p">(</span><span class="s2">&quot;STARTTLS&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_checkok</span><span class="p">(</span><span class="s1">&#39;starttls&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_starttls_done</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="n">tls</span><span class="o">.</span><span class="n">wrap_socket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">sock</span><span class="p">,</span> <span class="n">ssl_context</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">makefile</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="IMAPClient.login"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.login">[docs]</a>    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Login using *username* and *password*, returning the</span>
+<span class="sd">        server response.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span>
+            <span class="s1">&#39;login&#39;</span><span class="p">,</span>
+            <span class="n">to_unicode</span><span class="p">(</span><span class="n">username</span><span class="p">),</span>
+            <span class="n">to_unicode</span><span class="p">(</span><span class="n">password</span><span class="p">),</span>
+            <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.oauth_login"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.oauth_login">[docs]</a>    <span class="k">def</span> <span class="nf">oauth_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">oauth_token</span><span class="p">,</span> <span class="n">oauth_token_secret</span><span class="p">,</span>
+                    <span class="n">consumer_key</span><span class="o">=</span><span class="s1">&#39;anonymous&#39;</span><span class="p">,</span> <span class="n">consumer_secret</span><span class="o">=</span><span class="s1">&#39;anonymous&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Authenticate using the OAUTH method.</span>
+
+<span class="sd">        This only works with IMAP servers that support OAUTH (e.g. Gmail).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">oauth_module</span><span class="p">:</span>
+            <span class="n">token</span> <span class="o">=</span> <span class="n">oauth_module</span><span class="o">.</span><span class="n">Token</span><span class="p">(</span><span class="n">oauth_token</span><span class="p">,</span> <span class="n">oauth_token_secret</span><span class="p">)</span>
+            <span class="n">consumer</span> <span class="o">=</span> <span class="n">oauth_module</span><span class="o">.</span><span class="n">Consumer</span><span class="p">(</span><span class="n">consumer_key</span><span class="p">,</span> <span class="n">consumer_secret</span><span class="p">)</span>
+            <span class="n">xoauth_callable</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">oauth_module</span><span class="o">.</span><span class="n">build_xoauth_string</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;authenticate&#39;</span><span class="p">,</span> <span class="s1">&#39;XOAUTH&#39;</span><span class="p">,</span> <span class="n">xoauth_callable</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s1">&#39;The optional oauth2 package is needed for OAUTH authentication&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.oauth2_login"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.oauth2_login">[docs]</a>    <span class="k">def</span> <span class="nf">oauth2_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">access_token</span><span class="p">,</span> <span class="n">mech</span><span class="o">=</span><span class="s1">&#39;XOAUTH2&#39;</span><span class="p">,</span> <span class="n">vendor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Authenticate using the OAUTH2 method.</span>
+
+<span class="sd">        Gmail and Yahoo both support the &#39;XOAUTH2&#39; mechanism, but Yahoo requires</span>
+<span class="sd">        the &#39;vendor&#39; portion in the payload.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">auth_string</span> <span class="o">=</span> <span class="s1">&#39;user=</span><span class="si">%s</span><span class="se">\1</span><span class="s1">auth=Bearer </span><span class="si">%s</span><span class="se">\1</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">access_token</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vendor</span><span class="p">:</span>
+            <span class="n">auth_string</span> <span class="o">+=</span> <span class="s1">&#39;vendor=</span><span class="si">%s</span><span class="se">\1</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">vendor</span>
+        <span class="n">auth_string</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\1</span><span class="s1">&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;authenticate&#39;</span><span class="p">,</span> <span class="n">mech</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">auth_string</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.logout"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.logout">[docs]</a>    <span class="k">def</span> <span class="nf">logout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Logout, returning the server response.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">typ</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">logout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_resp</span><span class="p">(</span><span class="s1">&#39;BYE&#39;</span><span class="p">,</span> <span class="s1">&#39;logout&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="IMAPClient.shutdown"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Close the connection to the IMAP server (without logging out)</span>
+
+<span class="sd">        In most cases, :py:meth:`.logout` should be used instead of</span>
+<span class="sd">        this. The logout method also shutdown down the connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IMAPClient.id_"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.id_">[docs]</a>    <span class="k">def</span> <span class="nf">id_</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Issue the ID command, returning a dict of server implementation</span>
+<span class="sd">        fields.</span>
+
+<span class="sd">        *parameters* should be specified as a dictionary of field/value pairs,</span>
+<span class="sd">        for example: ``{&quot;name&quot;: &quot;IMAPClient&quot;, &quot;version&quot;: &quot;0.12&quot;}``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_capability</span><span class="p">(</span><span class="s1">&#39;ID&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;server does not support IMAP ID extension&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="s1">&#39;NIL&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;&#39;parameters&#39; should be a dictionary&quot;</span><span class="p">)</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="n">seq_to_parenstr</span><span class="p">(</span>
+                <span class="n">_quote</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span>
+                <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+
+        <span class="n">typ</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_simple_command</span><span class="p">(</span><span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_checkok</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="n">typ</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_untagged_response</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="s1">&#39;ID&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">parse_response</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.capabilities"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.capabilities">[docs]</a>    <span class="k">def</span> <span class="nf">capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the server capability list.</span>
+
+<span class="sd">        If the session is authenticated and the server has returned an</span>
+<span class="sd">        untagged CAPABILITY response at authentication time, this</span>
+<span class="sd">        response will be returned. Otherwise, the CAPABILITY command</span>
+<span class="sd">        will be issued to the server, with the results cached for</span>
+<span class="sd">        future calls.</span>
+
+<span class="sd">        If the session is not yet authenticated, the capabilities</span>
+<span class="sd">        requested at connection time will be returned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Ensure cached capabilities aren&#39;t used post-STARTTLS. As per</span>
+        <span class="c1"># https://tools.ietf.org/html/rfc2595#section-3.1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_starttls_done</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s1">&#39;NONAUTH&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cached_capabilities</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_capabilites</span><span class="p">()</span>
+
+        <span class="c1"># If a capability response has been cached, use that.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_capabilities</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_capabilities</span>
+
+        <span class="c1"># If the server returned an untagged CAPABILITY response</span>
+        <span class="c1"># (during authentication), cache it and return that.</span>
+        <span class="n">untagged</span> <span class="o">=</span> <span class="n">_dict_bytes_normaliser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">untagged_responses</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">untagged</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;CAPABILITY&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cached_capabilities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_capabilites</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_capabilities</span>
+
+        <span class="c1"># If authenticated, but don&#39;t have a capability reponse, ask for one</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">state</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;SELECTED&#39;</span><span class="p">,</span> <span class="s1">&#39;AUTH&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cached_capabilities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_capabilites</span><span class="p">()</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cached_capabilities</span>
+
+        <span class="c1"># Return capabilities that imaplib requested at connection</span>
+        <span class="c1"># time (pre-auth)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">capabilities</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_do_capabilites</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">raw_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;capability&#39;</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_capabilites</span><span class="p">(</span><span class="n">raw_response</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_normalise_capabilites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">raw_response</span><span class="p">):</span>
+        <span class="n">raw_response</span> <span class="o">=</span> <span class="n">to_bytes</span><span class="p">(</span><span class="n">raw_response</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">raw_response</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+
+<div class="viewcode-block" id="IMAPClient.has_capability"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.has_capability">[docs]</a>    <span class="k">def</span> <span class="nf">has_capability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capability</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return ``True`` if the IMAP server has the given *capability*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># FIXME: this will not detect capabilities that are backwards</span>
+        <span class="c1"># compatible with the current level. For instance the SORT</span>
+        <span class="c1"># capabilities may in the future be named SORT2 which is</span>
+        <span class="c1"># still compatible with the current standard and will not</span>
+        <span class="c1"># be detected by this method.</span>
+        <span class="k">return</span> <span class="n">to_bytes</span><span class="p">(</span><span class="n">capability</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">capabilities</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IMAPClient.namespace"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.namespace">[docs]</a>    <span class="k">def</span> <span class="nf">namespace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the namespace for the account as a (personal, other,</span>
+<span class="sd">        shared) tuple.</span>
+
+<span class="sd">        Each element may be None if no namespace of that type exists,</span>
+<span class="sd">        or a sequence of (prefix, separator) pairs.</span>
+
+<span class="sd">        For convenience the tuple elements may be accessed</span>
+<span class="sd">        positionally or using attributes named *personal*, *other* and</span>
+<span class="sd">        *shared*.</span>
+
+<span class="sd">        See :rfc:`2342` for more details.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;namespace&#39;</span><span class="p">)</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">parse_response</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">converted</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">separator</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">folder_encode</span><span class="p">:</span>
+                        <span class="n">prefix</span> <span class="o">=</span> <span class="n">decode_utf7</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+                    <span class="n">converted</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">prefix</span><span class="p">,</span> <span class="n">to_unicode</span><span class="p">(</span><span class="n">separator</span><span class="p">)))</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">converted</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">Namespace</span><span class="p">(</span><span class="o">*</span><span class="n">parts</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.list_folders"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.list_folders">[docs]</a>    <span class="k">def</span> <span class="nf">list_folders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a listing of folders on the server as a list of</span>
+<span class="sd">        ``(flags, delimiter, name)`` tuples.</span>
+
+<span class="sd">        Specifying *directory* will limit returned folders to the</span>
+<span class="sd">        given base directory. The directory and any child directories</span>
+<span class="sd">        will returned.</span>
+
+<span class="sd">        Specifying *pattern* will limit returned folders to those with</span>
+<span class="sd">        matching names. The wildcards are supported in</span>
+<span class="sd">        *pattern*. ``*`` matches zero or more of any character and</span>
+<span class="sd">        ``%`` matches 0 or more characters except the folder</span>
+<span class="sd">        delimiter.</span>
+
+<span class="sd">        Calling list_folders with no arguments will recursively list</span>
+<span class="sd">        all folders available for the logged in user.</span>
+
+<span class="sd">        Folder names are always returned as unicode strings, and</span>
+<span class="sd">        decoded from modified UTF-7, except if folder_decode is not</span>
+<span class="sd">        set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_list</span><span class="p">(</span><span class="s1">&#39;LIST&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.xlist_folders"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.xlist_folders">[docs]</a>    <span class="k">def</span> <span class="nf">xlist_folders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Execute the XLIST command, returning ``(flags, delimiter,</span>
+<span class="sd">        name)`` tuples.</span>
+
+<span class="sd">        This method returns special flags for each folder and a</span>
+<span class="sd">        localized name for certain folders (e.g. the name of the</span>
+<span class="sd">        inbox may be localized and the flags can be used to</span>
+<span class="sd">        determine the actual inbox, even if the name has been</span>
+<span class="sd">        localized.</span>
+
+<span class="sd">        A ``XLIST`` response could look something like::</span>
+
+<span class="sd">            [((b&#39;\\HasNoChildren&#39;, b&#39;\\Inbox&#39;), b&#39;/&#39;, u&#39;Inbox&#39;),</span>
+<span class="sd">             ((b&#39;\\Noselect&#39;, b&#39;\\HasChildren&#39;), b&#39;/&#39;, u&#39;[Gmail]&#39;),</span>
+<span class="sd">             ((b&#39;\\HasNoChildren&#39;, b&#39;\\AllMail&#39;), b&#39;/&#39;, u&#39;[Gmail]/All Mail&#39;),</span>
+<span class="sd">             ((b&#39;\\HasNoChildren&#39;, b&#39;\\Drafts&#39;), b&#39;/&#39;, u&#39;[Gmail]/Drafts&#39;),</span>
+<span class="sd">             ((b&#39;\\HasNoChildren&#39;, b&#39;\\Important&#39;), b&#39;/&#39;, u&#39;[Gmail]/Important&#39;),</span>
+<span class="sd">             ((b&#39;\\HasNoChildren&#39;, b&#39;\\Sent&#39;), b&#39;/&#39;, u&#39;[Gmail]/Sent Mail&#39;),</span>
+<span class="sd">             ((b&#39;\\HasNoChildren&#39;, b&#39;\\Spam&#39;), b&#39;/&#39;, u&#39;[Gmail]/Spam&#39;),</span>
+<span class="sd">             ((b&#39;\\HasNoChildren&#39;, b&#39;\\Starred&#39;), b&#39;/&#39;, u&#39;[Gmail]/Starred&#39;),</span>
+<span class="sd">             ((b&#39;\\HasNoChildren&#39;, b&#39;\\Trash&#39;), b&#39;/&#39;, u&#39;[Gmail]/Trash&#39;)]</span>
+
+<span class="sd">        This is a *deprecated* Gmail-specific IMAP extension (See</span>
+<span class="sd">        https://developers.google.com/gmail/imap_extensions#xlist_is_deprecated</span>
+<span class="sd">        for more information). It is the responsibility of the caller</span>
+<span class="sd">        to either check for ``XLIST`` in the server capabilites, or to</span>
+<span class="sd">        handle the error if the server doesn&#39;t support this extension.</span>
+
+<span class="sd">        The *directory* and *pattern* arguments are as per</span>
+<span class="sd">        list_folders().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_list</span><span class="p">(</span><span class="s1">&#39;XLIST&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.list_sub_folders"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.list_sub_folders">[docs]</a>    <span class="k">def</span> <span class="nf">list_sub_folders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of subscribed folders on the server as</span>
+<span class="sd">        ``(flags, delimiter, name)`` tuples.</span>
+
+<span class="sd">        The default behaviour will list all subscribed folders. The</span>
+<span class="sd">        *directory* and *pattern* arguments are as per list_folders().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_list</span><span class="p">(</span><span class="s1">&#39;LSUB&#39;</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_do_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
+        <span class="n">directory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_folder</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+        <span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_folder</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+        <span class="n">typ</span><span class="p">,</span> <span class="n">dat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_simple_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">directory</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_checkok</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">dat</span><span class="p">)</span>
+        <span class="n">typ</span><span class="p">,</span> <span class="n">dat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_untagged_response</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">dat</span><span class="p">,</span> <span class="n">cmd</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_proc_folder_list</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_proc_folder_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_data</span><span class="p">):</span>
+        <span class="c1"># Filter out empty strings and None&#39;s.</span>
+        <span class="c1"># This also deals with the special case of - no &#39;untagged&#39;</span>
+        <span class="c1"># responses (ie, no folders). This comes back as [None].</span>
+        <span class="n">folder_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">folder_data</span> <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">parse_response</span><span class="p">(</span><span class="n">folder_data</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">parsed</span><span class="p">:</span>
+            <span class="c1"># TODO: could be more efficient</span>
+            <span class="n">flags</span><span class="p">,</span> <span class="n">delim</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">parsed</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+            <span class="n">parsed</span> <span class="o">=</span> <span class="n">parsed</span><span class="p">[</span><span class="mi">3</span><span class="p">:]</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">long</span><span class="p">)):</span>
+                <span class="c1"># Some IMAP implementations return integer folder names</span>
+                <span class="c1"># with quotes. These get parsed to ints so convert them</span>
+                <span class="c1"># back to strings.</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">text_type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">folder_encode</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">decode_utf7</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">flags</span><span class="p">,</span> <span class="n">delim</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+<div class="viewcode-block" id="IMAPClient.select_folder"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.select_folder">[docs]</a>    <span class="k">def</span> <span class="nf">select_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">readonly</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the current folder on the server.</span>
+
+<span class="sd">        Future calls to methods such as search and fetch will act on</span>
+<span class="sd">        the selected folder.</span>
+
+<span class="sd">        Returns a dictionary containing the ``SELECT`` response. At least</span>
+<span class="sd">        the ``b&#39;EXISTS&#39;``, ``b&#39;FLAGS&#39;`` and ``b&#39;RECENT&#39;`` keys are guaranteed</span>
+<span class="sd">        to exist. An example::</span>
+
+<span class="sd">            {b&#39;EXISTS&#39;: 3,</span>
+<span class="sd">             b&#39;FLAGS&#39;: (b&#39;\\Answered&#39;, b&#39;\\Flagged&#39;, b&#39;\\Deleted&#39;, ... ),</span>
+<span class="sd">             b&#39;RECENT&#39;: 0,</span>
+<span class="sd">             b&#39;PERMANENTFLAGS&#39;: (b&#39;\\Answered&#39;, b&#39;\\Flagged&#39;, b&#39;\\Deleted&#39;, ... ),</span>
+<span class="sd">             b&#39;READ-WRITE&#39;: True,</span>
+<span class="sd">             b&#39;UIDNEXT&#39;: 11,</span>
+<span class="sd">             b&#39;UIDVALIDITY&#39;: 1239278212}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_folder</span><span class="p">(</span><span class="n">folder</span><span class="p">),</span> <span class="n">readonly</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_select_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">untagged_responses</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_process_select_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="n">untagged</span> <span class="o">=</span> <span class="n">_dict_bytes_normaliser</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># imaplib doesn&#39;t parse these correctly (broken regex) so replace</span>
+        <span class="c1"># with the raw values out of the OK section</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">untagged</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;OK&#39;</span><span class="p">,</span> <span class="p">[]):</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">br</span><span class="s1">&#39;\[(?P&lt;key&gt;[A-Z-]+)( \((?P&lt;data&gt;.*)\))?\]&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="n">b</span><span class="s1">&#39;PERMANENTFLAGS&#39;</span><span class="p">:</span>
+                    <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">untagged</span><span class="p">):</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="n">b</span><span class="s1">&#39;OK&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;PERMANENTFLAGS&#39;</span><span class="p">):</span>
+                <span class="k">continue</span>  <span class="c1"># already handled above</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="n">b</span><span class="s1">&#39;EXISTS&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;RECENT&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;UIDNEXT&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;UIDVALIDITY&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;HIGHESTMODSEQ&#39;</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="n">b</span><span class="s1">&#39;READ-WRITE&#39;</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="o">==</span> <span class="n">b</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+<div class="viewcode-block" id="IMAPClient.noop"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.noop">[docs]</a>    <span class="k">def</span> <span class="nf">noop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Execute the NOOP command.</span>
+
+<span class="sd">        This command returns immediately, returning any server side</span>
+<span class="sd">        status updates. It can also be used to reset any auto-logout</span>
+<span class="sd">        timers.</span>
+
+<span class="sd">        The return value is the server command response message</span>
+<span class="sd">        followed by a list of status responses. For example::</span>
+
+<span class="sd">            (b&#39;NOOP completed.&#39;,</span>
+<span class="sd">             [(4, b&#39;EXISTS&#39;),</span>
+<span class="sd">              (3, b&#39;FETCH&#39;, (b&#39;FLAGS&#39;, (b&#39;bar&#39;, b&#39;sne&#39;))),</span>
+<span class="sd">              (6, b&#39;FETCH&#39;, (b&#39;FLAGS&#39;, (b&#39;sne&#39;,)))])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_command</span><span class="p">(</span><span class="s1">&#39;NOOP&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_until_tagged_response</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="s1">&#39;NOOP&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.idle"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.idle">[docs]</a>    <span class="k">def</span> <span class="nf">idle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Put the server into IDLE mode.</span>
+
+<span class="sd">        In this mode the server will return unsolicited responses</span>
+<span class="sd">        about changes to the selected mailbox. This method returns</span>
+<span class="sd">        immediately. Use ``idle_check()`` to look for IDLE responses</span>
+<span class="sd">        and ``idle_done()`` to stop IDLE mode.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            Any other commmands issued while the server is in IDLE</span>
+<span class="sd">            mode will fail.</span>
+
+<span class="sd">        See :rfc:`2177` for more information about the IDLE extension.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_idle_tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_command</span><span class="p">(</span><span class="s1">&#39;IDLE&#39;</span><span class="p">)</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_get_response</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">resp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s1">&#39;Unexpected IDLE response: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.idle_check"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.idle_check">[docs]</a>    <span class="k">def</span> <span class="nf">idle_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check for any IDLE responses sent by the server.</span>
+
+<span class="sd">        This method should only be called if the server is in IDLE</span>
+<span class="sd">        mode (see ``idle()``).</span>
+
+<span class="sd">        By default, this method will block until an IDLE response is</span>
+<span class="sd">        received. If *timeout* is provided, the call will block for at</span>
+<span class="sd">        most this many seconds while waiting for an IDLE response.</span>
+
+<span class="sd">        The return value is a list of received IDLE responses. These</span>
+<span class="sd">        will be parsed with values converted to appropriate types. For</span>
+<span class="sd">        example::</span>
+
+<span class="sd">            [(b&#39;OK&#39;, b&#39;Still here&#39;),</span>
+<span class="sd">             (1, b&#39;EXISTS&#39;),</span>
+<span class="sd">             (1, b&#39;FETCH&#39;, (b&#39;FLAGS&#39;, (b&#39;\\NotJunk&#39;,)))]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sock</span>
+
+        <span class="c1"># make the socket non-blocking so the timeout can be</span>
+        <span class="c1"># implemented for this call</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">resps</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">rs</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="n">sock</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">timeout</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">rs</span><span class="p">:</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_get_line</span><span class="p">()</span>
+                    <span class="k">except</span> <span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">):</span>
+                        <span class="k">break</span>
+                    <span class="k">except</span> <span class="n">IMAPClient</span><span class="o">.</span><span class="n">AbortError</span><span class="p">:</span>
+                        <span class="c1"># An imaplib.IMAP4.abort with &quot;EOF&quot; is raised</span>
+                        <span class="c1"># under Python 3</span>
+                        <span class="n">err</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="s1">&#39;EOF&#39;</span> <span class="ow">in</span> <span class="n">err</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                            <span class="k">break</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">raise</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">resps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_parse_untagged_response</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">resps</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_timeout</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="IMAPClient.idle_done"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.idle_done">[docs]</a>    <span class="k">def</span> <span class="nf">idle_done</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Take the server out of IDLE mode.</span>
+
+<span class="sd">        This method should only be called if the server is already in</span>
+<span class="sd">        IDLE mode.</span>
+
+<span class="sd">        The return value is of the form ``(command_text,</span>
+<span class="sd">        idle_responses)`` where *command_text* is the text sent by the</span>
+<span class="sd">        server when the IDLE command finished (eg. ``b&#39;Idle</span>
+<span class="sd">        terminated&#39;``) and *idle_responses* is a list of parsed idle</span>
+<span class="sd">        responses received since the last call to ``idle_check()`` (if</span>
+<span class="sd">        any). These are returned in parsed form as per</span>
+<span class="sd">        ``idle_check()``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;DONE</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_until_tagged_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_idle_tag</span><span class="p">,</span> <span class="s1">&#39;IDLE&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.folder_status"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.folder_status">[docs]</a>    <span class="k">def</span> <span class="nf">folder_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the status of *folder*.</span>
+
+<span class="sd">        *what* should be a sequence of status items to query. This</span>
+<span class="sd">        defaults to ``(&#39;MESSAGES&#39;, &#39;RECENT&#39;, &#39;UIDNEXT&#39;, &#39;UIDVALIDITY&#39;,</span>
+<span class="sd">        &#39;UNSEEN&#39;)``.</span>
+
+<span class="sd">        Returns a dictionary of the status items for the folder with</span>
+<span class="sd">        keys matching *what*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">what</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">what</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;MESSAGES&#39;</span><span class="p">,</span> <span class="s1">&#39;RECENT&#39;</span><span class="p">,</span> <span class="s1">&#39;UIDNEXT&#39;</span><span class="p">,</span> <span class="s1">&#39;UIDVALIDITY&#39;</span><span class="p">,</span> <span class="s1">&#39;UNSEEN&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">what</span> <span class="o">=</span> <span class="n">normalise_text_list</span><span class="p">(</span><span class="n">what</span><span class="p">)</span>
+        <span class="n">what_</span> <span class="o">=</span> <span class="s1">&#39;(</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">what</span><span class="p">))</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_folder</span><span class="p">(</span><span class="n">folder</span><span class="p">),</span> <span class="n">what_</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">status_items</span> <span class="o">=</span> <span class="n">parse_response</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">as_pairs</span><span class="p">(</span><span class="n">status_items</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="IMAPClient.close_folder"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.close_folder">[docs]</a>    <span class="k">def</span> <span class="nf">close_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Close the currently selected folder, returning the server</span>
+<span class="sd">        response string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;close&#39;</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.create_folder"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.create_folder">[docs]</a>    <span class="k">def</span> <span class="nf">create_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create *folder* on the server returning the server response string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;create&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_folder</span><span class="p">(</span><span class="n">folder</span><span class="p">),</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.rename_folder"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.rename_folder">[docs]</a>    <span class="k">def</span> <span class="nf">rename_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_name</span><span class="p">,</span> <span class="n">new_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Change the name of a folder on the server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;rename&#39;</span><span class="p">,</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_folder</span><span class="p">(</span><span class="n">old_name</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_folder</span><span class="p">(</span><span class="n">new_name</span><span class="p">),</span>
+                                       <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.delete_folder"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.delete_folder">[docs]</a>    <span class="k">def</span> <span class="nf">delete_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete *folder* on the server returning the server response string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_folder</span><span class="p">(</span><span class="n">folder</span><span class="p">),</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.folder_exists"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.folder_exists">[docs]</a>    <span class="k">def</span> <span class="nf">folder_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return ``True`` if *folder* exists on the server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_folders</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">folder</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="IMAPClient.subscribe_folder"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.subscribe_folder">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Subscribe to *folder*, returning the server response string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;subscribe&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_folder</span><span class="p">(</span><span class="n">folder</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="IMAPClient.unsubscribe_folder"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.unsubscribe_folder">[docs]</a>    <span class="k">def</span> <span class="nf">unsubscribe_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Unsubscribe to *folder*, returning the server response string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;unsubscribe&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_folder</span><span class="p">(</span><span class="n">folder</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="IMAPClient.search"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="s1">&#39;ALL&#39;</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of messages ids from the currently selected</span>
+<span class="sd">        folder matching *criteria*.</span>
+
+<span class="sd">        *criteria* should be a sequence of one or more criteria</span>
+<span class="sd">        items. Each criteria item may be either unicode or</span>
+<span class="sd">        bytes. Example values::</span>
+
+<span class="sd">            [u&#39;UNSEEN&#39;]</span>
+<span class="sd">            [u&#39;SMALLER&#39;, 500]</span>
+<span class="sd">            [b&#39;NOT&#39;, b&#39;DELETED&#39;]</span>
+<span class="sd">            [u&#39;TEXT&#39;, u&#39;foo bar&#39;, u&#39;FLAGGED&#39;, u&#39;SUBJECT&#39;, u&#39;baz&#39;]</span>
+<span class="sd">            [u&#39;SINCE&#39;, date(2005, 4, 3)]</span>
+
+<span class="sd">        IMAPClient will perform conversion and quoting as</span>
+<span class="sd">        required. The caller shouldn&#39;t do this.</span>
+
+<span class="sd">        It is also possible (but not recommended) to pass the combined</span>
+<span class="sd">        criteria as a single string. In this case IMAPClient won&#39;t</span>
+<span class="sd">        perform quoting, allowing lower-level specification of</span>
+<span class="sd">        criteria. Examples of this style::</span>
+
+<span class="sd">            u&#39;UNSEEN&#39;</span>
+<span class="sd">            u&#39;SMALLER 500&#39;</span>
+<span class="sd">            b&#39;NOT DELETED&#39;</span>
+<span class="sd">            u&#39;TEXT &quot;foo bar&quot; FLAGGED SUBJECT &quot;baz&quot;&#39;</span>
+<span class="sd">            b&#39;SINCE 03-Apr-2005&#39;</span>
+
+<span class="sd">        *charset* specifies the character set of the criteria. It</span>
+<span class="sd">        defaults to US-ASCII as this is the only charset that a server</span>
+<span class="sd">        is required to support by the RFC. UTF-8 is commonly supported</span>
+<span class="sd">        however.</span>
+
+<span class="sd">        Any criteria specified using unicode will be encoded as per</span>
+<span class="sd">        *charset*. Specifying a unicode criteria that can not be</span>
+<span class="sd">        encoded using *charset* will result in an error.</span>
+
+<span class="sd">        Any criteria specified using bytes will be sent as-is but</span>
+<span class="sd">        should use an encoding that matches *charset* (the character</span>
+<span class="sd">        set given is still passed on to the server).</span>
+
+<span class="sd">        See :rfc:`3501#section-6.4.4` for more details.</span>
+
+<span class="sd">        Note that criteria arguments that are 8-bit will be</span>
+<span class="sd">        transparently sent by IMAPClient as IMAP literals to ensure</span>
+<span class="sd">        adherence to IMAP standards.</span>
+
+<span class="sd">        The returned list of message ids will have a special *modseq*</span>
+<span class="sd">        attribute. This is set if the server included a MODSEQ value</span>
+<span class="sd">        to the search response (i.e. if a MODSEQ criteria was included</span>
+<span class="sd">        in the search).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">charset</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.gmail_search"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.gmail_search">[docs]</a>    <span class="k">def</span> <span class="nf">gmail_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Search using Gmail&#39;s X-GM-RAW attribute.</span>
+
+<span class="sd">        *query* should be a valid Gmail search query string. For</span>
+<span class="sd">        example: ``has:attachment in:unread``. The search string may</span>
+<span class="sd">        be unicode and will be encoded using the specified *charset*</span>
+<span class="sd">        (defaulting to UTF-8).</span>
+
+<span class="sd">        This method only works for IMAP servers that support X-GM-RAW,</span>
+<span class="sd">        which is only likely to be Gmail.</span>
+
+<span class="sd">        See https://developers.google.com/gmail/imap_extensions#extension_of_the_search_command_x-gm-raw</span>
+<span class="sd">        for more info.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search</span><span class="p">([</span><span class="n">b</span><span class="s1">&#39;X-GM-RAW&#39;</span><span class="p">,</span> <span class="n">query</span><span class="p">],</span> <span class="n">charset</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">criteria</span><span class="p">,</span> <span class="n">charset</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">charset</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">b</span><span class="s1">&#39;CHARSET&#39;</span><span class="p">,</span> <span class="n">to_bytes</span><span class="p">(</span><span class="n">charset</span><span class="p">)])</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_normalise_search_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">charset</span><span class="p">))</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_command_untagged</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;SEARCH&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">parse_message_list</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<div class="viewcode-block" id="IMAPClient.sort"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sort_criteria</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="s1">&#39;ALL&#39;</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of message ids from the currently selected</span>
+<span class="sd">        folder, sorted by *sort_criteria* and optionally filtered by</span>
+<span class="sd">        *criteria*.</span>
+
+<span class="sd">        *sort_criteria* may be specified as a sequence of strings or a</span>
+<span class="sd">        single string. IMAPClient will take care any required</span>
+<span class="sd">        conversions. Valid *sort_criteria* values::</span>
+
+<span class="sd">            [&#39;ARRIVAL&#39;]</span>
+<span class="sd">            [&#39;SUBJECT&#39;, &#39;ARRIVAL&#39;]</span>
+<span class="sd">            &#39;ARRIVAL&#39;</span>
+<span class="sd">            &#39;REVERSE SIZE&#39;</span>
+
+<span class="sd">        The *criteria* and *charset* arguments are as per</span>
+<span class="sd">        :py:meth:`.search`.</span>
+
+<span class="sd">        See :rfc:`5256` for full details.</span>
+
+<span class="sd">        Note that SORT is an extension to the IMAP4 standard so it may</span>
+<span class="sd">        not be supported by all IMAP servers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_capability</span><span class="p">(</span><span class="s1">&#39;SORT&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The server does not support the SORT extension&#39;</span><span class="p">)</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">_normalise_sort_criteria</span><span class="p">(</span><span class="n">sort_criteria</span><span class="p">),</span>
+            <span class="n">to_bytes</span><span class="p">(</span><span class="n">charset</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_normalise_search_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">charset</span><span class="p">))</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_command_untagged</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;SORT&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">long</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ids</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="IMAPClient.thread"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.thread">[docs]</a>    <span class="k">def</span> <span class="nf">thread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s1">&#39;REFERENCES&#39;</span><span class="p">,</span> <span class="n">criteria</span><span class="o">=</span><span class="s1">&#39;ALL&#39;</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="s1">&#39;UTF-8&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of messages threads from the currently</span>
+<span class="sd">        selected folder which match *criteria*.</span>
+
+<span class="sd">        Each returned thread is a list of messages ids. An example</span>
+<span class="sd">        return value containing three message threads::</span>
+
+<span class="sd">            ((1, 2), (3,), (4, 5, 6))</span>
+
+<span class="sd">        The optional *algorithm* argument specifies the threading</span>
+<span class="sd">        algorithm to use.</span>
+
+<span class="sd">        The *criteria* and *charset* arguments are as per</span>
+<span class="sd">        :py:meth:`.search`.</span>
+
+<span class="sd">        See :rfc:`5256` for more details.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">algorithm</span> <span class="o">=</span> <span class="n">to_bytes</span><span class="p">(</span><span class="n">algorithm</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_capability</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;THREAD=&#39;</span> <span class="o">+</span> <span class="n">algorithm</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;server does not support </span><span class="si">%s</span><span class="s1"> threading algorithm&#39;</span>
+                             <span class="o">%</span> <span class="n">algorithm</span><span class="p">)</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">algorithm</span><span class="p">,</span> <span class="n">to_bytes</span><span class="p">(</span><span class="n">charset</span><span class="p">)]</span> <span class="o">+</span> \
+            <span class="n">_normalise_search_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">charset</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_command_untagged</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;THREAD&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">parse_response</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.get_flags"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.get_flags">[docs]</a>    <span class="k">def</span> <span class="nf">get_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the flags set for each message in *messages* from</span>
+<span class="sd">        the currently selected folder.</span>
+
+<span class="sd">        The return value is a dictionary structured like this: ``{</span>
+<span class="sd">        msgid1: (flag1, flag2, ... ), }``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_fetch_dict</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.add_flags"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.add_flags">[docs]</a>    <span class="k">def</span> <span class="nf">add_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">flags</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add *flags* to *messages* in the currently selected folder.</span>
+
+<span class="sd">        *flags* should be a sequence of strings.</span>
+
+<span class="sd">        Returns the flags set for each modified message (see</span>
+<span class="sd">        *get_flags*).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;+FLAGS&#39;</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.remove_flags"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.remove_flags">[docs]</a>    <span class="k">def</span> <span class="nf">remove_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">flags</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove one or more *flags* from *messages* in the currently</span>
+<span class="sd">        selected folder.</span>
+
+<span class="sd">        *flags* should be a sequence of strings.</span>
+
+<span class="sd">        Returns the flags set for each modified message (see</span>
+<span class="sd">        *get_flags*).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;-FLAGS&#39;</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.set_flags"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.set_flags">[docs]</a>    <span class="k">def</span> <span class="nf">set_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">flags</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the *flags* for *messages* in the currently selected</span>
+<span class="sd">        folder.</span>
+
+<span class="sd">        *flags* should be a sequence of strings.</span>
+
+<span class="sd">        Returns the flags set for each modified message (see</span>
+<span class="sd">        *get_flags*).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;FLAGS&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.get_gmail_labels"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.get_gmail_labels">[docs]</a>    <span class="k">def</span> <span class="nf">get_gmail_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the label set for each message in *messages* in the</span>
+<span class="sd">        currently selected folder.</span>
+
+<span class="sd">        The return value is a dictionary structured like this: ``{</span>
+<span class="sd">        msgid1: (label1, label2, ... ), }``.</span>
+
+<span class="sd">        This only works with IMAP servers that support the X-GM-LABELS</span>
+<span class="sd">        attribute (eg. Gmail).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="p">[</span><span class="n">b</span><span class="s1">&#39;X-GM-LABELS&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_fetch_dict</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;X-GM-LABELS&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.add_gmail_labels"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.add_gmail_labels">[docs]</a>    <span class="k">def</span> <span class="nf">add_gmail_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add *labels* to *messages* in the currently selected folder.</span>
+
+<span class="sd">        *labels* should be a sequence of strings.</span>
+
+<span class="sd">        Returns the label set for each modified message (see</span>
+<span class="sd">        *get_gmail_labels*).</span>
+
+<span class="sd">        This only works with IMAP servers that support the X-GM-LABELS</span>
+<span class="sd">        attribute (eg. Gmail).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;+X-GM-LABELS&#39;</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_labels</span><span class="p">(</span><span class="n">labels</span><span class="p">),</span> <span class="n">b</span><span class="s1">&#39;X-GM-LABELS&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.remove_gmail_labels"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.remove_gmail_labels">[docs]</a>    <span class="k">def</span> <span class="nf">remove_gmail_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove one or more *labels* from *messages* in the</span>
+<span class="sd">        currently selected folder.</span>
+
+<span class="sd">        *labels* should be a sequence of strings.</span>
+
+<span class="sd">        Returns the label set for each modified message (see</span>
+<span class="sd">        *get_gmail_labels*).</span>
+
+<span class="sd">        This only works with IMAP servers that support the X-GM-LABELS</span>
+<span class="sd">        attribute (eg. Gmail).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;-X-GM-LABELS&#39;</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_labels</span><span class="p">(</span><span class="n">labels</span><span class="p">),</span> <span class="n">b</span><span class="s1">&#39;X-GM-LABELS&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.set_gmail_labels"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.set_gmail_labels">[docs]</a>    <span class="k">def</span> <span class="nf">set_gmail_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the *labels* for *messages* in the currently selected</span>
+<span class="sd">        folder.</span>
+
+<span class="sd">        *labels* should be a sequence of strings.</span>
+
+<span class="sd">        Returns the label set for each modified message (see</span>
+<span class="sd">        *get_gmail_labels*).</span>
+
+<span class="sd">        This only works with IMAP servers that support the X-GM-LABELS</span>
+<span class="sd">        attribute (eg. Gmail).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;X-GM-LABELS&#39;</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_labels</span><span class="p">(</span><span class="n">labels</span><span class="p">),</span> <span class="n">b</span><span class="s1">&#39;X-GM-LABELS&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.delete_messages"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.delete_messages">[docs]</a>    <span class="k">def</span> <span class="nf">delete_messages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Delete one or more *messages* from the currently selected</span>
+<span class="sd">        folder.</span>
+
+<span class="sd">        Returns the flags set for each modified message (see</span>
+<span class="sd">        *get_flags*).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_flags</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">DELETED</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.fetch"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.fetch">[docs]</a>    <span class="k">def</span> <span class="nf">fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">modifiers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieve selected *data* associated with one or more</span>
+<span class="sd">        *messages* in the currently selected folder.</span>
+
+<span class="sd">        *data* should be specified as a sequnce of strings, one item</span>
+<span class="sd">        per data selector, for example ``[&#39;INTERNALDATE&#39;,</span>
+<span class="sd">        &#39;RFC822&#39;]``.</span>
+
+<span class="sd">        *modifiers* are required for some extensions to the IMAP</span>
+<span class="sd">        protocol (eg. :rfc:`4551`). These should be a sequnce of strings</span>
+<span class="sd">        if specified, for example ``[&#39;CHANGEDSINCE 123&#39;]``.</span>
+
+<span class="sd">        A dictionary is returned, indexed by message number. Each item</span>
+<span class="sd">        in this dictionary is also a dictionary, with an entry</span>
+<span class="sd">        corresponding to each item in *data*. Returned values will be</span>
+<span class="sd">        appropriately typed. For example, integer values will be returned as</span>
+<span class="sd">        Python integers, timestamps will be returned as datetime</span>
+<span class="sd">        instances and ENVELOPE responses will be returned as</span>
+<span class="sd">        :py:class:`Envelope &lt;imapclient.response_types.Envelope&gt;` instances.</span>
+
+<span class="sd">        String data will generally be returned as bytes (Python 3) or</span>
+<span class="sd">        str (Python 2).</span>
+
+<span class="sd">        In addition to an element for each *data* item, the dict</span>
+<span class="sd">        returned for each message also contains a *SEQ* key containing</span>
+<span class="sd">        the sequence number for the message. This allows for mapping</span>
+<span class="sd">        between the UID and sequence number (when the *use_uid*</span>
+<span class="sd">        property is ``True``).</span>
+
+<span class="sd">        Example::</span>
+
+<span class="sd">            &gt;&gt; c.fetch([3293, 3230], [&#39;INTERNALDATE&#39;, &#39;FLAGS&#39;])</span>
+<span class="sd">            {3230: {b&#39;FLAGS&#39;: (b&#39;\\Seen&#39;,),</span>
+<span class="sd">                    b&#39;INTERNALDATE&#39;: datetime.datetime(2011, 1, 30, 13, 32, 9),</span>
+<span class="sd">                    b&#39;SEQ&#39;: 84},</span>
+<span class="sd">             3293: {b&#39;FLAGS&#39;: (),</span>
+<span class="sd">                    b&#39;INTERNALDATE&#39;: datetime.datetime(2011, 2, 24, 19, 30, 36),</span>
+<span class="sd">                    b&#39;SEQ&#39;: 110}}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">messages</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;FETCH&#39;</span><span class="p">,</span>
+            <span class="n">join_message_ids</span><span class="p">(</span><span class="n">messages</span><span class="p">),</span>
+            <span class="n">seq_to_parenstr_upper</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+            <span class="n">seq_to_parenstr_upper</span><span class="p">(</span><span class="n">modifiers</span><span class="p">)</span> <span class="k">if</span> <span class="n">modifiers</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_uid</span><span class="p">:</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;UID&#39;</span><span class="p">)</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_command</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">typ</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_command_complete</span><span class="p">(</span><span class="s1">&#39;FETCH&#39;</span><span class="p">,</span> <span class="n">tag</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_checkok</span><span class="p">(</span><span class="s1">&#39;fetch&#39;</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="n">typ</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_untagged_response</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="s1">&#39;FETCH&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">parse_fetch_response</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalise_times</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_uid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.append"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">(),</span> <span class="n">msg_time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Append a message to *folder*.</span>
+
+<span class="sd">        *msg* should be a string contains the full message including</span>
+<span class="sd">        headers.</span>
+
+<span class="sd">        *flags* should be a sequence of message flags to set. If not</span>
+<span class="sd">        specified no flags will be set.</span>
+
+<span class="sd">        *msg_time* is an optional datetime instance specifying the</span>
+<span class="sd">        date and time to set on the message. The server will set a</span>
+<span class="sd">        time if it isn&#39;t specified. If *msg_time* contains timezone</span>
+<span class="sd">        information (tzinfo), this will be honoured. Otherwise the</span>
+<span class="sd">        local machine&#39;s time zone sent to the server.</span>
+
+<span class="sd">        Returns the APPEND response as returned by the server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">msg_time</span><span class="p">:</span>
+            <span class="n">time_val</span> <span class="o">=</span> <span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="n">datetime_to_INTERNALDATE</span><span class="p">(</span><span class="n">msg_time</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">PY3</span><span class="p">:</span>
+                <span class="n">time_val</span> <span class="o">=</span> <span class="n">to_unicode</span><span class="p">(</span><span class="n">time_val</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">time_val</span> <span class="o">=</span> <span class="n">to_bytes</span><span class="p">(</span><span class="n">time_val</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">time_val</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;append&#39;</span><span class="p">,</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_folder</span><span class="p">(</span><span class="n">folder</span><span class="p">),</span>
+                                       <span class="n">seq_to_parenstr</span><span class="p">(</span><span class="n">flags</span><span class="p">),</span>
+                                       <span class="n">time_val</span><span class="p">,</span>
+                                       <span class="n">to_bytes</span><span class="p">(</span><span class="n">msg</span><span class="p">),</span>
+                                       <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.copy"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Copy one or more messages from the current folder to</span>
+<span class="sd">        *folder*. Returns the COPY response string returned by the</span>
+<span class="sd">        server.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;copy&#39;</span><span class="p">,</span>
+                                       <span class="n">join_message_ids</span><span class="p">(</span><span class="n">messages</span><span class="p">),</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_folder</span><span class="p">(</span><span class="n">folder</span><span class="p">),</span>
+                                       <span class="n">uid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.expunge"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.expunge">[docs]</a>    <span class="k">def</span> <span class="nf">expunge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove any messages from the currently selected folder that</span>
+<span class="sd">        have the ``\\Deleted`` flag set.</span>
+
+<span class="sd">        The return value is the server response message</span>
+<span class="sd">        followed by a list of expunge responses. For example::</span>
+
+<span class="sd">            (&#39;Expunge completed.&#39;,</span>
+<span class="sd">             [(2, &#39;EXPUNGE&#39;),</span>
+<span class="sd">              (1, &#39;EXPUNGE&#39;),</span>
+<span class="sd">              (0, &#39;RECENT&#39;)])</span>
+
+<span class="sd">        In this case, the responses indicate that the message with</span>
+<span class="sd">        sequence numbers 2 and 1 where deleted, leaving no recent</span>
+<span class="sd">        messages in the folder.</span>
+
+<span class="sd">        See :rfc:`3501#section-6.4.3` section 6.4.3 and</span>
+<span class="sd">        :rfc:`3501#section-7.4.1` section 7.4.1 for more details.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_command</span><span class="p">(</span><span class="s1">&#39;EXPUNGE&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consume_until_tagged_response</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="s1">&#39;EXPUNGE&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IMAPClient.getacl"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.getacl">[docs]</a>    <span class="k">def</span> <span class="nf">getacl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of ``(who, acl)`` tuples describing the</span>
+<span class="sd">        access controls for *folder*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;getacl&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_folder</span><span class="p">(</span><span class="n">folder</span><span class="p">))</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">response_lexer</span><span class="o">.</span><span class="n">TokenSource</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>       <span class="c1"># First item is folder name</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">parts</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">parts</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">),</span> <span class="mi">2</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="IMAPClient.setacl"><a class="viewcode-back" href="../../index.html#imapclient.IMAPClient.setacl">[docs]</a>    <span class="k">def</span> <span class="nf">setacl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">who</span><span class="p">,</span> <span class="n">what</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set an ACL (*what*) for user (*who*) for a folder.</span>
+
+<span class="sd">        Set *what* to an empty string to remove an ACL. Returns the</span>
+<span class="sd">        server response string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;setacl&#39;</span><span class="p">,</span>
+                                       <span class="bp">self</span><span class="o">.</span><span class="n">_normalise_folder</span><span class="p">(</span><span class="n">folder</span><span class="p">),</span>
+                                       <span class="n">who</span><span class="p">,</span> <span class="n">what</span><span class="p">,</span>
+                                       <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_check_resp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check command responses for errors.</span>
+
+<span class="sd">        Raises IMAPClient.Error if the command fails.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">typ</span> <span class="o">!=</span> <span class="n">expected</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">Error</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">to_unicode</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+
+    <span class="k">def</span> <span class="nf">_consume_until_tagged_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="n">tagged_commands</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">tagged_commands</span>
+        <span class="n">resps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_get_response</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">tagged_commands</span><span class="p">[</span><span class="n">tag</span><span class="p">]:</span>
+                <span class="k">break</span>
+            <span class="n">resps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_parse_untagged_response</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+        <span class="n">typ</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">tagged_commands</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_checkok</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">resps</span>
+
+    <span class="k">def</span> <span class="nf">_raw_command_untagged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># TODO: eventually this should replace _command_and_check (call it _command)</span>
+        <span class="n">typ</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_command</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="n">typ</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_untagged_response</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">to_unicode</span><span class="p">(</span><span class="n">command</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_checkok</span><span class="p">(</span><span class="n">to_unicode</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="n">typ</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">unpack</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">_raw_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run the specific command with the arguments given. 8-bit arguments</span>
+<span class="sd">        are sent as literals. The return value is (typ, data).</span>
+
+<span class="sd">        This sidesteps much of imaplib&#39;s command sending</span>
+<span class="sd">        infrastructure because imaplib can&#39;t send more than one</span>
+<span class="sd">        literal.</span>
+
+<span class="sd">        *command* should be specified as bytes.</span>
+<span class="sd">        *args* should be specified as a list of bytes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_ts</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_write</span><span class="p">(</span><span class="s1">&#39;&gt; &#39;</span><span class="p">)</span>
+
+        <span class="n">command</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">args</span><span class="p">]</span>
+
+        <span class="n">tag</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_new_tag</span><span class="p">()</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="p">[</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">tag</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_uid</span><span class="p">:</span>
+            <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;UID&#39;</span><span class="p">)</span>
+        <span class="n">prefix</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+        <span class="n">line</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">is_last</span> <span class="ow">in</span> <span class="n">_iter_with_last</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">args</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;command args must be passed as bytes&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">_is8bit</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="n">out</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_log_write</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_literal</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_last</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">line</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_log_write</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_write</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_command_complete</span><span class="p">(</span><span class="n">to_unicode</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="n">tag</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_send_literal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Send a single literal for the command with *tag*.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39; {&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">))</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="s1">&#39;}</span><span class="se">\r\n</span><span class="s1">&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_write</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+        <span class="c1"># Wait for continuation response</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">_get_response</span><span class="p">():</span>
+            <span class="n">tagged_resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">tagged_commands</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tagged_resp</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">AbortError</span><span class="p">(</span>
+                    <span class="s2">&quot;unexpected response while waiting for continuation response: &quot;</span> <span class="o">+</span>
+                    <span class="nb">repr</span><span class="p">(</span><span class="n">tagged_resp</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_write</span><span class="p">(</span><span class="s2">&quot;   (literal) &gt; &quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_write</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_command_and_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">unpack</span> <span class="o">=</span> <span class="n">pop_with_default</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s1">&#39;unpack&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">uid</span> <span class="o">=</span> <span class="n">pop_with_default</span><span class="p">(</span><span class="n">kwargs</span><span class="p">,</span> <span class="s1">&#39;uid&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="p">,</span> <span class="s2">&quot;unexpected keyword args: &quot;</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">uid</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_uid</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">PY3</span><span class="p">:</span>
+                <span class="n">command</span> <span class="o">=</span> <span class="n">to_unicode</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>  <span class="c1"># imaplib must die</span>
+            <span class="n">typ</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">uid</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">meth</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="p">,</span> <span class="n">to_unicode</span><span class="p">(</span><span class="n">command</span><span class="p">))</span>
+            <span class="n">typ</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">meth</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_checkok</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">unpack</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">_checkok</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_resp</span><span class="p">(</span><span class="s1">&#39;OK&#39;</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">typ</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_store</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">messages</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">fetch_key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Worker function for the various flag manipulation methods.</span>
+
+<span class="sd">        *cmd* is the STORE command to use (eg. &#39;+FLAGS&#39;).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">messages</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_command_and_check</span><span class="p">(</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>
+                                       <span class="n">join_message_ids</span><span class="p">(</span><span class="n">messages</span><span class="p">),</span>
+                                       <span class="n">cmd</span><span class="p">,</span>
+                                       <span class="n">seq_to_parenstr</span><span class="p">(</span><span class="n">flags</span><span class="p">),</span>
+                                       <span class="n">uid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_fetch_dict</span><span class="p">(</span><span class="n">parse_fetch_response</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">fetch_key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_filter_fetch_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fetch_dict</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">msgid</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+                    <span class="k">for</span> <span class="n">msgid</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="n">fetch_dict</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__debug_get</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">debug</span>
+
+    <span class="k">def</span> <span class="nf">__debug_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">level</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="mi">4</span>
+        <span class="k">elif</span> <span class="n">level</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_imap</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">level</span>
+
+    <span class="n">debug</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">__debug_get</span><span class="p">,</span> <span class="n">__debug_set</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_log_ts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%M:%S.</span><span class="si">%f</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_log_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">binary_type</span><span class="p">):</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="s2">&quot;</span><span class="se">\&quot;</span><span class="s2">&#39;&quot;</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">end</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log_file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_ts</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_write</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_normalise_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">folder_name</span><span class="p">,</span> <span class="n">binary_type</span><span class="p">):</span>
+            <span class="n">folder_name</span> <span class="o">=</span> <span class="n">folder_name</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">folder_encode</span><span class="p">:</span>
+            <span class="n">folder_name</span> <span class="o">=</span> <span class="n">encode_utf7</span><span class="p">(</span><span class="n">folder_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_quote</span><span class="p">(</span><span class="n">folder_name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_normalise_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="p">(</span><span class="n">text_type</span><span class="p">,</span> <span class="n">binary_type</span><span class="p">)):</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="p">(</span><span class="n">labels</span><span class="p">,)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">_quote</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span></div>
+
+
+<span class="k">def</span> <span class="nf">_quote</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">text_type</span><span class="p">):</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="s1">&#39;&quot;&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+        <span class="n">q</span> <span class="o">=</span> <span class="n">b</span><span class="s1">&#39;&quot;&#39;</span>
+    <span class="k">return</span> <span class="n">q</span> <span class="o">+</span> <span class="n">arg</span> <span class="o">+</span> <span class="n">q</span>
+
+<span class="k">def</span> <span class="nf">_normalise_search_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">criteria</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;no criteria specified&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">charset</span><span class="p">:</span>
+        <span class="n">charset</span> <span class="o">=</span> <span class="s1">&#39;us-ascii&#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="p">(</span><span class="n">text_type</span><span class="p">,</span> <span class="n">binary_type</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">charset</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">_handle_one_search_criteria</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">charset</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">criteria</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_handle_one_search_criteria</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">charset</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="p">(</span><span class="n">datetime</span><span class="p">,</span> <span class="n">date</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">format_criteria_date</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_maybe_quote</span><span class="p">(</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">charset</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_normalise_sort_criteria</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="n">charset</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">criteria</span><span class="p">,</span> <span class="p">(</span><span class="n">text_type</span><span class="p">,</span> <span class="n">binary_type</span><span class="p">)):</span>
+        <span class="n">criteria</span> <span class="o">=</span> <span class="p">[</span><span class="n">criteria</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">b</span><span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="n">b</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">criteria</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span><span class="s1">&#39;)&#39;</span>
+
+
+<span class="k">def</span> <span class="nf">_maybe_quote</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Apply quoting, but only if it&#39;s required - otherwise return the</span>
+<span class="sd">    input unchanged.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\\\\</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="o">!=</span> <span class="n">arg</span> <span class="ow">or</span> <span class="n">b</span><span class="s1">&#39; &#39;</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">b</span><span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">out</span> <span class="o">+</span> <span class="n">b</span><span class="s1">&#39;&quot;&#39;</span>
+    <span class="k">return</span> <span class="n">arg</span>
+
+
+<span class="c1"># normalise_text_list, seq_to_parentstr etc have to return unicode</span>
+<span class="c1"># because imaplib handles flags and sort criteria assuming these are</span>
+<span class="c1"># passed as unicode</span>
+<span class="k">def</span> <span class="nf">normalise_text_list</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">_normalise_text_list</span><span class="p">(</span><span class="n">items</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">seq_to_parenstr</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_join_and_paren</span><span class="p">(</span><span class="n">_normalise_text_list</span><span class="p">(</span><span class="n">items</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">seq_to_parenstr_upper</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_join_and_paren</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">_normalise_text_list</span><span class="p">(</span><span class="n">items</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_join_and_paren</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s1">&#39;(&#39;</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;)&#39;</span>
+
+
+<span class="k">def</span> <span class="nf">_normalise_text_list</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="p">(</span><span class="n">text_type</span><span class="p">,</span> <span class="n">binary_type</span><span class="p">)):</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="p">(</span><span class="n">items</span><span class="p">,)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">to_unicode</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">items</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">join_message_ids</span><span class="p">(</span><span class="n">messages</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a sequence of messages ids or a single integer message id</span>
+<span class="sd">    into an id byte string for use with IMAP commands</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="p">(</span><span class="n">text_type</span><span class="p">,</span> <span class="n">binary_type</span><span class="p">,</span> <span class="n">integer_types</span><span class="p">)):</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="p">(</span><span class="n">to_bytes</span><span class="p">(</span><span class="n">messages</span><span class="p">),)</span>
+    <span class="k">return</span> <span class="n">b</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_maybe_int_to_bytes</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_maybe_int_to_bytes</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">integer_types</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;us-ascii&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">to_bytes</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_parse_untagged_response</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">text</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39;* &#39;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+    <span class="k">if</span> <span class="n">text</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="n">b</span><span class="s1">&#39;OK &#39;</span><span class="p">,</span> <span class="n">b</span><span class="s1">&#39;NO &#39;</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">b</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">parse_response</span><span class="p">([</span><span class="n">text</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">pop_with_default</span><span class="p">(</span><span class="n">dct</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dct</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dct</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">default</span>
+
+
+<span class="k">def</span> <span class="nf">as_pairs</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">last_item</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">last_item</span><span class="p">,</span> <span class="n">item</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">last_item</span> <span class="o">=</span> <span class="n">item</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+
+<span class="k">def</span> <span class="nf">_is8bit</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">b</span> <span class="o">&gt;</span> <span class="mi">127</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">iterbytes</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_iter_with_last</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+    <span class="n">last_i</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">item</span><span class="p">,</span> <span class="n">i</span> <span class="o">==</span> <span class="n">last_i</span>
+
+
+<span class="n">_not_present</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">_dict_bytes_normaliser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrap a dict with unicode/bytes keys and normalise the keys to</span>
+<span class="sd">    bytes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_d</span> <span class="o">=</span> <span class="n">d</span>
+
+    <span class="k">def</span> <span class="nf">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">iteritems</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">to_bytes</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="n">value</span>
+
+    <span class="c1"># For Python 3 compatibility.</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="n">iteritems</span>
+
+    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ink</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_keys</span><span class="p">(</span><span class="n">ink</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ink</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">_not_present</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_keys</span><span class="p">(</span><span class="n">ink</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="o">==</span> <span class="n">_not_present</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">ink</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">default</span>
+
+    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ink</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">_not_present</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_keys</span><span class="p">(</span><span class="n">ink</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="o">==</span> <span class="n">_not_present</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">ink</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">default</span>
+
+    <span class="k">def</span> <span class="nf">_gen_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">k</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">binary_type</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">to_unicode</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">to_bytes</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="nav-item nav-item-0"><a href="../../index.html">IMAPClient 1.0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Menno Smits.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
+    </div>
+  </body>
+</html>

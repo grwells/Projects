@@ -1,0 +1,288 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>imapclient.tls &#8212; IMAPClient 1.0.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="IMAPClient 1.0.2 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="nav-item nav-item-0"><a href="../../index.html">IMAPClient 1.0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for imapclient.tls</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2015, Menno Smits</span>
+<span class="c1"># Released subject to the New BSD License</span>
+<span class="c1"># Please see http://en.wikipedia.org/wiki/BSD_licenses</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains IMAPClient&#39;s functionality related to Transport</span>
+<span class="sd">Layer Security (TLS a.k.a. SSL).</span>
+
+<span class="sd">It uses ``backports.ssl`` to provide consistent TLS functionality</span>
+<span class="sd">across Python versions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">imaplib</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;create_default_context&#39;</span><span class="p">,)</span>
+
+<span class="c1"># Explicitly check that the required pyOpenSSL is installed. On some</span>
+<span class="c1"># systems (particularly OS X) the system installed version will be</span>
+<span class="c1"># seen before any user installed version. Using a virtualenv is</span>
+<span class="c1"># recommended to work around this.</span>
+<span class="k">def</span> <span class="nf">check_pyopenssl_version</span><span class="p">():</span>
+    <span class="kn">from</span> <span class="nn">distutils.version</span> <span class="k">import</span> <span class="n">LooseVersion</span> <span class="k">as</span> <span class="n">V</span>
+    <span class="kn">from</span> <span class="nn">OpenSSL</span> <span class="k">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">installed_pyopenssl_version</span>
+    <span class="kn">from</span> <span class="nn">.version</span> <span class="k">import</span> <span class="n">min_pyopenssl_version</span>
+
+    <span class="k">if</span> <span class="n">V</span><span class="p">(</span><span class="n">installed_pyopenssl_version</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">V</span><span class="p">(</span><span class="n">min_pyopenssl_version</span><span class="p">):</span>
+       <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+           <span class="s2">&quot;pyOpenSSL version (</span><span class="si">%s</span><span class="s2">) is too old. Need at least </span><span class="si">%s</span><span class="s2">.</span><span class="se">\n</span><span class="s2">&quot;</span>
+           <span class="s2">&quot;See http://imapclient.rtfd.io/#old-pyopenssl-versions&quot;</span>
+           <span class="o">%</span> <span class="p">(</span><span class="n">installed_pyopenssl_version</span><span class="p">,</span> <span class="n">min_pyopenssl_version</span><span class="p">))</span>
+
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;READTHEDOCS&quot;</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;True&quot;</span><span class="p">:</span>
+    <span class="n">check_pyopenssl_version</span><span class="p">()</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">backports</span> <span class="k">import</span> <span class="n">ssl</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;backports.ssl is not installed&quot;</span><span class="p">)</span>
+
+<span class="n">_ossl</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">ossl</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">ssl</span> <span class="k">import</span> <span class="n">enum_certificates</span><span class="p">,</span> <span class="n">Purpose</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">enum_certificates</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">[]</span>
+
+
+<span class="c1"># taken from Python 3.4 ssl module</span>
+<span class="n">_RESTRICTED_SERVER_CIPHERS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+HIGH:&#39;</span>
+    <span class="s1">&#39;DH+HIGH:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+HIGH:RSA+3DES:!aNULL:&#39;</span>
+    <span class="s1">&#39;!eNULL:!MD5:!DSS:!RC4&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># TODO: get this into backports.ssl</span>
+
+
+<div class="viewcode-block" id="create_default_context"><a class="viewcode-back" href="../../index.html#imapclient.tls.create_default_context">[docs]</a><span class="k">def</span> <span class="nf">create_default_context</span><span class="p">(</span><span class="n">cafile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a backports.ssl.SSLContext object configured with sensible</span>
+<span class="sd">    default settings.</span>
+
+<span class="sd">    The optional *cafile* argument is path to a file of concatenated</span>
+<span class="sd">    CA certificates in PEM format.</span>
+
+<span class="sd">    The optional *capath* argument is a path to a directory containing</span>
+<span class="sd">    several CA certificates in PEM format, following an OpenSSL</span>
+<span class="sd">    specific layout.</span>
+
+<span class="sd">    The optional *cadata* argument is either an ASCII string of one or</span>
+<span class="sd">    more PEM-encoded certificates or a bytes-like object of</span>
+<span class="sd">    DER-encoded certificates.</span>
+
+<span class="sd">    If *cafile*, *capath* and *cadata* are all None then</span>
+<span class="sd">    system-installed CA certificates will be loaded (if available).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># adapted from Python 3.4&#39;s ssl.create_default_context</span>
+
+    <span class="n">context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">SSLContext</span><span class="p">(</span><span class="n">ssl</span><span class="o">.</span><span class="n">PROTOCOL_SSLv23</span><span class="p">)</span>
+
+    <span class="c1"># require certificate that matches the host name.</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">verify_mode</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">CERT_REQUIRED</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">check_hostname</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># SSLv2 considered harmful.</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">options</span> <span class="o">|=</span> <span class="n">_ossl</span><span class="o">.</span><span class="n">OP_NO_SSLv2</span>
+
+    <span class="c1"># SSLv3 has problematic security and is only required for really old</span>
+    <span class="c1"># clients such as IE6 on Windows XP</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">options</span> <span class="o">|=</span> <span class="n">_ossl</span><span class="o">.</span><span class="n">OP_NO_SSLv3</span>
+
+    <span class="c1"># disable compression to prevent CRIME attacks (OpenSSL 1.0+)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">options</span> <span class="o">|=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_ossl</span><span class="p">,</span> <span class="s2">&quot;OP_NO_COMPRESSION&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Prefer the server&#39;s ciphers by default so that we get stronger</span>
+    <span class="c1"># encryption</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">options</span> <span class="o">|=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_ossl</span><span class="p">,</span> <span class="s2">&quot;OP_CIPHER_SERVER_PREFERENCE&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Use single use keys in order to improve forward secrecy</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">options</span> <span class="o">|=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_ossl</span><span class="p">,</span> <span class="s2">&quot;OP_SINGLE_DH_USE&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">options</span> <span class="o">|=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_ossl</span><span class="p">,</span> <span class="s2">&quot;OP_SINGLE_ECDH_USE&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># disallow ciphers with known vulnerabilities</span>
+    <span class="c1"># TODO: backports.ssl.SSLContext is missing set_ciphers</span>
+    <span class="n">context</span><span class="o">.</span><span class="n">_ctx</span><span class="o">.</span><span class="n">set_cipher_list</span><span class="p">(</span><span class="n">_RESTRICTED_SERVER_CIPHERS</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cafile</span> <span class="ow">or</span> <span class="n">capath</span> <span class="ow">or</span> <span class="n">cadata</span><span class="p">:</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">load_verify_locations</span><span class="p">(</span><span class="n">cafile</span><span class="p">,</span> <span class="n">capath</span><span class="p">,</span> <span class="n">cadata</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">context</span><span class="o">.</span><span class="n">verify_mode</span> <span class="o">!=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">CERT_NONE</span><span class="p">:</span>
+        <span class="c1"># no explicit cafile, capath or cadata but the verify mode is</span>
+        <span class="c1"># CERT_OPTIONAL or CERT_REQUIRED. Let&#39;s try to load default system</span>
+        <span class="c1"># root CA certificates for the given purpose. This may fail silently.</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+            <span class="n">certs</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">storename</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;CA&quot;</span><span class="p">,</span> <span class="s2">&quot;ROOT&quot;</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">cert</span><span class="p">,</span> <span class="n">encoding</span><span class="p">,</span> <span class="n">trust</span> <span class="ow">in</span> <span class="n">enum_certificates</span><span class="p">(</span><span class="n">storename</span><span class="p">):</span>
+                    <span class="c1"># CA certs are never PKCS#7 encoded</span>
+                    <span class="k">if</span> <span class="n">encoding</span> <span class="o">==</span> <span class="s2">&quot;x509_asn&quot;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">trust</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">or</span> <span class="n">Purpose</span><span class="o">.</span><span class="n">SERVER_AUTH</span> <span class="ow">in</span> <span class="n">trust</span><span class="p">:</span>
+                            <span class="n">certs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">cert</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">certs</span><span class="p">:</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">load_verify_locations</span><span class="p">(</span><span class="n">cadata</span><span class="o">=</span><span class="n">certs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">set_default_verify_paths</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">context</span></div>
+
+
+<span class="k">def</span> <span class="nf">wrap_socket</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">ssl_context</span><span class="p">,</span> <span class="n">hostname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrap a socket and return an SSLSocket.</span>
+
+<span class="sd">    If *ssl_context* is `None`, a default context as returned by</span>
+<span class="sd">    `create_default_context` will be used.</span>
+
+<span class="sd">    If certificate validation fails, the socket will be shut down and</span>
+<span class="sd">    an Error raised.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ssl_context</span><span class="p">:</span>
+        <span class="n">ssl_context</span> <span class="o">=</span> <span class="n">create_default_context</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">killsock</span><span class="p">():</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">newsock</span> <span class="o">=</span> <span class="n">ssl_context</span><span class="o">.</span><span class="n">wrap_socket</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">server_hostname</span><span class="o">=</span><span class="n">hostname</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">ssl</span><span class="o">.</span><span class="n">CertificateError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">killsock</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="n">imaplib</span><span class="o">.</span><span class="n">IMAP4</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;certificate error for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)))</span>
+    <span class="k">except</span> <span class="n">ssl</span><span class="o">.</span><span class="n">SSLError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">killsock</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="n">imaplib</span><span class="o">.</span><span class="n">IMAP4</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;SSL error for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+
+    <span class="k">return</span> <span class="n">_SSLSocketWithShutdown</span><span class="p">(</span><span class="n">newsock</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">IMAP4_TLS</span><span class="p">(</span><span class="n">imaplib</span><span class="o">.</span><span class="n">IMAP4</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;IMAP4 client class for TLS/SSL connections.</span>
+
+<span class="sd">    Adapted from imaplib.IMAP4_SSL.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">ssl_context</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssl_context</span> <span class="o">=</span> <span class="n">ssl_context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="n">imaplib</span><span class="o">.</span><span class="n">IMAP4</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">create_connection</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeout</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="n">wrap_socket</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_context</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">makefile</span><span class="p">(</span><span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">readline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">remaining</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">remaining</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sent</span> <span class="o">==</span> <span class="n">remaining</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">sent</span><span class="p">:]</span>
+            <span class="n">remaining</span> <span class="o">-=</span> <span class="n">sent</span>
+
+    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+<span class="c1"># TODO: get shutdown added in backports.ssl.SSLSocket</span>
+<span class="k">class</span> <span class="nc">_SSLSocketWithShutdown</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sslsock</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sslsock</span> <span class="o">=</span> <span class="n">sslsock</span>
+
+    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">how</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sslsock</span><span class="o">.</span><span class="n">_conn</span><span class="o">.</span><span class="n">sock_shutdown</span><span class="p">(</span><span class="n">how</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sslsock</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="nav-item nav-item-0"><a href="../../index.html">IMAPClient 1.0.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Menno Smits.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.6.
+    </div>
+  </body>
+</html>

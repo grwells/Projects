@@ -1,0 +1,49 @@
+SUBSYTEM BREAKDOWN:
+	
+	CONTROLLER:
+		Raspberry Pi: $5-36
+			Less expensive, may be less power efficient
+
+		Arduino: $30-50
+			Can it provide all the functions required? May have desirable size to price and function ratio
+	
+
+	SENSOR:
+		Ultrasonic: $3-25
+			$3 version not durable, can buy pvc protected version(submersible) for $25
+
+		Submersible Pressure/Transducer: $30-500
+			Hard to determine quality, may become corroded or clogged by dirty water, costs a lot. However it is well
+			packaged, may have longer life span.
+
+	RELAY:
+		FONA Board: $36-60
+			Requires antenna, sim card. Cheapest carrier is AT&T with Ting phone plan. $36 version does not come with antenna or battery pack.
+			
+
+	BODY(PROTECTION LAYER):
+		3D Printed Case: $5
+			Custom made...
+		
+		Pelican Case(modified):	$15
+			Off the shelf with a price to match...
+
+	POWER SUPPLY:
+		Lithium Ion Rechargeable:
+			Unlimited theoretical number of cycles, requires charger, may not stand up to many charging cycles or harsh environment
+	
+		Battery Pack:
+			Easy to switch in and out, customizable
+
+		Solar Power:
+			Dependent on weather, requires independent battery
+
+	USER INTERFACE?:
+		LED Display:
+			May augment debugging, allow user to get on site readings, energy expensive
+		
+		Button Interface:
+			May allow simple user configuration, may help with either of the other proposed systems
+
+		Voice Interface:
+			Friendly? Cool? Otherwise not very functional

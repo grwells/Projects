@@ -10,25 +10,25 @@
  * @param pinNumber The pin that the sensor is connected to
  * @return bool if wiringPi setup function is successful return true
  */
-bool Tolako5V::setup(int pinNumber){
-    pinNum = pinNumber;
-    return wiringPiSetup();
+void Tolako5V::setup(void){
+    wiringPiSetup(); //prints error message if fail
 };
 
 /*
  * Read the current on the sensor
  * @return current The current flowing through the wires
  */
-float Tolako5V::readCurrent(void){
-    current = analogRead(pinNum); // Read the current flowing through the sensor
-    current;
+float Tolako5V::readCurrent(int pinNumber){
+	pinMode(pinNumber, INPUT);
+    current = analogRead(pinNumber); // Read the current flowing through the sensor
+    return current;
 };
 
 /*
  * Print the current as a string
  * @return current The current flowing through the wires
  */
-string Tolako5V::print(void){
+std::string Tolako5V::print(void){
     return std::to_string(current);
 }
 

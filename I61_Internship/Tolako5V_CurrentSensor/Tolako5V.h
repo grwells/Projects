@@ -1,34 +1,19 @@
-/*
- * Tolako 5V Hall-Effect Current Sensor Source Code
- * @author Garrett Wells
- * @version 1.0
- */
-#include "Tolako5V.h"
+#ifndef TOLAKO5V
+#define TOLAKO5V
 
-/*
- * Setup wiringPi and get the pin number from the user
- * @param pinNumber The pin that the sensor is connected to
- * @return bool if wiringPi setup function is successful return true
- */
-bool Tolako5V::setup(int pinNumber){
-    pinNum = pinNumber;
-    return wiringPiSetup();
+#include <string>
+#include <wiringPi.h>
+
+class Tolako5V
+{
+public:
+	void setup(void);					//Calls wiringPi setup
+	float readCurrent(int pinNumber);	//Performs an analog read on the sensor wire
+	std::string print(void);			//Prints the current as a string
+
+private:
+	int pinNum;							//The number of the pin the sensor is connected to
+	float current;						//The current measurement data from the last read
 };
 
-/*
- * Read the current on the sensor
- * @return current The current flowing through the wires
- */
-float Tolako5V::readCurrent(void){
-    current = analogRead(pinNum); // Read the current flowing through the sensor
-    current;
-};
-
-/*
- * Print the current as a string
- * @return current The current flowing through the wires
- */
-string Tolako5V::print(void){
-    return std::to_string(current);
-}
-
+#endif TOLAKO5V

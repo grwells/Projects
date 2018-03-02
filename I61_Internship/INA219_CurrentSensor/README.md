@@ -1,7 +1,7 @@
-#INA219 Current Sensor
+# INA219 Current Sensor
 This sensor uses a resistor to measure the current and voltage values across a wire. It uses the I2C interface protocol and is fully configurable for varying levels of robustness and accuracy.
 
-##Datasheets:
+## Datasheets:
 * [Texas Instruments](https://cdn-shop.adafruit.com/datasheets/ina219.pdf)
 * [Adafruit](https://cdn-learn.adafruit.com/downloads/pdf/adafruit-ina219-current-sensor-breakout.pdf)
 

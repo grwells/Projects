@@ -1,8 +1,6 @@
-#include <wiringPiI2C.h>
-#include <iostream>
 #include <errno.h>
-#include <string.h>
 #include <stdint.h>
+#include "INA219.h"
 
 // INA219 VARIABLES ------------------------------------------------------------
 #define INA219_ADDR                        (0x40)
@@ -13,7 +11,7 @@
 #define INA219_CURRENT                     (0x04)
 #define INA219_CALIBRATION                 (0x05)
 //------------------------------------------------------------------------------
-////////////////////////////////////////////////////////////////////////////////
+
 // INA219 CONFIG ---------------------------------------------------------------
 #define INA219_BVOLTAGERANGE_32V           (0x2000)
 #define INA219_GAIN_8_320MV                (0x1800)
@@ -22,23 +20,14 @@
 #define INA219_MODE_SANDBVOLT_CONTINUOUS   (0x0007)
 // -----------------------------------------------------------------------------
 
-class INA219
-{ 
-  private:
-    int fd;
-    float current_mA;
-    float voltage_mV;
-  public:
-    INA219(void);
-    bool setup(void); // initializes the settings for I2C
-    bool setup(int addr); // initializes the settings for I2C using user address
-    float getCurrent(void);
-    float getVoltage(void);
-};
-
 INA219::INA219(void)
 {
+  //Call the default setup method
   setupSuccess = setup();
+  if(setupSuccess != true)
+  {
+	std::cout << "[ERROR]: setup failed, try changing address" << std::endl;
+  }
 }
 
 // Call this setup if device is assumed to be connected to INA219_ADDR
@@ -86,36 +75,11 @@ float INA219::getVoltage(void)
   return voltRaw * 0.01;
 }
 
-// If main is called, the sensor can be run without master, will do 25 readings and close
-int main(void)
+/*
+    Print the current and voltage information and return a string.
+*/
+std::string INA219::print(void)
 {
-    INA219 bat;
-    
-    if(bat.setupSuccess)
-    {
-      std::cout << "[OK] setup successful" << std::endl;
-    }
-    else
-    {
-      std::cout << "[ERROR]: " <<  strerror(errno) << std::endl;
-    }
-
-    bool noError = true;
-    int i = 0;
-
-    while (noError && i < 25)
-    {
-      noError = (bat.getCurrent() >= 0) && (bat.getVoltage() >= 0);
-      std::cout << "Current: " << (float)bat.currentRaw << std::endl;
-      std::cout << "Voltage: " << bat.getVoltage() << std::endl;
-      i += 1;
-    }
-    
-    if(!noError)
-    { 
-        std::cout << "[ERROR]: " << errno  << " " << strerror(errno) << std::endl;
-    }
-
-    std::cout << "Exiting..." << std::endl;
+  std::string info = "Current: " + std::to_string(getCurrent()) + ", Voltage: " + std::to_string(getVoltage()) + "\n";
+  return info;
 }
-

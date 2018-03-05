@@ -5,14 +5,11 @@
  */
 #include "Tolako5V.h"
 
-/*
- * Setup wiringPi and get the pin number from the user
- * @param pinNumber The pin that the sensor is connected to
- * @return bool if wiringPi setup function is successful return true
- */
-void Tolako5V::setup(void){
-    wiringPiSetup(); //prints error message if fail
-};
+Tolako5V::Tolako5V(int pinNumber){
+	wiringPiSetup(); //prints error message if fail
+	pinNum = pinNumber;
+	pinMode(pinNum, INPUT);
+}
 
 /*
  * Read the current on the sensor
@@ -22,7 +19,12 @@ float Tolako5V::readCurrent(int pinNumber){
 	pinMode(pinNumber, INPUT);
     current = analogRead(pinNumber); // Read the current flowing through the sensor
     return current;
-};
+}
+
+float Tolako5V::readCurrent(void) {
+	current = analogRead(pinNum);
+	return current;
+}
 
 /*
  * Print the current as a string

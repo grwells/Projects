@@ -1,2 +1,2 @@
 # Internship I61
-	This repository contains all personal code for the autonomous water management and green house system.
+This repository contains all personal code for the autonomous water management and green house system. Members of the I61 internship team are welcome to use this code as a resource. Each subdirectory contains the source code for a sensor as well as a README.md file that contains a basic synopsis of the sensor's purpose, use, and relevant information from retailers and manufacturers.

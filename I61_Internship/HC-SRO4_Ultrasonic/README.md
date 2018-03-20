@@ -1,10 +1,9 @@
-# HC-SRO4 Ultrasonic Senosr
-A
-The HC-SRO4 ultrasonic sensor can be used to measure distance. It is a four pin device with a voltage in pin, trigger pin, echo pin, and ground. Unfortunately it requires a special communication protocol to read data from the sensor. 
+# HC-SRO4 Ultrasonic Sensor
+The HC-SRO4 ultrasonic sensor can be used to measure distance. It is a four pin device with a voltage in pin, trigger pin, echo pin, and ground. Unfortunately it requires a special communication protocol to read data from the sensor.
 
 ## Datasheets:
-[ModMyPi.com](https://www.modmypi.com/blog/hc-sr04-ultrasonic-range-sensor-on-the-raspberry-pi)
-[Adafruit Industries](https://learn.adafruit.com/dht?view=all#using-a-dhtxx-sensor)
+* [ModMyPi.com](https://www.modmypi.com/blog/hc-sr04-ultrasonic-range-sensor-on-the-raspberry-pi)
+* [Adafruit Industries](https://learn.adafruit.com/dht?view=all#using-a-dhtxx-sensor)
 
 ## Usage:
 1. Set trigger pin to output, and drive it LOW for 2 seconds to allow the sensor to settle. If this is not done the data may be inaccurate.

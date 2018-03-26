@@ -24,5 +24,12 @@ public:
 
 private:
 	bool tankIsFull = false;
+	bool tankIsEmpty = true;
+
+	HCSR04 primary;
+	HCSR04 secondary;
+	HCSR04 failsafe;
+
+	DS18B20 tempSense;
 };
 #endif

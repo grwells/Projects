@@ -1,0 +1,33 @@
+G++:
+	compile commands: 
+		sudo g++ -std=c++0x file1.cpp file2.cpp -o outputfile
+
+GPIO:
+
+Raspberry Pi 2 B+:
+
+	Pin Map (WiringPi, Physical Number, BCM Pin#, and Software):
+        ________________________________________________________________________________
+	BCM# | Wiring Pi |    Software    |  HdWr |   Software      | Wiring Pi | BCM# |
+        -------------------------------------------------------------------------------	   
+             |     NA    |  3.3 VDC Power | 1 | 2 | 5.0 VDC Power   |     NA    |  NA  |
+	BCM2 |      8    |  SDA(I2C)      | 3 | 4 | 5.0 VDC Power   |     NA    |  NA  |
+	BCM3 |      9    |  SCL(I2C)      | 5 | 6 | 0V (Ground)     |     NA    |  NA  |
+	BCM4 |      7    |  GPIO 7(PWM)   | 7 | 8 | TxD(UART3)      |     15    | BCM14|
+	     |           |  0V (Ground)   | 9 | 10| RxD(UART3)      |     16    | BCM15|
+	BCM17|      0    |  RxD(UART2)    | 11| 12| GPIO 1          |      1    | BCM18|      
+	BCM27|      2    |  TxD(UART2)    | 13| 14| 0V (Ground)     |     NA    |  NA  |
+	BCM22|      3    |  CTS(UART2)    | 15| 16| CAN TX          |      4    | BCM23|
+	     |	         |  3.3 VDC Power | 17| 18| CAN RX          |      5    | BCM24|   
+	BCM10|     12    |  MOSI (SPIO)   | 19| 20| 0V (Ground)     |     NA    |  NA  |
+	BCM9 |     13    |  MISO (SPIO)   | 21| 22| RTS(UART2)      |      6    | BCM25|
+	BCM11|     14    |  SCLK (SPIO)   | 23| 24| CE0 (SPIO)      |     10    | BCM8 |
+	  NA |     NA    |  0V (Ground)   | 25| 26| CE1 (SPIO)      |     11    | BCM7 |
+	BCM0 |     30    |  ID_SD         | 27| 28| ID_SC           |     31    | BCM1 |
+	BCM5 |     21    |  GPIO          | 29| 30| 0V (Ground)     |     NA    |  NA  |
+        BCM6 |     22    |  GPIO          | 31| 32| PWM0            |     26    | BCM12|
+	BCM13|     23    |  PWM1          | 33| 34| 0V (Ground)     |     NA    |  NA  |
+	BCM19|     24    |  MISO (SPI1)   | 35| 36| GPIO            |     27    | BCM16|
+	BCM26|     25    |  GPIO          | 37| 38| MOSI (SPI1)     |     28    | BCM20|     
+          NA |     NA    |  0V (Ground)   | 39| 40| SCLK (SPI1)     |     NA    |  NA  |
+        ________________________________________________________________________________

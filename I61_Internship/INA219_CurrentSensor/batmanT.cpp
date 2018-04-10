@@ -2,16 +2,21 @@
 	This class will monitor the drainage of a battery based on current output and voltage. It will also monitor the charging of a battery.
 */
 //Environment----------------------
-#include <string.h>
+#include <iostream>
+#include <string>
 #include <fstream>
 #include <chrono>
 #include <thread>
 //---------------------------------
 
 //Open Source----------------------
-#include "Tolako5V.h"
+#include "../Tolako5V_CurrentSensor/Tolako5V.h"
 #include "INA219.h"
 //---------------------------------
+
+#define CSV "journal_file.csv"
+#define CSV_HEADER "Current(mA), Voltage(mV), Total Charge(mA), Time(delta seconds)"
+#define TOLAKO_PIN 5 
 
 using namespace std::chrono;
 
@@ -19,13 +24,14 @@ class BatmanT
 {
 private:
 	//File Variables
-	std::string filename = "journal_file.csv"; //csv data collection file 
+	std::string filename;
 	std::ofstream file_in;
 	std::string data;                          //data to be written to the file
 
-			//Data Variables
+	//Data Variables
 	float charge;   //total charge in the battery
-	float currentI; //current that is flowing into the battery 
+	float currentIn; //current that is flowing into the battery
+	float currentOut;
 	float voltage;  //the voltage supplied to the battery
 
 	//Time Variables
@@ -37,6 +43,7 @@ private:
 	//Program Variables and Sensors
 	bool keepCollecting;
 	INA219 ina219;
+	Tolako5V tolako;     //Initialize the Tolako sensor on the default pin
 
 public:
 	BatmanT();
@@ -48,6 +55,8 @@ public:
 
 BatmanT::BatmanT()
 {
+	filename = CSV;	
+
 	// OPEN FILE...
 	file_in.open(filename.c_str());
 
@@ -56,14 +65,15 @@ BatmanT::BatmanT()
 	else { std::cout << "[ERROR]: file " + filename + " closed" << std::endl; }
 
 	//write csv header
-	std::string header = "Current(mA), Voltage(mV), Total Charge(mA), Time(delta)";
+	std::string header = CSV_HEADER; 
 	file_in << header;
 	std::cout << "printed header, check file now" << std::endl;
 
 	// START SENSORS...
 	std::cout << "Calling sensor setup" << std::endl;
-	// start Tolako5V
-	Tolako5V tolako;
+	//start Tolako5V
+	std::cout << "[info]: setting Tolako5V sensor to read from pin TOLAKO_PIN" << std::endl;
+	tolako.setPin(TOLAKO_PIN);
 	// start INA219
 	if (ina219.setup()) { keepCollecting = true; }
 	else { std::cout << "[ERROR]: sensor setup failed" << std::endl; }
@@ -80,7 +90,7 @@ BatmanT::BatmanT()
 		//collect data...
 		logData(data);
 
-		//Program stop...take out some time soon	
+		//Program stop...take out some time soon
 		keepCollecting = false;
 
 	}
@@ -94,8 +104,8 @@ void BatmanT::logData(std::string data)
 	//WRITE DATA TO FILE FROM STRING
 	if (file_in.is_open())
 	{
-		//get data 
-		currentI = getCurrent();
+		//get data
+		currentIn = getCurrent();
 		voltage = getVoltage();
 
 		//calculate elapsed time
@@ -107,7 +117,7 @@ void BatmanT::logData(std::string data)
 		charge = calcCurrentCharge();
 
 		std::cout << "[WARNING]: writing data" << std::endl;
-		file_in << "\n" + std::to_string(currentI) + "," + std::to_string(voltage) + "," + std::to_string(charge) + "," + std::to_string(deltaT);
+		file_in << "\n" + std::to_string(currentIn) + "," + std::to_string(voltage) + "," + std::to_string(charge) + "," + std::to_string(deltaT);
 		std::cout << "[SUCCESS]: data written to file" << std::endl;
 
 	}
@@ -126,7 +136,7 @@ void BatmanT::logData(std::string data)
 float BatmanT::getCurrent()
 {
 	//READ CURRENT FROM SENSOR
-	return ina219.getCurrent();
+	return ina219.getCurrent() + tolako.readCurrent();
 }
 
 float BatmanT::getVoltage()
@@ -138,7 +148,7 @@ float BatmanT::getVoltage()
 float BatmanT::calcCurrentCharge()
 {
 	//CALCULATE THE AMOUNT THE CHARGE OF THE BATTERY HAS CHANGED OVER DELTAT
-	return charge + (deltaT * currentI);
+	return charge + (deltaT * currentIn);
 }
 
 int main()
@@ -148,4 +158,3 @@ int main()
 
 	return 1;
 }
-

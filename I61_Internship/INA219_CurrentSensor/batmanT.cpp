@@ -1,6 +1,9 @@
 /*
-	This class will monitor the drainage of a battery based on current output and voltage. It will also monitor the charging of a battery.
+ * This class will monitor the drainage of a battery based on current output and voltage. It will also monitor the charging of a battery.
+ * @author: Garrett Wells
+ * @version: 2.0
 */
+
 //Environment----------------------
 #include <iostream>
 #include <string>
@@ -151,7 +154,11 @@ float BatmanT::calcCurrentCharge()
 	return charge + (deltaT * currentIn);
 }
 
-int main()
+/*
+ * Run battery manager.
+ * @param bool debugMode If true, print debug messages
+*/
+int main(bool debugMode, bool verbose, bool limitLines, int numLines)
 {
 	// CALL THE BATMAN!!!
 	BatmanT bat;

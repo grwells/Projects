@@ -18,8 +18,17 @@
 //---------------------------------
 
 #define CSV "journal_file.csv"
-#define CSV_HEADER "Current(mA), Voltage(mV), Total Charge(mA), Time(delta seconds)"
-#define TOLAKO_PIN 5 
+#define CSV_HEADER "Current(mA), Voltage(mV), Current In(mA), Current Out(mA), Total Charge(mA), Time Delta(seconds)"
+#define TOLAKO_PIN 5
+
+//Debug Mode Messages--------------
+#define FILE_OPEN "[info]: file open..."
+#define FILE_CLOSED "[info]: file closed..."
+
+#define ERROR "[\e[1;31mERROR\e[0;30m]:"
+#define SUCCESS "[\e[1;32mSUCCESS\e[0;30m]:"
+#define WARNING "[\e[1;33mwarning\e[0;30m]:"
+#define INFO "[\e[1;33minfo\e[0;30m]:"
 
 using namespace std::chrono;
 
@@ -44,6 +53,10 @@ private:
 	high_resolution_clock::time_point endPoint;
 
 	//Program Variables and Sensors
+	bool debug = false;
+	bool verbose = false;
+	bool limitLines = false;
+	int numLines = 1;
 	bool keepCollecting;
 	INA219 ina219;
 	Tolako5V tolako;     //Initialize the Tolako sensor on the default pin
@@ -64,40 +77,83 @@ BatmanT::BatmanT()
 	file_in.open(filename.c_str());
 
 	//make sure file is open
-	if (file_in.is_open()) { std::cout << "[SUCCESS]: file " + filename + " open" << std::endl; }
-	else { std::cout << "[ERROR]: file " + filename + " closed" << std::endl; }
+	if(debug){
+		if (file_in.is_open()) { std::cout << SUCCESS << " " + filename + " is open" << std::endl; }
+		else { 
+			std::cout << ERROR << " " + filename + " is still closed" << std::endl; 
+			std::cout << "Proceed?(y/n): ";
+			std::string proceed;
+			std::cin >> proceed;
+			std::transform(proceed.begin(), proceed.end(), proceed.begin(), ::tolower);
+			
+			if(proceed.equals("y") || proceed.equals("yes")){
+				std::cout << INFO << " Continuing without saving..." << std::endl;
+			}else {return;}
+		}
+	}
 
-	//write csv header
+	//WRITE CSV HEADER...
 	std::string header = CSV_HEADER; 
 	file_in << header;
-	std::cout << "printed header, check file now" << std::endl;
+	
+	//print debug
+	if(debug && verbose){
+		std::cout << INFO << " printed header, check file now" << std::endl;
+		std::cout << "Header: " + CSV << std::endl;
+	}else if(debug){
+		std::cout << INFO << " printed header..." << std::endl;
+	}
+
 
 	// START SENSORS...
-	std::cout << "Calling sensor setup" << std::endl;
+	if(verbose){
+		std::cout << INFO << " calling sensor setup..." << std::endl;
+		std::cout << INFO << " setting Tolako5V sensor to read from pin" << std::endl;
+	}
+
 	//start Tolako5V
-	std::cout << "[info]: setting Tolako5V sensor to read from pin TOLAKO_PIN" << std::endl;
 	tolako.setPin(TOLAKO_PIN);
 	// start INA219
 	if (ina219.setup()) { keepCollecting = true; }
-	else { std::cout << "[ERROR]: sensor setup failed" << std::endl; }
-
+	else if(debug){ std::cout << ERROR << " INA219 sensor setup failed, check I2C address" << std::endl; }
+	
+	int collectedLines = 0;
 	//LOG DATA...
 	while (keepCollecting)
 	{
-		//record start time...
+		//Record start time...
 		startingPoint = high_resolution_clock::now();
+		if(verbose || debug){std::cout << INFO << " starting point for time measurement: " << /*TODO*/ << std::endl;
 
-		//wait 10sec...
+		//Wait 10sec...
 		std::this_thread::sleep_for(seconds(5));
+		if(verbose || debug){std::cout << INFO << " slept for 5 seconds... resuming data collection" << std::endl;i
 
-		//collect data...
+		//Save data...
+		if(verbose || debug){std::cout << INFO << " saving data..." << std::endl;
 		logData(data);
 
-		//Program stop...take out some time soon
-		keepCollecting = false;
+		collectedLines++;
+
+		//Program stop... 
+		if(collectedLines == numLines){
+			keepCollecting = false;
+
+			//print debug
+			if(debug || verbose){
+				std::cout << INFO << " stopping data collection" << std::endl;
+				std::cout << "Line # Limit: " + numLines << std:endl;
+				std::cout << "# Collected Lines: " + collectedLines << std::endl;
+			}else if(debug){
+				std::cout << INFO << " stopping data collection" << std::endl;
+			}
+		}
 
 	}
-	std::cout << "[WARNING]: closing file" << std::endl;
+
+	if(debug){
+		std::cout << WARNING << " closing file " << CSV << std::endl;
+	}
 	file_in.close();
 
 }
@@ -109,29 +165,55 @@ void BatmanT::logData(std::string data)
 	{
 		//get data
 		currentIn = getCurrent();
+		if(verbose){std::cout << INFO << " Current In: " << currentIn << std::endl;}
+		else if(debug){std::cout << INFO << " measured current input..." << std::endl;}
+
 		voltage = getVoltage();
+		if(verbose){std::cout << INFO << " Voltage: " << voltage << std::endl;}
+		else if(debug){std::cout << INFO << " measured voltage..." << std::endl;}
+
 
 		//calculate elapsed time
 		duration<double> timeLapse = duration_cast<duration<double>>(high_resolution_clock::now() - startingPoint); //record first time point
 		deltaT = timeLapse.count();
 		timeT += deltaT;
+		if(verbose){
+			std::cout << INFO << " recorded time elapsed" << "\nTime Elapsed: " + deltaT << "\nTotal Time: " + timeT << std::endl;
+		}else if(debug){std::cout << INFO << " recorded time elapsed..." << std::endl;}
 
 		//calculate accumulated charge
 		charge = calcCurrentCharge();
+		std::string data = "\n" + std::to_string(currentIn) + "," + std::to_string(voltage) + "," + std::to_string(charge) + "," + std::to_string(deltaT);
+		file_in << data;
 
-		std::cout << "[WARNING]: writing data" << std::endl;
-		file_in << "\n" + std::to_string(currentIn) + "," + std::to_string(voltage) + "," + std::to_string(charge) + "," + std::to_string(deltaT);
-		std::cout << "[SUCCESS]: data written to file" << std::endl;
 
-	}
-	else
-	{
+		if(verbose){
+			std::cout << INFO << " Current Net Charge: " + charge << std::endl;
+			std::cout << WARNING << " Writing data: " + data << std::endl;
+			std::cout << SUCCESS << " data written to file..." << std::endl;
+
+		}else if(debug){
+			std::cout << INFO << " Calculated net charge..." << std::endl;
+			std::cout << WARNING << " writing data..." << std::endl;
+			std::cout << SUCCESS << " data written to file" << std::endl;
+
+		}
+
+		
+	}else{
 		//print error message
-		std::cout << "[ERROR] file " + filename + " not open" << std::endl;
+		if(verbose){std::cout << ERROR << " file " + filename + " not open" << std::endl;}
+		else if(debug){std::cout << ERROR << "file not open..." << std::endl;}
+
 		file_in.open(filename.c_str(), std::ofstream::out | std::ofstream::app);
 
 		//try to open file again
-		std::cout << "trying to open file again..." << std::endl;
+		if(verbose){
+			std::cout << INFO << " trying to open file again..." << std::endl;
+			std::cout << INFO << " trying again..." std::endl;
+
+		else if(debug){std::cout << INFO << " re-opening file..." << std::endl;}
+
 		logData(data); //goes to loop if file can not be opened
 	}
 }
@@ -156,12 +238,20 @@ float BatmanT::calcCurrentCharge()
 
 /*
  * Run battery manager.
- * @param bool debugMode If true, print debug messages
+ * @param bool debugMode - If true, print debug messages
+ * @param bool verboseMode - If true, print debug messages with additional detail
+ * @param bool lineLimit - If true limit the number of lines of data collected by the battery manager
+ * @return 1 
 */
-int main(bool debugMode, bool verbose, bool limitLines, int numLines)
+int main(bool debugMode = false, bool verboseMode = false, bool lineLimit = false, int num = 1)
 {
 	// CALL THE BATMAN!!!
-	BatmanT bat;
+	debug = debugMode;
+	verbose = verboseMode;
+	limitLines = lineLimit;
+	numLines = num;
 
+	BatmanT bat;
+	
 	return 1;
 }

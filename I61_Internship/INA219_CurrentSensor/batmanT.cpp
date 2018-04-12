@@ -6,6 +6,7 @@
 
 //Environment----------------------
 #include <iostream>
+#include <algorithm>
 #include <string>
 #include <fstream>
 #include <chrono>
@@ -78,8 +79,9 @@ BatmanT::BatmanT()
 
 	//make sure file is open
 	if(debug){
-		if (file_in.is_open()) { std::cout << SUCCESS << " " + filename + " is open" << std::endl; }
-		else {
+		if (file_in.is_open()) {
+			std::cout << SUCCESS << " " + filename + " is open" << std::endl;
+		}else{
 			std::cout << ERROR << " " + filename + " is still closed" << std::endl;
 			std::cout << "Proceed?(y/n): ";
 			std::string proceed;
@@ -89,7 +91,7 @@ BatmanT::BatmanT()
 			if(proceed.compare("y") || proceed.compare("yes")){
 				std::cout << INFO << " Continuing without saving..." << std::endl;
 			}else {return;}
-		}
+	 }
 	}
 
 	//WRITE CSV HEADER...
@@ -123,17 +125,21 @@ BatmanT::BatmanT()
 	{
 		//Record start time...
 		startingPoint = high_resolution_clock::now();
-		if(verbose || debug){std::cout << INFO << " starting point for time measurement: " << duration_cast<duration<double>>(startingPoint).count() << std::endl;
+		if(verbose || debug){
+			duration<double> timeLapse = duration_cast<duration<double>>(startingPoint);
+			std::cout << INFO << " starting point for time measurement: " << timeLapse.count() << std::endl;
+		}
 
 		//Wait 10sec...
 		std::this_thread::sleep_for(seconds(5));
-		if(verbose || debug){std::cout << INFO << " slept for 5 seconds... resuming data collection" << std::endl;
+		if(verbose || debug){std::cout << INFO << " slept for 5 seconds... resuming data collection" << std::endl;}
 
 		//Save data...
-		if(verbose || debug){std::cout << INFO << " saving data..." << std::endl;
-		logData(data);
-
-		collectedLines++;
+		if(verbose || debug){
+			std::cout << INFO << " saving data..." << std::endl;
+			logData(data);
+			collectedLines++;
+		}
 
 		//Program stop...
 		if(collectedLines == numLines){
@@ -142,7 +148,7 @@ BatmanT::BatmanT()
 			//print debug
 			if(debug || verbose){
 				std::cout << INFO << " stopping data collection" << std::endl;
-				std::cout << "Line # Limit: " + numLines << std:endl;
+				std::cout << "Line # Limit: " + numLines << std::endl;
 				std::cout << "# Collected Lines: " + collectedLines << std::endl;
 			}else if(debug){
 				std::cout << INFO << " stopping data collection" << std::endl;

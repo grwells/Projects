@@ -71,7 +71,7 @@ public:
 
 BatmanT::BatmanT()
 {
-	filename = CSV;	
+	filename = CSV;
 
 	// OPEN FILE...
 	file_in.open(filename.c_str());
@@ -79,13 +79,13 @@ BatmanT::BatmanT()
 	//make sure file is open
 	if(debug){
 		if (file_in.is_open()) { std::cout << SUCCESS << " " + filename + " is open" << std::endl; }
-		else { 
-			std::cout << ERROR << " " + filename + " is still closed" << std::endl; 
+		else {
+			std::cout << ERROR << " " + filename + " is still closed" << std::endl;
 			std::cout << "Proceed?(y/n): ";
 			std::string proceed;
 			std::cin >> proceed;
 			std::transform(proceed.begin(), proceed.end(), proceed.begin(), ::tolower);
-			
+
 			if(proceed.equals("y") || proceed.equals("yes")){
 				std::cout << INFO << " Continuing without saving..." << std::endl;
 			}else {return;}
@@ -93,9 +93,9 @@ BatmanT::BatmanT()
 	}
 
 	//WRITE CSV HEADER...
-	std::string header = CSV_HEADER; 
+	std::string header = CSV_HEADER;
 	file_in << header;
-	
+
 	//print debug
 	if(debug && verbose){
 		std::cout << INFO << " printed header, check file now" << std::endl;
@@ -116,7 +116,7 @@ BatmanT::BatmanT()
 	// start INA219
 	if (ina219.setup()) { keepCollecting = true; }
 	else if(debug){ std::cout << ERROR << " INA219 sensor setup failed, check I2C address" << std::endl; }
-	
+
 	int collectedLines = 0;
 	//LOG DATA...
 	while (keepCollecting)
@@ -135,7 +135,7 @@ BatmanT::BatmanT()
 
 		collectedLines++;
 
-		//Program stop... 
+		//Program stop...
 		if(collectedLines == numLines){
 			keepCollecting = false;
 
@@ -199,7 +199,7 @@ void BatmanT::logData(std::string data)
 
 		}
 
-		
+
 	}else{
 		//print error message
 		if(verbose){std::cout << ERROR << " file " + filename + " not open" << std::endl;}
@@ -221,18 +221,27 @@ void BatmanT::logData(std::string data)
 float BatmanT::getCurrent()
 {
 	//READ CURRENT FROM SENSOR
+	if(debug || verbose){
+		std::cout << INFO << " reading current..." << std::endl;
+	}
 	return ina219.getCurrent() + tolako.readCurrent();
 }
 
 float BatmanT::getVoltage()
 {
 	//READ VOLTAGE FROM SENSOR
+	if(debug || verbose){
+		std::cout << INFO << " reading voltage..." << std::endl;
+	}
 	return ina219.getVoltage();
 }
 
 float BatmanT::calcCurrentCharge()
 {
 	//CALCULATE THE AMOUNT THE CHARGE OF THE BATTERY HAS CHANGED OVER DELTAT
+	if(debug || verbose){
+		std::cout << INFO << " calculating charge..." << std::endl;
+	}
 	return charge + (deltaT * currentIn);
 }
 
@@ -241,7 +250,7 @@ float BatmanT::calcCurrentCharge()
  * @param bool debugMode - If true, print debug messages
  * @param bool verboseMode - If true, print debug messages with additional detail
  * @param bool lineLimit - If true limit the number of lines of data collected by the battery manager
- * @return 1 
+ * @return 1
 */
 int main(bool debugMode = false, bool verboseMode = false, bool lineLimit = false, int num = 1)
 {
@@ -252,6 +261,6 @@ int main(bool debugMode = false, bool verboseMode = false, bool lineLimit = fals
 	numLines = num;
 
 	BatmanT bat;
-	
+
 	return 1;
 }

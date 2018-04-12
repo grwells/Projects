@@ -86,7 +86,7 @@ BatmanT::BatmanT()
 			std::cin >> proceed;
 			std::transform(proceed.begin(), proceed.end(), proceed.begin(), ::tolower);
 
-			if(proceed.equals("y") || proceed.equals("yes")){
+			if(proceed.compare("y") || proceed.compare("yes")){
 				std::cout << INFO << " Continuing without saving..." << std::endl;
 			}else {return;}
 		}
@@ -99,7 +99,7 @@ BatmanT::BatmanT()
 	//print debug
 	if(debug && verbose){
 		std::cout << INFO << " printed header, check file now" << std::endl;
-		std::cout << "Header: " + CSV << std::endl;
+		std::cout << "Header: " << CSV << std::endl;
 	}else if(debug){
 		std::cout << INFO << " printed header..." << std::endl;
 	}
@@ -123,11 +123,11 @@ BatmanT::BatmanT()
 	{
 		//Record start time...
 		startingPoint = high_resolution_clock::now();
-		if(verbose || debug){std::cout << INFO << " starting point for time measurement: " << /*TODO*/ << std::endl;
+		if(verbose || debug){std::cout << INFO << " starting point for time measurement: " << duration_cast<duration<double>>(startingPoint).count() << std::endl;
 
 		//Wait 10sec...
 		std::this_thread::sleep_for(seconds(5));
-		if(verbose || debug){std::cout << INFO << " slept for 5 seconds... resuming data collection" << std::endl;i
+		if(verbose || debug){std::cout << INFO << " slept for 5 seconds... resuming data collection" << std::endl;
 
 		//Save data...
 		if(verbose || debug){std::cout << INFO << " saving data..." << std::endl;

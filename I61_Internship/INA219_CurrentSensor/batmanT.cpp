@@ -54,10 +54,10 @@ private:
 	high_resolution_clock::time_point endPoint;
 
 	//Program Variables and Sensors
-	bool debug = false;
-	bool verbose = false;
-	bool limitLines = false;
-	int numLines = 1;
+	static bool debug = false;
+	static bool verbose = false;
+	static bool limitLines = false;
+	static int numLines = 1;
 	bool keepCollecting;
 	INA219 ina219;
 	Tolako5V tolako;     //Initialize the Tolako sensor on the default pin

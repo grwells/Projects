@@ -65,21 +65,27 @@ private:
 
 public:
 	//Functions
-	BatmanT();
+	BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numberOfLines);
 	void logData(std::string data);
 	float getCurrent();
 	float getVoltage();
 	float calcCurrentCharge();
 
 	//Variables
-	static bool debug;
-	static bool verbose;
-	static bool limitLines;
-	static int numLines = 1;
+	bool debug;
+	bool verbose;
+	bool limitLines;
+	int numLines = 1;
 };
 
-BatmanT::BatmanT()
+BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numberOfLines)
 {
+	//Initialize command line based arguments
+	debug = debugMode;
+	verbose = verboseMode;
+	limitLines = limitLineMode;
+	if(limitLines){numLines = numberOfLines;}
+
 	filename = CSV;
 
 	// OPEN FILE...
@@ -273,10 +279,15 @@ float BatmanT::calcCurrentCharge()
 int main(int argc, char *argv[] /*bool debugMode = false, bool verboseMode = false, bool lineLimit = false, int num = 1*/)
 {
 	//Verify proper number of arguments were passed...
-	if(argc > 7/*TODO: decide on minimum number of arguments*/){
+	if(argc > 7){
 		std::cout << "Usage: " << argv[0] << " <ARG>" << std::endl;
 		return 0;
 	}
+
+	bool debug = false;
+	bool verbose = false;
+	bool limitLines = false;
+	int numLines = 1;
 
 	//Process command line arguments
 	for(int i = 0; i < argc; i++){
@@ -296,7 +307,7 @@ int main(int argc, char *argv[] /*bool debugMode = false, bool verboseMode = fal
 	}
 
 	//Call the battery manager
-	BatmanT bat;
+	BatmanT bat(debug, verbose, limitLines, numLines);
 
 	//Exit program
 	return 1;

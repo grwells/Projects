@@ -19,7 +19,7 @@
 //---------------------------------
 
 #define CSV "journal_file.csv"
-#define CSV_HEADER "Current(mA), Voltage(mV), Current In(mA), Current Out(mA), Total Charge(mA), Time Delta(seconds)"
+#define CSV_HEADER "Voltage(mV), Current In(mA), Current Out(mA), Total Charge(mA), Time Delta(seconds)"
 #define TOLAKO_PIN 5
 
 //Debug Mode Messages--------------
@@ -42,9 +42,9 @@ private:
 	std::string data;                          //data to be written to the file
 
 	//Data Variables
-	float charge;   //total charge in the battery
+	float charge;    //total charge in the battery
 	float currentIn; //current that is flowing into the battery
-	float currentOut;
+	float currentOut;//current flowing out of the battery
 	float voltage;  //the voltage supplied to the battery
 
 	//Time Variables
@@ -169,7 +169,7 @@ void BatmanT::logData(std::string data)
 	//WRITE DATA TO FILE FROM STRING
 	if (file_in.is_open())
 	{
-		//get data
+		//Get data------------------------------------------------------------------------------------
 		currentIn = getCurrent();
 		if(verbose){std::cout << INFO << " Current In: " << currentIn << std::endl;}
 		else if(debug){std::cout << INFO << " measured current input..." << std::endl;}
@@ -179,7 +179,7 @@ void BatmanT::logData(std::string data)
 		else if(debug){std::cout << INFO << " measured voltage..." << std::endl;}
 
 
-		//calculate elapsed time
+		//Calculate elapsed time------------------------------------------------------------------------
 		duration<double> timeLapse = duration_cast<duration<double>>(high_resolution_clock::now() - startingPoint); //record first time point
 		deltaT = timeLapse.count();
 		timeT += deltaT;
@@ -187,12 +187,16 @@ void BatmanT::logData(std::string data)
 			std::cout << INFO << " recorded time elapsed" << "\nTime Elapsed: " + deltaT << "\nTotal Time: " + timeT << std::endl;
 		}else if(debug){std::cout << INFO << " recorded time elapsed..." << std::endl;}
 
-		//calculate accumulated charge
+		//Calculate accumulated charge-------------------------------------------------------------------
 		charge = calcCurrentCharge();
-		std::string data = "\n" + std::to_string(currentIn) + "," + std::to_string(voltage) + "," + std::to_string(charge) + "," + std::to_string(deltaT);
+
+		//Build data string------------------------------------------------------------------------------
+		//contains currentIn, currentOut, voltage, charge accumulated, and time delta since last collection point
+		std::string data = "\n" + std::to_string(voltage) + "," + std::to_string(currentIn) + ","  + std::to_string(currentOut) + "," +
+												std::to_string(charge) + "," + std::to_string(deltaT);
 		file_in << data;
 
-
+		//Print debug------------------------------------------------------------------------------------
 		if(verbose){
 			std::cout << INFO << " Current Net Charge: " + charge << std::endl;
 			std::cout << WARNING << " Writing data: " + data << std::endl;

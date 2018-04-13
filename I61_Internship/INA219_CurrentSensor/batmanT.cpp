@@ -72,9 +72,9 @@ public:
 	float calcCurrentCharge();
 
 	//Variables
-	static bool debug = false;
-	static bool verbose = false;
-	static bool limitLines = false;
+	static bool debug;
+	static bool verbose;
+	static bool limitLines;
 	static int numLines = 1;
 };
 

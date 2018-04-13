@@ -22,6 +22,11 @@
 #define CSV_HEADER "Voltage(mV), Current In(mA), Current Out(mA), Total Charge(mA), Time Delta(seconds)"
 #define TOLAKO_PIN 5
 
+//Command Line Triggers------------
+#define DEBUG_ON true
+#define VERBOSE_ON true
+#define LINELIMIT_ON true
+
 //Debug Mode Messages--------------
 #define FILE_OPEN "[info]: file open..."
 #define FILE_CLOSED "[info]: file closed..."
@@ -54,20 +59,23 @@ private:
 	high_resolution_clock::time_point endPoint;
 
 	//Program Variables and Sensors
-	static bool debug = false;
-	static bool verbose = false;
-	static bool limitLines = false;
-	static int numLines = 1;
 	bool keepCollecting;
 	INA219 ina219;
 	Tolako5V tolako;     //Initialize the Tolako sensor on the default pin
 
 public:
+	//Functions
 	BatmanT();
 	void logData(std::string data);
 	float getCurrent();
 	float getVoltage();
 	float calcCurrentCharge();
+
+	//Variables
+	static bool debug = false;
+	static bool verbose = false;
+	static bool limitLines = false;
+	static int numLines = 1;
 };
 
 BatmanT::BatmanT()
@@ -184,7 +192,7 @@ void BatmanT::logData(std::string data)
 		deltaT = timeLapse.count();
 		timeT += deltaT;
 		if(verbose){
-			std::cout << INFO << " recorded time elapsed" << "\nTime Elapsed: " + deltaT << "\nTotal Time: " + timeT << std::endl;
+			std::cout << INFO << " recorded time elapsed" << "\nTime Elapsed: " << deltaT << "\nTotal Time: " << timeT << std::endl;
 		}else if(debug){std::cout << INFO << " recorded time elapsed..." << std::endl;}
 
 		//Calculate accumulated charge-------------------------------------------------------------------
@@ -198,8 +206,8 @@ void BatmanT::logData(std::string data)
 
 		//Print debug------------------------------------------------------------------------------------
 		if(verbose){
-			std::cout << INFO << " Current Net Charge: " + charge << std::endl;
-			std::cout << WARNING << " Writing data: " + data << std::endl;
+			std::cout << INFO << " Current Net Charge: " << charge << std::endl;
+			std::cout << WARNING << " Writing data: " << data << std::endl;
 			std::cout << SUCCESS << " data written to file..." << std::endl;
 
 		}else if(debug){
@@ -220,9 +228,9 @@ void BatmanT::logData(std::string data)
 		//try to open file again
 		if(verbose){
 			std::cout << INFO << " trying to open file again..." << std::endl;
-			std::cout << INFO << " trying again..." std::endl;
+			std::cout << INFO << " trying again..." << std::endl;
 
-		else if(debug){std::cout << INFO << " re-opening file..." << std::endl;}
+		}else if(debug){std::cout << INFO << " re-opening file..." << std::endl;}
 
 		logData(data); //goes to loop if file can not be opened
 	}
@@ -257,20 +265,39 @@ float BatmanT::calcCurrentCharge()
 
 /*
  * Run battery manager.
- * @param bool debugMode - If true, print debug messages
- * @param bool verboseMode - If true, print debug messages with additional detail
- * @param bool lineLimit - If true limit the number of lines of data collected by the battery manager
- * @return 1
+ * @param int argc - The number of command line arguments passed in by the user, at least 1
+ * @param char argv[] - The arguments passed in by the user, an array of strings where the
+ 			first string is the argument used to call the Program
+ * @return int - 1 if successful, 0 if not
 */
-int main(bool debugMode = false, bool verboseMode = false, bool lineLimit = false, int num = 1)
+int main(int argc, char *argv[] /*bool debugMode = false, bool verboseMode = false, bool lineLimit = false, int num = 1*/)
 {
-	// CALL THE BATMAN!!!
-	debug = debugMode;
-	verbose = verboseMode;
-	limitLines = lineLimit;
-	numLines = num;
+	//Verify proper number of arguments were passed...
+	if(argc > 7/*TODO: decide on minimum number of arguments*/){
+		std::cout << "Usage: " << argv[0] << " <ARG>" << std::endl;
+		return 0;
+	}
 
+	//Process command line arguments
+	for(int i = 0; i < argc; i++){
+		std::string arg = argv[i];
+		if(arg == "-v"){
+			verbose = VERBOSE_ON;
+		}else if(arg == "-d"){
+			debug = DEBUG_ON;
+		}else if(arg == "-l"){
+			limitLines = LINELIMIT_ON;
+			numLines = argv[i+1];
+		}else if(arg == "-h" || arg == "--help"){
+			/*TODO
+			* write help commands
+			*/
+		}
+	}
+
+	//Call the battery manager
 	BatmanT bat;
 
+	//Exit program
 	return 1;
 }

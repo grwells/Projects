@@ -4,39 +4,47 @@
  * @version: 2.0
 */
 
-//Environment----------------------
+//Environment-------------------------------------------------------------------
 #include <iostream>
 #include <algorithm>
 #include <string>
 #include <fstream>
 #include <chrono>
 #include <thread>
-//---------------------------------
-
-//Open Source----------------------
+//------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+//Open Source-------------------------------------------------------------------
 #include "../Tolako5V_CurrentSensor/Tolako5V.h"
 #include "INA219.h"
-//---------------------------------
-
+//------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+//CSV Macros--------------------------------------------------------------------
 #define CSV "journal_file.csv"
 #define CSV_HEADER "Voltage(mV), Current In(mA), Current Out(mA), Total Charge(mA), Time Delta(seconds)"
 #define TOLAKO_PIN 5
-
-//Command Line Triggers------------
+//------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+//Command Line Triggers---------------------------------------------------------
 #define DEBUG_ON true
 #define VERBOSE_ON true
 #define LINELIMIT_ON true
-
-//Debug Mode Messages--------------
+//------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+//Debug Mode Messages-----------------------------------------------------------
 #define FILE_OPEN "[info]: file open..."
 #define FILE_CLOSED "[info]: file closed..."
-
+//------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+//Base Debug Messages-----------------------------------------------------------
 #define ERROR "[\e[1;31mERROR\e[0;30m]:"
 #define SUCCESS "[\e[1;32mSUCCESS\e[0;30m]:"
 #define WARNING "[\e[1;33mwarning\e[0;30m]:"
 #define INFO "[\e[1;33minfo\e[0;30m]:"
-
+//------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+//Namespaces--------------------------------------------------------------------
 using namespace std::chrono;
+//------------------------------------------------------------------------------
 
 class BatmanT
 {
@@ -75,20 +83,30 @@ public:
 	bool debug;
 	bool verbose;
 	bool limitLines;
-	int numLines = 1;
+	int numLines;
 };
 
+/*
+ * Constructor for battery manager
+ * @param bool debugMode - If true, print messages detailing code status
+ * @param bool verboseMode - If true, print detailed messages, including debug
+ * @param bool limitLineMode - If true, run the battery manager for x number of lines
+ * @param int numberOfLines - The number of lines of data to collect
+*/
 BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numberOfLines)
 {
-	//Initialize command line based arguments
+	//Initialize command line based arguments...
 	debug = debugMode;
 	verbose = verboseMode;
 	limitLines = limitLineMode;
-	if(limitLines){numLines = numberOfLines;}
 
+	//Set number of lines to collect...
+	if(limitLines){
+		numLines = numberOfLines;
+	}else{numLines = 1;}
+
+	//Assign file to save to...and open file to write header
 	filename = CSV;
-
-	// OPEN FILE...
 	file_in.open(filename.c_str());
 
 	//make sure file is open
@@ -108,7 +126,7 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 	 }
 	}
 
-	//WRITE CSV HEADER...
+	//write header
 	std::string header = CSV_HEADER;
 	file_in << header;
 
@@ -121,7 +139,7 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 	}
 
 
-	// START SENSORS...
+	//Start sensors...
 	if(verbose){
 		std::cout << INFO << " calling sensor setup..." << std::endl;
 		std::cout << INFO << " setting Tolako5V sensor to read from pin" << std::endl;
@@ -129,19 +147,22 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 
 	//start Tolako5V
 	tolako.setPin(TOLAKO_PIN);
-	// start INA219
-	if (ina219.setup()) { keepCollecting = true; }
-	else if(debug){ std::cout << ERROR << " INA219 sensor setup failed, check I2C address" << std::endl; }
 
+	//start INA219
+	if (ina219.setup()) { keepCollecting = true; }
+	else if(debug || verbose){ std::cout << ERROR << " INA219 sensor setup failed, check I2C address" << std::endl; }
+
+	//Pre-collection setup
 	int collectedLines = 0;
-	//LOG DATA...
+
+	//Log data...
 	while (keepCollecting)
 	{
 		//Record start time...
 		startingPoint = high_resolution_clock::now();
 		if(verbose || debug){
-			duration<double> timeLapse = duration_cast<duration<double>>(startingPoint);
-			std::cout << INFO << " starting point for time measurement: " << timeLapse.count() << std::endl;
+			std::time_t system_time= std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+			std::cout << INFO << " starting point for time measurement: " << std::ctime(&system_time) << " or " << system << std::endl;
 		}
 
 		//Wait 10sec...
@@ -171,6 +192,7 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 
 	}
 
+	//Close file and pack up...
 	if(debug){
 		std::cout << WARNING << " closing file " << CSV << std::endl;
 	}
@@ -178,6 +200,10 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 
 }
 
+/*
+ * Record the data collected by the battery manager and save it to the system journal file.
+ *	@param string data - The data string that we record. TODO is this right?
+*/
 void BatmanT::logData(std::string data)
 {
 	//WRITE DATA TO FILE FROM STRING
@@ -238,10 +264,14 @@ void BatmanT::logData(std::string data)
 
 		}else if(debug){std::cout << INFO << " re-opening file..." << std::endl;}
 
-		logData(data); //goes to loop if file can not be opened
+	logData(data); //goes to loop if file can not be opened
 	}
 }
 
+/*
+ * Read the current from the sensors.
+ * @return float - The net current in mA
+*/
 float BatmanT::getCurrent()
 {
 	//READ CURRENT FROM SENSOR
@@ -251,6 +281,10 @@ float BatmanT::getCurrent()
 	return ina219.getCurrent() + tolako.readCurrent();
 }
 
+/*
+ * Read the voltage from the INA219 sensor.
+ *	@return float - The voltage across the INA219 sensor
+*/
 float BatmanT::getVoltage()
 {
 	//READ VOLTAGE FROM SENSOR
@@ -260,6 +294,10 @@ float BatmanT::getVoltage()
 	return ina219.getVoltage();
 }
 
+/*
+ * Calculate the net charge across the two sensors.
+ * @return float - The charge in the battery
+*/
 float BatmanT::calcCurrentCharge()
 {
 	//CALCULATE THE AMOUNT THE CHARGE OF THE BATTERY HAS CHANGED OVER DELTAT
@@ -276,7 +314,7 @@ float BatmanT::calcCurrentCharge()
  			first string is the argument used to call the Program
  * @return int - 1 if successful, 0 if not
 */
-int main(int argc, char *argv[] /*bool debugMode = false, bool verboseMode = false, bool lineLimit = false, int num = 1*/)
+int main(int argc, char *argv[])
 {
 	//Verify proper number of arguments were passed...
 	if(argc > 7){
@@ -298,7 +336,8 @@ int main(int argc, char *argv[] /*bool debugMode = false, bool verboseMode = fal
 			debug = DEBUG_ON;
 		}else if(arg == "-l"){
 			limitLines = LINELIMIT_ON;
-			numLines = argv[i+1];
+			std::string arg = argv[i+1];
+			numLines = std::atoi(arg.c_str());
 		}else if(arg == "-h" || arg == "--help"){
 			/*TODO
 			* write help commands

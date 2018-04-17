@@ -172,7 +172,7 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 		//Save data...
 		if(verbose || debug){
 			std::cout << INFO << " saving data..." << std::endl;
-			logData();
+			logData(void);
 			collectedLines++;
 		}
 
@@ -204,7 +204,7 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
  * Record the data collected by the battery manager and save it to the system journal file.
  *	@param string data - The data string that we record. TODO is this right?
 */
-void BatmanT::logData(
+void BatmanT::logData(void)
 {
 	//WRITE DATA TO FILE FROM STRING
 	if (file_in.is_open())

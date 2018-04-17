@@ -4,7 +4,7 @@
  * @version: 2.0
 */
 
-//Environment-------------------------------------------------------------------
+//Environment------------------------------------------------------------------m
 #include <iostream>
 #include <algorithm>
 #include <string>
@@ -74,7 +74,7 @@ private:
 public:
 	//Functions
 	BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numberOfLines);
-	void logData(std::string data);
+	void logData(void);
 	float getCurrent();
 	float getVoltage();
 	float calcCurrentCharge();
@@ -204,7 +204,7 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
  * Record the data collected by the battery manager and save it to the system journal file.
  *	@param string data - The data string that we record. TODO is this right?
 */
-void BatmanT::logData(std::string data)
+void BatmanT::logData(
 {
 	//WRITE DATA TO FILE FROM STRING
 	if (file_in.is_open())

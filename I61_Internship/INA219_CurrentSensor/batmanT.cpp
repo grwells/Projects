@@ -152,7 +152,10 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 
 	//start INA219
 	if (ina219.setup()) { keepCollecting = true; }
-	else if(debug || verbose){ std::cout << ERROR << " INA219 sensor setup failed, check I2C address" << std::endl; }
+	else if(debug || verbose){ 
+		std::string error_message = ERROR + " at line #156, INA219 sensor setup failed, check I2C address...";
+		throw std::invalid_argument(error_message.c_str());
+		//std::cout << ERROR << " INA219 sensor setup failed, check I2C address" << std::endl; }
 
 	//Pre-collection setup
 	int collectedLines = 0;
@@ -334,8 +337,10 @@ int main(int argc, char *argv[])
 		std::string arg = argv[i];
 		if(arg == "-v"){
 			verbose = VERBOSE_ON;
+			std::cout << INFO << " entering verbose mode..." << std::endl;
 		}else if(arg == "-d"){
 			debug = DEBUG_ON;
+			std::cout << INFO << " entering debug mode..." << std::endl;
 		}else if(arg == "-l"){
 			limitLines = LINELIMIT_ON;
 			std::string arg = argv[i+1];

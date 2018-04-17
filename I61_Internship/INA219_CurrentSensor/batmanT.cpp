@@ -172,7 +172,7 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 		//Save data...
 		if(verbose || debug){
 			std::cout << INFO << " saving data..." << std::endl;
-			logData(data);
+			logData();
 			collectedLines++;
 		}
 

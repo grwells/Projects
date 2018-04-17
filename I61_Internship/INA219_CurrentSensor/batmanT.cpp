@@ -114,7 +114,7 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 		if (file_in.is_open()) {
 			std::cout << SUCCESS << " " + filename + " is open" << std::endl;
 		}else{
-			std::string error_message = ERROR + " at line #117, " + filename + "is still closed...";
+			std::string error_message = std::to_string(ERROR) + " at line #117, " + filename + "is still closed...";
 			throw std::invalid_argument(error_message.c_str());
 			//std::cout << ERROR << " " + filename + " is still closed" << std::endl;
 			std::cout << "Proceed?(y/n): ";

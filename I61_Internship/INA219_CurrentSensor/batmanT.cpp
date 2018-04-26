@@ -204,8 +204,6 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 		std::cout << WARNING << " closing file " << CSV << std::endl;
 	}
 	file_in.close();
-
-}
 }
 
 /*

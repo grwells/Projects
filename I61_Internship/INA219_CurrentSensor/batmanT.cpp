@@ -73,11 +73,12 @@ private:
 
 public:
 	//Functions
-	BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numberOfLines);
-	void logData(void);
-	float getCurrent();
-	float getVoltage();
-	float calcCurrentCharge();
+	BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numberOfLines); 
+	void logData(void);								  //Records the current, voltage, and time to csv
+	float getCurrent();								  //Measures the current from the sensor
+	float getVoltage();								  //Reads the voltage
+	float calcCurrentCharge();							  //Calculates the change in charge
+	void printMsg(const char messageType, int position, std::string message);         //Prints an error message 
 
 	//Variables
 	bool debug;
@@ -114,7 +115,7 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 		if (file_in.is_open()) {
 			std::cout << SUCCESS << " " + filename + " is open" << std::endl;
 		}else{
-			std::string error_message = std::to_string(ERROR) + " at line #117, " + filename + "is still closed...";
+			std::string error_message = ERROR " at line #117, " + filename + "is still closed...";
 			throw std::invalid_argument(error_message.c_str());
 			//std::cout << ERROR << " " + filename + " is still closed" << std::endl;
 			std::cout << "Proceed?(y/n): ";
@@ -125,7 +126,7 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 			if(proceed.compare("y") || proceed.compare("yes")){
 				std::cout << INFO << " Continuing without saving..." << std::endl;
 			}else {return;}
-	 }
+	 	}
 	}
 
 	//write header
@@ -153,9 +154,10 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 	//start INA219
 	if (ina219.setup()) { keepCollecting = true; }
 	else if(debug || verbose){ 
-		std::string error_message = ERROR + " at line #156, INA219 sensor setup failed, check I2C address...";
+		std::string error_message = ERROR " at line #156, INA219 sensor setup failed, check I2C address...";
 		throw std::invalid_argument(error_message.c_str());
-		//std::cout << ERROR << " INA219 sensor setup failed, check I2C address" << std::endl; }
+		//std::cout << ERROR << " INA219 sensor setup failed, check I2C address" << std::endl; 
+	}
 
 	//Pre-collection setup
 	int collectedLines = 0;
@@ -203,6 +205,7 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 	}
 	file_in.close();
 
+}
 }
 
 /*

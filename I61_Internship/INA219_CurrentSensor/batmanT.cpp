@@ -36,10 +36,10 @@
 //------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 //Base Debug Messages-----------------------------------------------------------
-#define ERROR "[\e[1;31mERROR\e[0;30m]:"
-#define SUCCESS "[\e[1;32mSUCCESS\e[0;30m]:"
-#define WARNING "[\e[1;33mwarning\e[0;30m]:"
-#define INFO "[\e[1;33minfo\e[0;30m]:"
+#define ERROR "[\e[1;31mERROR\u001b[0m]:"
+#define SUCCESS "[\e[1;32mSUCCESS\u001b[0m]:"
+#define WARNING "[\e[1;33mwarning\u001b[0m]:"
+#define INFO "[\e[1;33minfo\u001b[0m]:"
 //------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 //Namespaces--------------------------------------------------------------------
@@ -338,10 +338,11 @@ int main(int argc, char *argv[])
 		std::string arg = argv[i];
 		if(arg == "-v"){
 			verbose = VERBOSE_ON;
-			std::cout << INFO << " entering verbose mode..." << std::endl;
+			std::cout << "printing debug" << std::endl;
+			std::cout << INFO " entering verbose mode..." << std::endl;
 		}else if(arg == "-d"){
 			debug = DEBUG_ON;
-			std::cout << INFO << " entering debug mode..." << std::endl;
+			std::cout << INFO " entering debug mode..." << std::endl;
 		}else if(arg == "-l"){
 			limitLines = LINELIMIT_ON;
 			std::string arg = argv[i+1];

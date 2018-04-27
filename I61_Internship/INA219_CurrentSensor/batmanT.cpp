@@ -156,7 +156,6 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 	else if(debug || verbose){ 
 		std::string error_message = ERROR " at line #156, INA219 sensor setup failed, check I2C address...";
 		throw std::invalid_argument(error_message.c_str());
-		//std::cout << ERROR << " INA219 sensor setup failed, check I2C address" << std::endl; 
 	}
 
 	//Pre-collection setup

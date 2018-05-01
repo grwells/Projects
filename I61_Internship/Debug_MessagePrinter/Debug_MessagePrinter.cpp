@@ -14,6 +14,16 @@ void MSG_Prnt::info_msg(bool print, std::string message){
 }
 
 /*
+ * Prints a basic informational message with the line number
+ * @param bool print: If true, print the message
+ * @param int lineNum: The line that the error is thrown on
+ * @param string message: The error message to throw
+ */
+void MSG_Prnt::info_msg(bool print, int lineNum, std::string message){
+    if(print){std::cout << INFO << message << std::endl;}
+}
+
+/*
  * Prints a basic success message
  * @param bool print: If true, print the message
  * @param string message: The text that the user wants printed
@@ -22,6 +32,16 @@ void MSG_Prnt::success_msg(bool print, std::string message){
     if (print) {
         std::cout << SUCCESS << message << std::endl;
     }
+}
+
+/*
+ * Prints a basic informational message with the line number
+ * @param bool print: If true, print the message
+ * @param int lineNum: The line that the error is thrown on
+ * @param string message: The error message to throw
+ */
+void MSG_Prnt::success_msg(bool print, int lineNum, std::string message){
+    if(print){std::cout << SUCCESS << message << std::endl;}
 }
 
 /*
@@ -36,6 +56,16 @@ void MSG_Prnt::warning_msg(bool print, std::string message){
 }
 
 /*
+ * Prints a basic informational message with the line number
+ * @param bool print: If true, print the message
+ * @param int lineNum: The line that the error is thrown on
+ * @param string message: The error message to throw
+ */
+void MSG_Prnt::warning_msg(bool print, int lineNum, std::string message){
+    if(print){std::cout << WARNING << message << std::endl;}
+}
+
+/*
  * Prints a basic error message
  * @param bool print: If true, print the message
  * @param string message: The text that the user wants printed
@@ -44,4 +74,14 @@ void MSG_Prnt::error_msg(bool print, std::string message){
     if (print) {
         std::cout << ERROR << message << std::endl;
     }
+}
+
+/*
+ * Prints a basic informational message with the line number
+ * @param bool print: If true, print the message
+ * @param int lineNum: The line that the error is thrown on
+ * @param string message: The error message to throw
+ */
+void MSG_Prnt::error_msg(bool print, int lineNum, std::string message){
+    if(print){std::cout << ERROR << message << std::endl;}
 }

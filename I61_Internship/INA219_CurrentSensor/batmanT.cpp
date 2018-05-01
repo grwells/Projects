@@ -16,6 +16,7 @@
 //Open Source-------------------------------------------------------------------
 #include "../Tolako5V_CurrentSensor/Tolako5V.h"
 #include "INA219.h"
+#include "../Debug_MessagePrinter/Debug_MessagePrinter.h"
 //------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 //CSV Macros--------------------------------------------------------------------
@@ -33,13 +34,6 @@
 //Debug Mode Messages-----------------------------------------------------------
 #define FILE_OPEN "[info]: file open..."
 #define FILE_CLOSED "[info]: file closed..."
-//------------------------------------------------------------------------------
-////////////////////////////////////////////////////////////////////////////////
-//Base Debug Messages-----------------------------------------------------------
-#define ERROR "[\e[1;31mERROR\u001b[0m]:"
-#define SUCCESS "[\e[1;32mSUCCESS\u001b[0m]:"
-#define WARNING "[\e[1;33mwarning\u001b[0m]:"
-#define INFO "[\e[1;33minfo\u001b[0m]:"
 //------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 //Namespaces--------------------------------------------------------------------
@@ -78,7 +72,7 @@ public:
 	float getCurrent();								  //Measures the current from the sensor
 	float getVoltage();								  //Reads the voltage
 	float calcCurrentCharge();							  //Calculates the change in charge
-	void printMsg(const char messageType, int position, std::string message);         //Prints an error message 
+	void msgMsg(const char messageType, int position, std::string message);         //Prints an error message 
 
 	//Variables
 	bool debug;
@@ -89,13 +83,15 @@ public:
 
 /*
  * Constructor for battery manager
- * @param bool debugMode - If true, print messages detailing code status
- * @param bool verboseMode - If true, print detailed messages, including debug
+ * @param bool debugMode - If true, msg messages detailing code status
+ * @param bool verboseMode - If true, msg detailed messages, including debug
  * @param bool limitLineMode - If true, run the battery manager for x number of lines
  * @param int numberOfLines - The number of lines of data to collect
 */
 BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numberOfLines)
 {
+	MSG_Prnt msg;
+
 	//Initialize command line based arguments...
 	debug = debugMode;
 	verbose = verboseMode;
@@ -113,18 +109,16 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 	//make sure file is open
 	if(debug){
 		if (file_in.is_open()) {
-			std::cout << SUCCESS << " " + filename + " is open" << std::endl;
+			msg.success_msg(debug, filename + " is open");
 		}else{
-			std::string error_message = ERROR " at line #117, " + filename + "is still closed...";
-			throw std::invalid_argument(error_message.c_str());
-			//std::cout << ERROR << " " + filename + " is still closed" << std::endl;
+			msg.error_msg(true, 111, filename + "is still closed...");
 			std::cout << "Proceed?(y/n): ";
 			std::string proceed;
 			std::cin >> proceed;
 			std::transform(proceed.begin(), proceed.end(), proceed.begin(), ::tolower);
 
 			if(proceed.compare("y") || proceed.compare("yes")){
-				std::cout << INFO << " Continuing without saving..." << std::endl;
+				msg.info_msg(debug || verbose, " Continuing without saving...");
 			}else {return;}
 	 	}
 	}
@@ -133,29 +127,21 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 	std::string header = CSV_HEADER;
 	file_in << header;
 
-	//print debug
-	if(debug && verbose){
-		std::cout << INFO << " printed header, check file now" << std::endl;
-		std::cout << "Header: " << CSV << std::endl;
-	}else if(debug){
-		std::cout << INFO << " printed header..." << std::endl;
-	}
-
-
+	//msg debug
+	msg.info_msg(debug, "msged CSV header");
+	msg.info_msg(debug, "Header: " CSV);
+	
 	//Start sensors...
-	if(verbose){
-		std::cout << INFO << " calling sensor setup..." << std::endl;
-		std::cout << INFO << " setting Tolako5V sensor to read from pin" << std::endl;
-	}
-
+	msg.info_msg(verbose || debug, "calling sensor setup...");
+	msg.info_msg(verbose || debug, "setting Tolako5V sensor to read from pin");
+	
 	//start Tolako5V
 	tolako.setPin(TOLAKO_PIN);
 
 	//start INA219
 	if (ina219.setup()) { keepCollecting = true; }
-	else if(debug || verbose){ 
-		std::string error_message = ERROR " at line #156, INA219 sensor setup failed, check I2C address...";
-		throw std::invalid_argument(error_message.c_str());
+	else{
+		msg.error_msg(true, 156, "INA219 sensor setup failed, check I2C address...");
 	}
 
 	//Pre-collection setup
@@ -173,35 +159,26 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 
 		//Wait 10sec...
 		std::this_thread::sleep_for(seconds(5));
-		if(verbose || debug){std::cout << INFO << " slept for 5 seconds... resuming data collection" << std::endl;}
+		msg.info_msg(debug || verbose, "slept for 5 seconds...resuming data collection");
 
 		//Save data...
-		if(verbose || debug){
-			std::cout << INFO << " saving data..." << std::endl;
-			logData();
-			collectedLines++;
-		}
-
+		msg.info_msg(debug || verbose, "saving data to " + filename);
+		logData();
+		collectedLines++;
+	
 		//Program stop...
 		if(collectedLines == numLines){
 			keepCollecting = false;
 
-			//print debug
-			if(debug || verbose){
-				std::cout << INFO << " stopping data collection" << std::endl;
-				std::cout << "Line # Limit: " + numLines << std::endl;
-				std::cout << "# Collected Lines: " + collectedLines << std::endl;
-			}else if(debug){
-				std::cout << INFO << " stopping data collection" << std::endl;
-			}
+			//msg debug
+			msg.info_msg(debug || verbose, "stopping data collection");
+			msg.info_msg(debug || verbose, "Line # Limit: " + std::to_string(numLines) + "\n    # Of Collected Data Lines: " + std::to_string(collectedLines));
 		}
 
 	}
 
 	//Close file and pack up...
-	if(debug){
-		std::cout << WARNING << " closing file " << CSV << std::endl;
-	}
+	msg.warning_msg(debug, "closing file " CSV);
 	file_in.close();
 }
 
@@ -256,7 +233,7 @@ void BatmanT::logData(void)
 
 
 	}else{
-		//print error message
+		//msg error message
 		if(verbose){std::cout << ERROR << " file " + filename + " not open" << std::endl;}
 		else if(debug){std::cout << ERROR << "file not open..." << std::endl;}
 

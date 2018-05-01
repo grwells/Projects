@@ -28,9 +28,13 @@
 class MSG_Prnt{
 public:
     void info_msg(bool print, std::string message);
+    void info_msg(bool print, int lineNum, std::string message);
     void success_msg(bool print, std::string message);
+    void success_msg(bool print, int lineNum, std::string message);
     void warning_msg(bool print, std::string message);
+    void warning_msg(bool print, int lineNum, std::string message);
     void error_msg(bool print, std::string message);
+    void error_msg(bool print, int lineNum, std::string message);
 };
 
 #endif /* DEBUG_MESSAGEPRINTER_H */

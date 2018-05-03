@@ -8,15 +8,17 @@
 #include <string>
 #include <string.h>
 
-const static int DS18B20_PIN = 10;
+#define DS18B20_PATH "/sys/bus/w1/devices/MAC_ADDRESS/w1_slave"
 
-class DS18B20
-{
+class DS18B20 {
 public:
-	DS18B20(void);					//Call the system setup commands
-	DS18B20(int pinNumber); // Use open source
-	float read(void);				//Read from the system file
-	std::string print(void);//Print the temperature
+    DS18B20(void); //Call the system setup commands
+    DS18B20(int pinNumber); // Use open source
+    float read(void); //Read from the system file
+    std::string print(void); //Print the temperature
+
+private:
+    std::string filename;
 };
 
 #endif // !DS18B20

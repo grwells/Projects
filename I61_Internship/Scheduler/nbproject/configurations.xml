@@ -13,6 +13,8 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>01.day</itemPath>
+      <itemPath>01.week</itemPath>
       <itemPath>Scheduler.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
@@ -38,6 +40,10 @@
       </toolsSet>
       <compileType>
       </compileType>
+      <item path="01.day" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="01.week" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Scheduler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Scheduler.h" ex="false" tool="3" flavor2="0">
@@ -65,6 +71,10 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="01.day" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="01.week" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Scheduler.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Scheduler.h" ex="false" tool="3" flavor2="0">

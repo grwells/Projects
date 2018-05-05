@@ -12,44 +12,6 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
-class Day{
-public:
-    Day(int day_of_week);
-    
-    bool add_Task(std::string name, int start_Time, int frequency);
-    bool add_Task(std::string name, int start_Time, int times_PerDay);
-    bool add_Task(std::string name, int start_Time, int duration);
-    
-    bool remove_Task(std::string name);
-    
-    std::string print_Schedule(void);
-    bool save_Day(void);
-};
-
-class Week : public Day{
-public:
-    Week(int week_of_month);
-    
-    bool add_Day(int day_of_week);
-    bool remove_Day(int day_of_week);
-    bool remove_Day(std::string day_of_week);
-    
-    std::string print_Week(void);
-    bool save_Week(void);
-};
-
-class Month : public Week{
-public:
-    Month(int month_of_year);
-    Month(void);
-    
-    bool add_Week(int week_of_month);
-    bool remove_Week(int week_of_month);
-    
-    std::string print_Month(void);
-    bool save_Month(void);
-};
-
 class Scheduler{
 public:
     Scheduler(void);

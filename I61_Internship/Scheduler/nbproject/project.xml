@@ -24,5 +24,13 @@
                 <project-formatting-style>false</project-formatting-style>
             </formatting>
         </data>
+        <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>FRIDAY</word>
+            <word>SATURDAY</word>
+            <word>SUNDAY</word>
+            <word>THURSDAY</word>
+            <word>TUESDAY</word>
+            <word>WEDNESDAY</word>
+        </spellchecker-wordlist>
     </configuration>
 </project>

@@ -1,17 +1,13 @@
-#include <c++/4.6/fstream>
-
 #include "DS18B20.h"
 
 /*
  * Run the system setup commands for the sensor using the pi drivers
  */
-DS18B20::DS18B20(void) {
+DS18B20::DS18B20(std::string MAC_address) {
     //INIT DRIVERS
-    filename = DS18B20_PATH;
-    std::string serialNum = {"28-000005e2fdc3"}; //TODO replace serialNum with MAC address
-    popen("sudo modprobe w1-gpio");
-    popen("sudo modprobe w1-therm");
-    std::ifstream w1_slave.open("cat /sys/bus/w1/devices/" + serialNum + "/w1_slave", "r");
+    filename = DS18B20_PATH MAC_address;
+    std::system("sudo modprobe w1-gpio");
+    std::system("sudo modprobe w1-therm");
 }
 
 /*
@@ -27,10 +23,24 @@ DS18B20::DS18B20(int pinNumber) {
  * @return float The sensor reading in degrees C
  */
 float DS18B20::read(void) {
+    //Open file
     std::ifstream w1_slave;
     w1_slave.open(filename.c_str());
-    w1_slave >> file;
-    return 0.0;
+    
+    //Read first string from file
+    std::string line;
+    std::getline(w1_slave, line);
+    
+    if(line.ends_with("YES")){
+        //read temperature
+        std::getline(w1_slave, line);
+        float temperature = std::stoi(line.substr(line.size()-5);
+        return temperature;
+    }else{
+        MSG_Printer print;
+        print.error_msg(true, "Error reading from sensor, make sure sensor drivers are enabled...");
+        return 0.0;
+    }
 }
 
 /*

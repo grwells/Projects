@@ -5,11 +5,18 @@ Hygrometer::Hygrometer(int pinNum){
   pinMode(pinNum, INPUT);
 }
 
-bool Hygrometer::read(void){
-  soilIsDry = analogRead(pinNum);
-  return soilIsDry;
+/*
+ * Performs a simple read whether the soil is dryer than the calibrated moisture level or not
+ * @return bool: Returns true if the soil is too dry and false if it is moist
+ */
+bool Hygrometer::soil_isDry(void){
+  return (digitalRead(pinNum) == LOW);
 }
 
+/*
+ * Read the percentage water level of the soil
+ * @return float: The percentage water in the soil
+ */
 float Hygrometer::readAnalog(void){
   //TODO
   // finish code

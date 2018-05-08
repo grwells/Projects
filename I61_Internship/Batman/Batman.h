@@ -3,6 +3,7 @@
 
 //Environment-------------------------------------------------------------------
 #include <wiringPi.h>
+#include <fstream>
 #include <iostream>
 #include <chrono>
 #include <thread>
@@ -34,42 +35,50 @@ using namespace std::chrono;
 
 struct Data {
     //System Data
-    float currentIN;
-    float currentOUT;
-    float systemVoltage;
-    float netCharge;
+    float currentIN = 0.0;
+    float currentOUT = 0.0;
+    float netCurrentFlow = 0.0;
+    float systemVoltage = 0.0;
+    float netCharge = 0.0;
     bool batteryIsLow = false;
+    
+    float maxCharge = 0.0;
 
     //Time
-    float time_step;
-    float total_time;
+    float time_step = 0.0;
+    float total_time = 0.0;
 
 } data;
 
 class Batman {
 private:
+    MSG_Printer print;
+    
     //File Variables
     std::string filename = CSV; //CSV data collection file 
     std::ofstream file_in;
-    std::string data; //data to be written to the file
+    std::string data_string; //data to be written to the file
+    
 
     //Time Variables
     high_resolution_clock::time_point startingPoint;
     high_resolution_clock::time_point endPoint;
 
     //Program Variables and Sensors
+    bool debug, verbose;
     bool keepCollecting;
-    INA219 ina219;
-    Tolako5V talako;
+    float chargeLowerLim;
+    INA219 input;
+    INA219 output;
 
 public:
     Batman(bool print_debug, bool record_data, bool print_data);
-    float getChargeLevel(void); //Get the level of charge of the battery
-    void logData(std::string data); //Prints data to a file as a string
+    float getChargeLevel(float *netCharge, float *maxCharge); //Get the level of charge of the battery
+    void logData(std::string filename, std::string data); //Prints data to a file as a string
     void sendData(void); //Sends the data to the user when necessary
-    float getCurrent(void); //Measure the net current flow
-    float getVoltage(void); //Measures the voltage on the INA219
-    float calcCurrentCharge(void); //Calculates the state of the battery based on current flow over time
+    float getCurrent(float *currentIn, float *currentOut, float *netCurrentFlow); //Measure the net current flow
+    float getVoltage(float *voltage); //Measures the voltage on the INA219
+    float calcCurrentCharge(float *netCharge, float *time_step); //Calculates the state of the battery based on current flow over time
     bool batteryIsLow(void); //If true the user better charge or replace battery
     int[] print_data(void); //Prints the data collected to an array of values
 

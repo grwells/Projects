@@ -3,9 +3,9 @@
 class Hygrometer{
 public:
   Hygrometer(int pinNum);
-  bool read(void);
+  bool soil_isDry(void);
   float readAnalog(void);
 
 private:
-  bool soilIsDry = false;
+  float threshold; // If moisture level is below this percentage, soil is too dry
 };

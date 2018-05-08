@@ -260,7 +260,10 @@ float BatmanT::getCurrent()
 	if(debug || verbose){
 		std::cout << INFO << " reading current..." << std::endl;
 	}
-	return ina219.getCurrent() + tolako.readCurrent();
+	currentIn = tolako.readCurrent();
+	currentOut = ina.getCurrent();
+
+	return currentIn - currentOut;
 }
 
 /*

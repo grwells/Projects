@@ -9,7 +9,7 @@
  * @param string message: The user's message to be printed
  */
 void MSG_Printer::msg(std::string message){
-    std::cout << msg << std::endl;
+    std::cout << message << std::endl;
 }
 
 /*
@@ -18,7 +18,7 @@ void MSG_Printer::msg(std::string message){
  * @param string color: The ASCII color for the text...
  */
 void MSG_Printer::msg(std::string message, std::string color){
-    std::cout << color << msg << RESET << std::endl;
+    std::cout << color << message << RESET << std::endl;
 }
 
 /*

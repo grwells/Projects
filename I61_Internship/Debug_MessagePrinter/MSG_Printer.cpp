@@ -22,6 +22,14 @@ void MSG_Printer::msg(std::string message, std::string color){
 }
 
 /*
+ * Prints a basic informational message, does not require debug mode
+ * @param string message: The message the user wants printed
+ */
+void MSG_Printer::info_msg(std::string message){
+	std::cout << INFO << message << std::endl;
+}
+
+/*
  * Prints a basic informational message
  * @param bool print: If true, print the message
  * @param string message: The text that the user wants printed
@@ -38,6 +46,14 @@ void MSG_Printer::info_msg(bool print, std::string message){
  */
 void MSG_Printer::info_msg(bool print, int lineNum, std::string message){
     if(print){std::cout << INFO << "at line #" << lineNum << ": " << message << std::endl;}
+}
+
+/*
+ * Prints a basic success message, without requiring debug mode
+ * @param string message: The message to be printed
+ */
+void MSG_Printer::success_msg(std::string message){
+	std::cout << SUCCESS << message << std::endl;
 }
 
 /*
@@ -62,6 +78,14 @@ void MSG_Printer::success_msg(bool print, int lineNum, std::string message){
 }
 
 /*
+ * Prints a very basic warning message, no debug mode required
+ * @param string message: The message to print
+ */
+void MSG_Printer::warning_msg(std::string message){
+	std::cout << WARNING << message << std::endl;
+}
+
+/*
  * Prints a basic warning message
  * @param bool print: If true, print the message
  * @param string message: The text that the user wants printed
@@ -80,6 +104,14 @@ void MSG_Printer::warning_msg(bool print, std::string message){
  */
 void MSG_Printer::warning_msg(bool print, int lineNum, std::string message){
     if(print){std::cout << WARNING << "at line #" << lineNum << ": " << message << std::endl;}
+}
+
+/*
+ * Prints a very basic error mesage, no debug mode required
+ * @param string message: The message to be printed
+ */
+void MSG_Printer::error_msg(std::string message){
+	std::cout << ERROR << message << std::endl;
 }
 
 /*

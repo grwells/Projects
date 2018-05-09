@@ -10,6 +10,8 @@
  */
 
 #include <wiringPi.h>
+#include <iostream>
+#include <string>
 #include "../Debug_MessagePrinter/MSG_Printer.h"
 #include "INA219.h"
 

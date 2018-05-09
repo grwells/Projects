@@ -7,6 +7,11 @@ The DS18B20 temerature sensor uses the one-wire protocol to communicate with the
   * [Raspberry Pi Foundation Guide](https://www.modmypi.com/blog/ds18b20-one-wire-digital-temperature-sensor-and-the-raspberry-pi)
 
 ## Usage:
+1. Wiring Code: 
+Yellow Wire: Data
+Black Wire: GND
+Red Wire: VCC
+ 
 1. Initialize One-Wire Driver
 Add the following line to the /boot/config.txt: dtoverlay=w1-gpio
 

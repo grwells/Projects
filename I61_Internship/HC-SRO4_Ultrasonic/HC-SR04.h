@@ -4,6 +4,7 @@
 #include <chrono>
 #include <thread>
 #include <wiringPi.h>
+#include "../Debug_MessagePrinter/MSG_Printer.h"
 
 using namespace std::chrono;
 
@@ -23,6 +24,9 @@ private:
     float time; //How long for the sound wave to return
     high_resolution_clock::time_point pulseStart; //When echo starts
     high_resolution_clock::time_point pulseEnd; //WHen echo ends
+    
+    MSG_Printer print; //The debugging message printer
+
 };
 
 #endif

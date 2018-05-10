@@ -20,6 +20,7 @@ public:
 
 private:
     std::string filename;
+    MSG_Printer prints;
 };
 
 #endif // !DS18B20

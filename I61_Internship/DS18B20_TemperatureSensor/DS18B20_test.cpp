@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
     print.info_msg(true, "Starting test...");
     
     print.info_msg(true, "Initializing DS18B20...");
-    DS18B20 ds18b20("0000");
+    DS18B20 ds18b20("28-0316516533ff");
     print.info_msg(true, "Temperature: " + ds18b20.print());
     
     print.info_msg(true, "Finishing test...");

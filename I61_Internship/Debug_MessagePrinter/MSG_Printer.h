@@ -23,7 +23,7 @@
 #define WARNING "[\e[1;33mwarning\u001b[0m]: "
 #define INFO "[\e[1;33minfo\u001b[0m]: "
 
-#define RESET "\u001b[0m]"
+#define RESET "\u001b[0m"
 #define RED "[\e[1;31m"
 #define GREEN "\e[1;32m"
 #define YELLOW "\e[1;33m"

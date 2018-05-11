@@ -10,10 +10,10 @@ MSG_Printer print;
 
 HCSR04 hc(5, 4);
 DS18B20 temp("28-0316516533ff");
-DHT11 humidity(2);
-Hygrometer hillary(0);
+DHT11 humidity(0);
+Hygrometer hillary(2);
 INA219 input;
-INA219 ouputC;
+INA219 ina2;
 
 
 void readDS18B20(void){
@@ -25,7 +25,7 @@ void readDS18B20(void){
 void readINA219(void){
 	print.info_msg("Reading current sensors...");
 	print.msg("Input(mA): " + std::to_string(input.getCurrent()), GREEN);
-	print.msg("Output(mA): " + std::to_string(outputC.getCurrent()), GREEN);
+	print.msg("Output(mA): " + std::to_string(ina2.getCurrent()), GREEN);
 }
 
 void readHCSR04(void){
@@ -37,12 +37,20 @@ void readHCSR04(void){
 void readHygrometer(void){	
 	print.info_msg("Reading Hygrometer...");
 	print.warning_msg(hillary.soil_isDry(), "Soil is dry, pour on the love!");
+	if(!hillary.soil_isDry()){
+	print.msg("Soil is fine, carry on", GREEN);
+	}
+}
+
+void readDHT11(void){
+	print.info_msg("Reading DHT11...");
+	humidity.read();
 }
 
 int main(void){
 	print.info_msg("Initializing sensors...");
 	print.info_msg(input.setup(0x40), "Input current sensor setup successful");
-	print.info_msg(outputC.setup(), "Output current sensor setup successful");
+	print.info_msg(ina2.setup(), "Output current sensor setup successful");
 
 	while(true){
 		readDS18B20();
@@ -55,6 +63,10 @@ int main(void){
 		delay(2000); //Delay for 2 seconds
 
 		readHygrometer();
+		delay(2000);
+
+		readDHT11();
+
 		delay(5000); //Delay for 5 seconds
 
 	}

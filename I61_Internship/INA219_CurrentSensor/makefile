@@ -9,7 +9,7 @@ Tolako5V.o: ../Tolako5V_CurrentSensor/Tolako5V.cpp ../Tolako5V_CurrentSensor/Tol
 	g++ -c ../Tolako5V_CurrentSensor/Tolako5V.cpp
 
 Debug_MessagePrinter.o: ../Debug_MessagePrinter/MSG_Printer.cpp ../Debug_MessagePrinter/MSG_Printer.h 
-	g++ -c ../Debug_MessagePrinter/MSG_Printer.cpp
+	g++ -c ../Debug_MessagePrinter/MSG_Printer.cpp -o Debug_MessagePrinter.o
 	
 test_ina: INA219_test.cpp INA219.o Debug_MessagePrinter.o
 	g++ -o INA219_T INA219_test.cpp INA219.o Debug_MessagePrinter.o -lwiringPi

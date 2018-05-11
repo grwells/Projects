@@ -3,6 +3,7 @@
 Hygrometer::Hygrometer(int pinNum){
   wiringPiSetup();
   pinMode(pinNum, INPUT);
+  pinNumber = pinNum;
 }
 
 /*
@@ -10,7 +11,7 @@ Hygrometer::Hygrometer(int pinNum){
  * @return bool: Returns true if the soil is too dry and false if it is moist
  */
 bool Hygrometer::soil_isDry(void){
-  return (digitalRead(pinNum) == LOW);
+  return (digitalRead(pinNumber) == LOW);
 }
 
 /*

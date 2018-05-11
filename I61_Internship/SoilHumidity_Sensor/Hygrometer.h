@@ -1,3 +1,6 @@
+#ifndef HYGROMETER
+#define HYGROMETER
+
 #include <wiringPi.h>
 
 class Hygrometer{
@@ -8,4 +11,7 @@ public:
 
 private:
   float threshold; // If moisture level is below this percentage, soil is too dry
+  int pinNumber;
 };
+
+#endif

@@ -16,7 +16,7 @@
 //Open Source-------------------------------------------------------------------
 #include "../Tolako5V_CurrentSensor/Tolako5V.h"
 #include "INA219.h"
-#include "../Debug_MessagePrinter/Debug_MessagePrinter.h"
+#include "../Debug_MessagePrinter/MSG_Printer.h"
 //------------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 //CSV Macros--------------------------------------------------------------------
@@ -63,7 +63,8 @@ private:
 	//Program Variables and Sensors
 	bool keepCollecting;
 	INA219 ina219;
-	Tolako5V tolako;     //Initialize the Tolako sensor on the default pin
+	INA219 ina;
+	//Tolako5V tolako;     //Initialize the Tolako sensor on the default pin
 
 public:
 	//Functions
@@ -90,7 +91,7 @@ public:
 */
 BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numberOfLines)
 {
-	MSG_Prnt msg;
+	MSG_Printer msg;
 
 	//Initialize command line based arguments...
 	debug = debugMode;
@@ -133,10 +134,11 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 	
 	//Start sensors...
 	msg.info_msg(verbose || debug, "calling sensor setup...");
-	msg.info_msg(verbose || debug, "setting Tolako5V sensor to read from pin");
+	//msg.info_msg(verbose || debug, "setting Tolako5V sensor to read from pin");
 	
 	//start Tolako5V
-	tolako.setPin(TOLAKO_PIN);
+	//tolako.setPin(TOLAKO_PIN);
+	msg.error_msg(!ina.setup(0x41), "INA219 input sensor failed setup...");	
 
 	//start INA219
 	if (ina219.setup()) { keepCollecting = true; }
@@ -260,7 +262,7 @@ float BatmanT::getCurrent()
 	if(debug || verbose){
 		std::cout << INFO << " reading current..." << std::endl;
 	}
-	currentIn = tolako.readCurrent();
+	currentIn = ina.getCurrent();
 	currentOut = ina.getCurrent();
 
 	return currentIn - currentOut;

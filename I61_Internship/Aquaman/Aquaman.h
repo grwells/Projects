@@ -17,7 +17,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 //Macros------------------------------------------------------------------------
 #define AQUAMAN_CSV "aquaman_journal.csv"
-#define AQUAMAN_CSV_HEADER "Temperature, HC-SR04 Primary, HC-SR04 Secondary, HC-Failsafe"
+#define AQUAMAN_CONFIG "aquaman.config"
+#define AQUAMAN_CSV_HEADER "Temperature, Water Level, HC-SR04 Primary, HC-SR04 Secondary, HC-Failsafe"
 
 //HC-SR04 Pins
 #define HC_TRIGGER 26
@@ -46,23 +47,33 @@ public:
     void pumpGallons(int gallons); //Pump gallons into the tank
 
 private:
+    void readConfig(std::string config_filename); //Parses provided config file
+    
     //IO
     bool debug = false;
     bool verbose = false;
-    MSG_Printer print;
-    std::string csv_filename;
     
+    MSG_Printer print;
+    
+    std::string csv_filename;
+    std::string config_filename;
+    
+    //Config Values
+    bool systemOfMeasurement = IMPERIAL;
+    float tankHeight = 0.0; //The total height of the tank, bottom to top, that can be filled with water
+    float heightOffset = 0.0; //How far the bottom of the sensor is from the maximum water height
+    float criticalLow = 0.0; //When the user wants to be notified that the water level is critically low
+    
+    //Water Level 
     bool tankIsFull = false;
     bool tankIsEmpty = true;
-    
-    //DS18B20 Data
-    float temperature;
-    
-    //HC-SR04 Data
     float primaryLevel = 0;
     float secondaryLevel = 0;
     float failsafeLevel = 0;
-
+    
+    //Temperature Data
+    float temperature;
+    
     //Sensors
     DS18B20 tempSensor;
     HCSR04 primary(HC_TRIGGER, PRIMARY_ECHO);

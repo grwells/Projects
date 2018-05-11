@@ -52,3 +52,28 @@ std::string Scheduler::print_Schedules(void){}
  * @param string schedule_options: The name of the schedule to run
  */
 void Scheduler::select_Schedule(std::string schedule_options){}
+
+int main(int argc, char *argv[]){
+
+    //Process command line arguments
+	for(int i = 0; i < argc; i++){
+		std::string arg = argv[i];
+		if(arg == "-v"){
+			verbose = VERBOSE_ON;
+			std::cout << "printing debug" << std::endl;
+			std::cout << INFO " entering verbose mode..." << std::endl;
+		}else if(arg == "-d"){
+			debug = DEBUG_ON;
+			std::cout << INFO " entering debug mode..." << std::endl;
+		}else if(arg == "-l"){
+			limitLines = LINELIMIT_ON;
+			std::string arg = argv[i+1];
+			numLines = std::atoi(arg.c_str());
+		}else if(arg == "-h" || arg == "--help"){
+			/*TODO
+			* write help commands
+			*/
+		}
+	}
+    
+}

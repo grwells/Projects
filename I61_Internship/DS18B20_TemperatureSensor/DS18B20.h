@@ -10,13 +10,16 @@
 #include "../Debug_MessagePrinter/MSG_Printer.h"
 
 #define DS18B20_PATH "/sys/bus/w1/devices/"
+#define DS18B20_MAC "28-0316516533ff"
 
 class DS18B20 {
 public:
     DS18B20(std::string MAC_address); //Call the system setup commands
     DS18B20(int pinNumber); // Use open source
+    DS18B20(void); //Call system setup with default MAC address
+    
     float read(void); //Read from the system file
-    std::string print(void); //Print the temperature
+    std::string printTemp(void); //Print the temperature
 
 private:
     std::string filename;

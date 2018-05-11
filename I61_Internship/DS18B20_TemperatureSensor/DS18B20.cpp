@@ -14,6 +14,19 @@ DS18B20::DS18B20(std::string MAC_address) {
 }
 
 /*
+ * Run the system setup commands for the sensor using the pi drivers
+ */
+DS18B20::DS18B20(void) {
+    //INIT DRIVERS
+    filename = DS18B20_PATH;
+    filename = filename + DS18B20_MAC + "/w1_slave";
+
+    prints.info_msg("Calling setup for DS18B20...");
+    std::system("sudo modprobe w1-gpio");
+    std::system("sudo modprobe w1-therm");
+}
+
+/*
  * Run the setup for the commands, and use open source libraries
  */
 DS18B20::DS18B20(int pinNumber) {
@@ -56,6 +69,6 @@ float DS18B20::read(void) {
  * Print the sensor value
  * @return string The temperature expressed as a string
  */
-std::string DS18B20::print(void) {
+std::string DS18B20::printTemp(void) {
     return std::to_string(read());
 }

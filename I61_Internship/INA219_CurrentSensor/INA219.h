@@ -11,16 +11,17 @@ class INA219
     int fd;
     float current_mA;
     float voltage_mV;
-  
+    float currentRaw;    
+    bool setupSuccess;
 
   public:
     INA219(void);
-    bool setup();
-    bool setupSuccess;
-    float currentRaw;
-    bool setup(int ina_addr);
+  
+    bool setup(void);
+    bool setup(int ina_addr); 
+    
     float getCurrent();
     float getVoltage();
-    std::string print(void);
+    std::string prints(void);
 };
 #endif

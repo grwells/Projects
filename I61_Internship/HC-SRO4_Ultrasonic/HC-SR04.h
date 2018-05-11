@@ -14,11 +14,12 @@ using namespace std::chrono;
 class HCSR04 {
 public:
     HCSR04(int triggerPin, int echoPin); //Initialize sensor
-    float readTime(void); //Read the time for echo to return on default pin
     float distance(bool systemOfMeasurement); //Get distance in either inches or cm
     float distanceMM(); //Get distance in mm
 
 private:
+    float readTime(void); //Read the time for echo to return on default pin
+    
     int trigger; //The trigger pin
     int echo; //Echo pin
     float time; //How long for the sound wave to return

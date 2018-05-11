@@ -78,7 +78,7 @@ float INA219::getVoltage(void)
 /*
     Print the current and voltage information and return a string.
 */
-std::string INA219::print(void)
+std::string INA219::prints(void)
 {
   std::string info = "Current: " + std::to_string(getCurrent()) + ", Voltage: " + std::to_string(getVoltage()) + "\n";
   return info;

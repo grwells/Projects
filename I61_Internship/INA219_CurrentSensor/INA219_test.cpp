@@ -16,8 +16,16 @@
 #include "INA219.h"
 
 /*
- * Tests INA219
+ * Tests 2xINA219
  */
+void test2(void){
+    INA219 inaA;
+    INA219 inaB;
+    
+    inaA.setup();
+    inaB.setup(0x41);        
+}
+
 int main(int argc, char** argv) {
     MSG_Printer print;
     print.info_msg(true, "Starting test...");

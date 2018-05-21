@@ -6,8 +6,24 @@
 /*
  * Constructs a new Battery Manager
  */
-Batman::Batman(bool print_debug, bool record_data, bool print_data){
+Batman::Batman(bool print_debug, bool record_data){
     wiringPiSetup(); //Initialize wiringPi
+    this-> debug = print_debug;
+    this-> record = record_data;
+}
+
+Batman::Batman(bool print_debug, bool record_data, int number_of_Lines){
+    wiringPiSetup(); //Initialize wiringPi
+    this-> debug = print_debug;
+    this-> record = record_data;
+    
+    int lines_collected = 0;
+        
+    while(lines_collected < number_of_Lines){
+        //collect data
+        getCurrent(data.currentIN, data.currentOUT, data.netCurrentFlow);
+        lines_collected++;
+    }
 }
 
 /*
@@ -93,4 +109,6 @@ bool Batman::batteryIsLow(void){
  * Prints the data to an array of values that can be parsed by other programs
  * @return int[]: The values other programs might be interested in
  */
-int[] Batman::print_data(void){}
+int[] Batman::print_data(void){
+    return int[5]{0,0,0,0,0};
+}

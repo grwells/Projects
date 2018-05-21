@@ -20,8 +20,8 @@ class INA219
     bool setup(void);
     bool setup(int ina_addr); 
     
-    float getCurrent();
-    float getVoltage();
+    float getCurrent(); //Reads the current from the sensor in mA
+    float getVoltage(); //Reads the current frm the sensor in mV
     std::string prints(void);
 };
 #endif

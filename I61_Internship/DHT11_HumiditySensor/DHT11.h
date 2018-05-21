@@ -10,7 +10,6 @@
 class DHT11{
 public:
 	DHT11(int pinNum); //Initializes sensor on the specified pin
-
 	float read(void); //Read the data
 
 private:

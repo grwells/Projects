@@ -47,9 +47,10 @@ private:
 	std::string filename;
 	std::ofstream file_in;
 	std::string data;                          //data to be written to the file
+	float lastTime; //The last time the time interval was measured
 
 	//Data Variables
-	float charge;    //total charge in the battery
+	float charge = 0;    //total charge in the battery
 	float currentIn; //current that is flowing into the battery
 	float currentOut;//current flowing out of the battery
 	float voltage;  //the voltage supplied to the battery
@@ -92,6 +93,8 @@ public:
 BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numberOfLines)
 {
 	MSG_Printer msg;
+
+	lastTime = millis();
 
 	//Initialize command line based arguments...
 	debug = debugMode;
@@ -153,14 +156,14 @@ BatmanT::BatmanT(bool debugMode, bool verboseMode, bool limitLineMode, int numbe
 	while (keepCollecting)
 	{
 		//Record start time...
-		startingPoint = high_resolution_clock::now();
+		//startingPoint = high_resolution_clock::now();
 		if(verbose || debug){
 			std::time_t system_time= std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 			std::cout << INFO << " starting point for time measurement: " << std::ctime(&system_time) << " or " << system << std::endl;
 		}
 
 		//Wait 10sec...
-		std::this_thread::sleep_for(seconds(5));
+		delay(5000);
 		msg.info_msg(debug || verbose, "slept for 5 seconds...resuming data collection");
 
 		//Save data...
@@ -204,9 +207,12 @@ void BatmanT::logData(void)
 
 
 		//Calculate elapsed time------------------------------------------------------------------------
-		duration<double> timeLapse = duration_cast<duration<double>>(high_resolution_clock::now() - startingPoint); //record first time point
-		deltaT = timeLapse.count();
+		//duration<double> timeLapse = duration_cast<duration<double>>(high_resolution_clock::now() - startingPoint); //record first time point
+		//deltaT = timeLapse.count();
+		deltaT = (lastTime - millis())/1000;
+		lastTime = millis();
 		timeT += deltaT;
+
 		if(verbose){
 			std::cout << INFO << " recorded time elapsed" << "\nTime Elapsed: " << deltaT << "\nTotal Time: " << timeT << std::endl;
 		}else if(debug){std::cout << INFO << " recorded time elapsed..." << std::endl;}
@@ -290,6 +296,9 @@ float BatmanT::calcCurrentCharge()
 	//CALCULATE THE AMOUNT THE CHARGE OF THE BATTERY HAS CHANGED OVER DELTAT
 	if(debug || verbose){
 		std::cout << INFO << " calculating charge..." << std::endl;
+	        std::cout << INFO << " Total Time = " + std::to_string(timeT) + "s";
+		std::cout << INFO << " Current In = " + std::to_string(currentIn);
+		std::cout << INFO << " charge = " + std::to_string(charge);	
 	}
 	return charge + (deltaT * currentIn);
 }

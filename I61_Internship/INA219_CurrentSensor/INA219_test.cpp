@@ -28,7 +28,10 @@ void test2(void){
     print.info_msg(inaB.setup(0x41), "INA219-B setup successful...");  
 
     print.info_msg("INA219-A Current: " + std::to_string(inaA.getCurrent()));
+    print.info_msg("INA219-A Voltage: " + std::to_string(inaA.getVoltage()));
+
     print.info_msg("INA219-B Current: " + std::to_string(inaB.getCurrent()));
+    print.info_msg("INA219-B Voltage: " + std::to_string(inaB.getVoltage()));
 }
 
 int main(int argc, char** argv) {

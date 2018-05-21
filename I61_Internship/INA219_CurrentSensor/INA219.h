@@ -14,6 +14,8 @@ class INA219
     float currentRaw;    
     bool setupSuccess;
 
+    float lastTime;
+
   public:
     INA219(void);
   

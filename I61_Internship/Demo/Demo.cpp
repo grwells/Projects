@@ -30,7 +30,6 @@ void readINA219(void){
 
 void readHCSR04(void){
 	print.info_msg("Reading Ultrasonic...");
-	//HCSR04 hc(5, 4);
 	print.msg("Distance(inches): " + std::to_string(hc.distance(IMPERIAL)), GREEN);
 }
 
@@ -49,7 +48,7 @@ void readDHT11(void){
 
 int main(void){
 	print.info_msg("Initializing sensors...");
-	print.info_msg(input.setup(0x40), "Input current sensor setup successful");
+	print.info_msg(input.setup(0x41), "Input current sensor setup successful");
 	print.info_msg(ina2.setup(), "Output current sensor setup successful");
 
 	while(true){

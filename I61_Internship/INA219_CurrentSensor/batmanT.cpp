@@ -63,8 +63,8 @@ private:
 
 	//Program Variables and Sensors
 	bool keepCollecting;
-	INA219 ina219;
-	INA219 ina;
+	INA219 ina219; //Output sensor
+	INA219 ina; //Input current sensor
 	//Tolako5V tolako;     //Initialize the Tolako sensor on the default pin
 
 public:
@@ -268,8 +268,8 @@ float BatmanT::getCurrent()
 	if(debug || verbose){
 		std::cout << INFO << " reading current..." << std::endl;
 	}
-	currentIn = ina.getCurrent();
-	currentOut = ina.getCurrent();
+	currentIn = ina.getCurrent_mA();
+	currentOut = ina219.getCurrent_mA();
 
 	return currentIn - currentOut;
 }
@@ -284,7 +284,9 @@ float BatmanT::getVoltage()
 	if(debug || verbose){
 		std::cout << INFO << " reading voltage..." << std::endl;
 	}
-	return ina219.getVoltage();
+
+	//return voltage from battery or source, either one
+	return ina219.getShuntVoltage_mV();
 }
 
 /*

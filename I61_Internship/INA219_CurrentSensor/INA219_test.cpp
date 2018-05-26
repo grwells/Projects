@@ -15,6 +15,8 @@
 #include "../Debug_MessagePrinter/MSG_Printer.h"
 #include "INA219.h"
 
+MSG_Printer print;
+
 /*
  * Tests 2xINA219
  */
@@ -103,7 +105,6 @@ void test4(void){
 }
 
 int main(int argc, char** argv) {
-    MSG_Printer print;
     print.info_msg(true, "Starting test...");
 
     test2();

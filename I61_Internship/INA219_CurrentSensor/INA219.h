@@ -10,7 +10,7 @@ class INA219
   private:
     int fd;
     int ina219_calValue = 4096;
-    int current_Divider_mA = 1;
+    int ina219_currentDivider_mA = 1;
     int ina219_powerDivider_mW = 1;
     bool setupSuccess;
 

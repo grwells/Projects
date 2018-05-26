@@ -222,7 +222,7 @@ float INA219::getShuntVoltage_mV(void){
  * @return float: The in Volts
  */
 float INA219::getShuntVoltage_V(void){
-  return getShuntVoltage_mA() * 0.001;
+  return getShuntVoltage_mV() * 0.001;
 }
 
 /*

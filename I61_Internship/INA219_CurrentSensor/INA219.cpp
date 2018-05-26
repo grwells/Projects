@@ -141,7 +141,7 @@ void INA219::set_32V_1A(void){
   ina219_currentDivider_mA = 25;
   ina219_powerDivider_mW = 1;  
 
-  wiringPiI2CWriteReg16(INA219_REG_CALIBRATION, ina219_calValue);
+  wiringPiI2CWriteReg16(fd, INA219_REG_CALIBRATION, ina219_calValue);
 
   uint16_t config = INA219_CONFIG_BVOLTAGERANGE_32V |
                     INA219_CONFIG_GAIN_8_320MV |
@@ -149,7 +149,7 @@ void INA219::set_32V_1A(void){
                     INA219_CONFIG_SADCRES_12BIT_1S_532US |
                     INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
 
-  wiringPiI2CWriteReg16(INA219_REG_CONFIG, config);
+  wiringPiI2CWriteReg16(fd, INA219_REG_CONFIG, config);
 }
 
 /*
@@ -168,7 +168,7 @@ void INA219::set_32V_2A(void){
                     INA219_CONFIG_SADCRES_12BIT_1S_532US |
                     INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
 
-  wiringPiI2CWriteReg16(INA219_REG_CONFIG, config);
+  wiringPiI2CWriteReg16(fd, INA219_REG_CONFIG, config);
 }
 
 /*
@@ -198,7 +198,7 @@ float INA219::getCurrent_mA(void){
   // Call to prevent resetting errors
   wiringPiI2CWrite(INA219_REG_CALIBRATION, ina219_calValue);
 
-  return (float)wiringPiI2CReadReg16(fd, INA219_CURRENT)/10; //Reads the voltage from the current register
+  return (float)wiringPiI2CReadReg16(fd, INA219_REG_CURRENT)/10; //Reads the voltage from the current register
 }
 
 /*
@@ -214,7 +214,7 @@ float INA219::getCurrent_A(void){
   * @return float: The voltage in milliVolts
   */
 float INA219::getShuntVoltage_mV(void){
-  return (uint16_t)wiringPiI2CReadReg16(fd, INA219_SHUNTVOLTAGE)* 0.01;
+  return (uint16_t)wiringPiI2CReadReg16(fd, INA219_REG_SHUNTVOLTAGE)* 0.01;
 }
 
 /*
@@ -230,7 +230,7 @@ float INA219::getShuntVoltage_V(void){
  * @return float: The voltage
  */
 float INA219::getBusVoltage_mV(void){
-  return (uint16_t)wiringPiI2CReadReg16(fd, INA219_BUSVOLTAGE);
+  return (uint16_t)wiringPiI2CReadReg16(fd, INA219_REG_BUSVOLTAGE);
 }
 
 /*
@@ -238,7 +238,7 @@ float INA219::getBusVoltage_mV(void){
  * @return float: The voltage 
  */
 float INA219::getBusVoltage_V(void){
-  return getBusVoltage_mA() * 0.001;  
+  return getBusVoltage_mV() * 0.001;  
 }
 
 /*

@@ -139,7 +139,7 @@ bool INA219::setup(int addr)
 void INA219::set_32V_1A(void){
   ina219_calValue = 10240;
   ina219_currentDivider_mA = 25;
-  ina219_powerDivider_mA = 1;  
+  ina219_powerDivider_mW = 1;  
 
   wiringPiI2CWriteReg16(fd, INA219_REG_CALIBRATION, ina219_calValue);
 
@@ -157,7 +157,7 @@ void INA219::set_32V_1A(void){
  */
 void INA219::set_32V_2A(void){
   ina219_calValue = 4096;
-  current_Divider_mA = 10;
+  ina219_currentDivider_mA = 10;
   ina219_powerDivider_mW = 2;
 
   wiringPiI2CWriteReg16(fd, INA219_REG_CALIBRATION, ina219_calValue);

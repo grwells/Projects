@@ -83,7 +83,7 @@
 /*=========================================================================
     CALIBRATION REGISTER (R/W)
     -----------------------------------------------------------------------*/
-    #define I NA219_REG_CALIBRATION                 (0x05)
+    #define INA219_REG_CALIBRATION                 (0x05)
 /*=========================================================================*/
 
 /*
@@ -112,7 +112,7 @@ bool INA219::setup(void)
              INA219_SADCRES_12BIT_1S_532US |
              INA219_MODE_SANDBVOLT_CONTINUOUS;
  
-  return (fd >= 0) && (wiringPiI2CWriteReg16(fd, INA219_CALIBRATION, config) >= 0);
+  return (fd >= 0) && (wiringPiI2CWriteReg16(fd, INA219_REG_CALIBRATION, config) >= 0);
 }
 
 /*
@@ -124,13 +124,13 @@ bool INA219::setup(int addr)
 {
   fd = wiringPiI2CSetup(addr);
   
-  uint16_t config = INA219_BVOLTAGERANGE_32V |
-             INA219_GAIN_8_320MV |
-             INA219_BADCRES_12BIT |
-             INA219_SADCRES_12BIT_1S_532US |
-             INA219_MODE_SANDBVOLT_CONTINUOUS;
+  uint16_t config = INA219_CONFIG_BVOLTAGERANGE_32V |
+                    INA219_CONFIG_GAIN_8_320MV |
+                    INA219_CONFIG_BADCRES_12BIT |
+                    INA219_CONFIG_SADCRES_12BIT_1S_532US |
+                    INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
 
-  return (fd >= 0) && wiringPiI2CWriteReg16(fd, INA219_CALIBRATION, config);
+  return (fd >= 0) && wiringPiI2CWriteReg16(fd, INA219_REG_CALIBRATION, config);
 }
 
 /*
@@ -187,7 +187,7 @@ void INA219::set_16V_400mA(void){
                     INA219_CONFIG_SADCRES_12BIT_1S_532US |
                     INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
 
-  wiringPiI2CWriteReg16(INA219_REG_CONFIG, config);
+  wiringPiI2CWriteReg16(fd, INA219_REG_CONFIG, config);
 }
 
 /*
@@ -196,7 +196,7 @@ void INA219::set_16V_400mA(void){
  */
 float INA219::getCurrent_mA(void){
   // Call to prevent resetting errors
-  wiringPiI2CWrite(INA219_CALIBRATION, ina219_calValue);
+  wiringPiI2CWrite(INA219_REG_CALIBRATION, ina219_calValue);
 
   return (float)wiringPiI2CReadReg16(fd, INA219_CURRENT)/10; //Reads the voltage from the current register
 }
@@ -238,7 +238,7 @@ float INA219::getBusVoltage_mV(void){
  * @return float: The voltage 
  */
 float INA219::getBusVoltage_V(void){
-  return getBusVoltage_mA * 0.001;  
+  return getBusVoltage_mA() * 0.001;  
 }
 
 /*
@@ -246,6 +246,6 @@ float INA219::getBusVoltage_V(void){
  */
 std::string INA219::prints(void)
 {
-  std::string info = "Current: " + std::to_string(getCurrent()) + ", Voltage: " + std::to_string(getVoltage()) + "\n";
+  std::string info = "Current: " + std::to_string(getCurrent_mA()) + ", Voltage: " + std::to_string(getShuntVoltage_V()) + "\n";
   return info;
 }

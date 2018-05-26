@@ -2,9 +2,10 @@
 
 /*
 * Initializes wiringPi and sets the pinMode for the pump controller
-* @param controlPin The pin the pump is connected to via relay
+* @param int controlPin: The pin the pump is connected to via relay
+* @param bool default_state: The default state of the relay, if true, the relay is supplying power to connected devices when no power is supplied
 */
-PC::PC(int controlPin){
+PC::PC(int controlPin, bool default_State){
 	pinNumber = controlPin;
 	wiringPiSetup();
 	PinMode(pinNumber, OUTPUT);

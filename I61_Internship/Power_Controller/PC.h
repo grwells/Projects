@@ -9,13 +9,14 @@ const static bool OFF = false;
 
 class PC{
 public:
-	PC(int controlPin);	//Set the pin for the pump control
-	bool powerOn(void);	//Turn check if the pump is running
-	void turnOn(void);
-	void turnOff(void);
+	PC(int controlPin, bool default_State);	//Set the pin that is connected to the relay
+	bool powerOn(void);	//Turn check if power the relay is connected and powered on
+	void turnOn(void); //Turn on power to the relay
+	void turnOff(void); //Turn off power to the relay
 
 private:
-	bool powerState = false;	//Whether the pump is on or off
-	int pinNumber;				//The number of the pin the pump is connected to
+	bool default_Power_State = OFF; //Default power state of the relay
+	bool powerState = ON;	//Whether the relay is on or off
+	int pinNumber; //The number of the pin the relay is connected to
 };
 #endif

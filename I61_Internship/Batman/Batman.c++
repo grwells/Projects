@@ -4,7 +4,9 @@
 #include "Batman.h"
 
 /*
- * Constructs a new Battery Manager
+ * Constructs a new Battery Manager and gathers an unlimited number of lines of data
+ * @param bool print_debug: If true, print the debug messages
+ * @param bool record_data: If true, record the data to a file
  */
 Batman::Batman(bool print_debug, bool record_data){
     wiringPiSetup(); //Initialize wiringPi
@@ -12,7 +14,16 @@ Batman::Batman(bool print_debug, bool record_data){
     this-> record = record_data;
 }
 
+/*
+ * Records a limited number of lines of data
+ * @param bool print_debug: If true, print debug messages
+ * @param bool record_data: If true, record the data
+ * @param int number_of_Lines: The number of lines of data to collect
+ */
 Batman::Batman(bool print_debug, bool record_data, int number_of_Lines){
+
+    data.time_point = millis(); //Set the time that the program starts...
+
     wiringPiSetup(); //Initialize wiringPi
     this-> debug = print_debug;
     this-> record = record_data;
@@ -21,7 +32,7 @@ Batman::Batman(bool print_debug, bool record_data, int number_of_Lines){
         
     while(lines_collected < number_of_Lines){
         //collect data
-        getCurrent(data.currentIN, data.currentOUT, data.netCurrentFlow);
+        getCurrent(*data.currentIN, *data.currentOUT, *data.netCurrentFlow);
         lines_collected++;
     }
 }
@@ -57,6 +68,7 @@ void Batman::logData(std::string filename, std::string data){
  * Sends the data to the user using the communication system
  */
 void Batman::sendData(void){
+    //TODO: Implement data sending features...
     print.info_msg(true, "Message from bits and bytes");
 }
 
@@ -65,13 +77,25 @@ void Batman::sendData(void){
  * @return float: The net current, positive if charging, negative if discharging power faster than input
  */
 float Batman::getCurrent(float *currentIn, float *currentOut, float *netCurrentFlow){
-    &currentIn = input.getCurrent();
-    &currentOut = output.getCurrent();
-    
+    //Read and record the current flowing through the wires...
+    &currentIn = input.getCurrent_mA();
+    &currentOut = output.getCurrent_mA();
+
+    //Record the time data and calculate time since last recording point
+    float time_millis = millis(); //Current time since program start
+    data.time_step = (time_millis - data.time_point)/1000; //Difference in time(seconds), since the last reading
+    data.total_time += data.time_step;
+    data.time_point = millis(); // Record the time that the current was measured
+   
+    //Record the net current flow 
     &netCurrentFlow = &currentIn - &currentOut;
     
+    //Print debug statements and notify user if current flow is abnormal, etc.
+    //TODO: Implement user warnings... 
     print.info_msg(debug, "Current In: " + std::to_string(&currentIn) + "\n     Current Out: " + std::to_string(&currentOut));
-    
+    print.info_msg(debug && (&netCurrentFlow > 0), "Charging battery...");
+    print.info_msg(debug && (&netCurrentFlow < 0), "Discharging battery...");
+
     return &netCurrentFlow;
 }
 
@@ -80,15 +104,18 @@ float Batman::getCurrent(float *currentIn, float *currentOut, float *netCurrentF
  * @return float: The voltage in the system
  */
 float Batman::getVoltage(float *voltage){
-    &voltage = input.getVoltage();
+    &voltage = input.getVoltage_mV();
     
     print.info_msg(debug || verbose, "Voltage Input: " + std::to_string(&voltage));
+
+    //TODO: Implement user warnings...
+    print.warning_msg(debug && (&voltage < 1000), "Voltage is below expected level...");
     
     return &voltage;
 }
 
 /*
- * Calculates the current amount of charge in the battery as a percentage 
+ * Calculates the current amount of charge in the battery as a percentage of total 
  * @return float: Percent the battery is charged
  */
 float Batman::calcCurrentCharge(float *netCharge, float *time_step){

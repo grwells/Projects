@@ -35,7 +35,7 @@ class INA219
     float getShuntVoltage_V(void); //Reads the shunt voltage and converts to Volts
 
     float getBusVoltage_mV(void); //Reads the voltage across GND and V-, the total voltage seen by the circuit under test
-    float getShuntVoltage_V(void); //Reads the bus voltage and converts to Volts
+    float getBusVoltage_V(void); //Reads the bus voltage and converts to Volts
 
     std::string prints(void);
 };

@@ -160,7 +160,7 @@ void INA219::set_32V_2A(void){
   current_Divider_mA = 10;
   ina219_powerDivider_mW = 2;
 
-  wiringPiI2CWriteReg16(INA219_REG_CALIBRATION, ina219_calValue);
+  wiringPiI2CWriteReg16(fd, INA219_REG_CALIBRATION, ina219_calValue);
 
   uint16_t config = INA219_CONFIG_BVOLTAGERANGE_32V |
                     INA219_CONFIG_GAIN_8_320MV |
@@ -179,7 +179,7 @@ void INA219::set_16V_400mA(void){
   ina219_currentDivider_mA = 20;
   ina219_powerDivider_mW = 1;
 
-  wiringPiI2CWriteReg16(INA219_REG_CALIBRATION, ina219_calValue);
+  wiringPiI2CWriteReg16(fd, INA219_REG_CALIBRATION, ina219_calValue);
 
   uint16_t config = INA219_CONFIG_BVOLTAGERANGE_16V |
                     INA219_CONFIG_GAIN_1_40MV |

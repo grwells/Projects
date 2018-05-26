@@ -104,7 +104,7 @@ INA219::INA219(void)
  */
 bool INA219::setup(void)
 {
-  fd = wiringPiI2CSetup(INA219_ADDR);
+  fd = wiringPiI2CSetup(INA219_ADDRESS);
 
   uint16_t config = INA219_BVOLTAGERANGE_32V |
              INA219_GAIN_8_320MV |

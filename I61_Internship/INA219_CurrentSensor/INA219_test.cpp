@@ -25,18 +25,19 @@ void test1(void){
     INA219 inaA;
     INA219 inaB;
     
-    MSG_Printer print;
-
-    print.info_msg(inaA.setup(), "INA219-A setup successful...");
-    print.info_msg(inaB.setup(0x41), "INA219-B setup successful...");  
-    inaA.set_16V_400mA();
-    inaB.set_16V_400mA();
-
-    print.info_msg("INA219-A Curren(mA)t: " + std::to_string(inaA.getCurrent_mA()));
-    print.info_msg("INA219-A Voltage(mV): " + std::to_string(inaA.getShuntVoltage_mV()));
-
-    print.info_msg("INA219-B Current(mA): " + std::to_string(inaB.getCurrent_mA()));
-    print.info_msg("INA219-B Voltage(mV): " + std::to_string(inaB.getShuntVoltage_mV()));
+    if(inaA.setup()){
+        print.info_msg("INA219-A setup successful...");
+        inaA.set_16V_400mA();  
+        print.info_msg("INA219-A Curren(mA)t: " + std::to_string(inaA.getCurrent_mA()));
+        print.info_msg("INA219-A Voltage(mV): " + std::to_string(inaA.getShuntVoltage_mV()));
+    }
+    
+    if(inaB.setup(0x41)){
+        print.info_msg("INA219-B setup successful...");
+        inaB.set_16V_400mA();
+        print.info_msg("INA219-B Current(mA): " + std::to_string(inaB.getCurrent_mA()));
+        print.info_msg("INA219-B Voltage(mV): " + std::to_string(inaB.getShuntVoltage_mV()));
+    }
 }
 
 /*
@@ -48,16 +49,19 @@ void test2(void){
     INA219 inaA;
     INA219 inaB;
     
-    MSG_Printer print;
-
-    print.info_msg(inaA.setup(), "INA219-A setup successful...");
-    print.info_msg(inaB.setup(0x41), "INA219-B setup successful...");  
-
-    print.info_msg("INA219-A Curren(mA)t: " + std::to_string(inaA.getCurrent_mA()));
-    print.info_msg("INA219-A Voltage(mV): " + std::to_string(inaA.getShuntVoltage_mV()));
-
-    print.info_msg("INA219-B Current(mA): " + std::to_string(inaB.getCurrent_mA()));
-    print.info_msg("INA219-B Voltage(mV): " + std::to_string(inaB.getShuntVoltage_mV()));
+    if(inaA.setup()){
+        print.info_msg("INA219-A setup successful...");
+        inaA.set_32V_1A();  
+        print.info_msg("INA219-A Curren(mA)t: " + std::to_string(inaA.getCurrent_mA()));
+        print.info_msg("INA219-A Voltage(mV): " + std::to_string(inaA.getShuntVoltage_mV()));
+    }
+    
+    if(inaB.setup(0x41)){
+        print.info_msg("INA219-B setup successful...");
+        inaB.set_32V_1A();
+        print.info_msg("INA219-B Current(mA): " + std::to_string(inaB.getCurrent_mA()));
+        print.info_msg("INA219-B Voltage(mV): " + std::to_string(inaB.getShuntVoltage_mV()));
+    }
 }
 
 /*
@@ -68,19 +72,19 @@ void test3(void){
     INA219 inaA;
     INA219 inaB;
     
-    MSG_Printer print;
-
-    print.info_msg(inaA.setup(), "INA219-A setup successful...");
-    print.info_msg(inaB.setup(0x41), "INA219-B setup successful...");  
-    inaA.set_32V_1A();
-    inaB.set_32V_1A();
-
-    print.info_msg("INA219-A Curren(mA): " + std::to_string(inaA.getCurrent_mA()));
-    print.info_msg("INA219-A Voltage(mV): " + std::to_string(inaA.getShuntVoltage_mV()));
-
-    print.info_msg("INA219-B Current(mA): " + std::to_string(inaB.getCurrent_mA()));
-    print.info_msg("INA219-B Voltage(mV): " + std::to_string(inaB.getShuntVoltage_mV()));
-}
+    if(inaA.setup()){
+        print.info_msg("INA219-A setup successful...");
+        inaA.set_32V_1A();  
+        print.info_msg("INA219-A Curren(mA)t: " + std::to_string(inaA.getCurrent_mA()));
+        print.info_msg("INA219-A Voltage(mV): " + std::to_string(inaA.getShuntVoltage_mV()));
+    }
+    
+    if(inaB.setup(0x41)){
+        print.info_msg("INA219-B setup successful...");
+        inaB.set_32V_1A();
+        print.info_msg("INA219-B Current(mA): " + std::to_string(inaB.getCurrent_mA()));
+        print.info_msg("INA219-B Voltage(mV): " + std::to_string(inaB.getShuntVoltage_mV()));
+    }
 
 /*
  * Tests 2xINA219
@@ -90,18 +94,19 @@ void test4(void){
     INA219 inaA;
     INA219 inaB;
     
-    MSG_Printer print;
-
-    print.info_msg(inaA.setup(), "INA219-A setup successful...");
-    print.info_msg(inaB.setup(0x41), "INA219-B setup successful...");  
-    inaA.set_32V_2A();
-    inaB.set_32V_2A();
-
-    print.info_msg("INA219-A Curren(mA): " + std::to_string(inaA.getCurrent_mA()));
-    print.info_msg("INA219-A Voltage(mV): " + std::to_string(inaA.getShuntVoltage_mV()));
-
-    print.info_msg("INA219-B Current(mA): " + std::to_string(inaB.getCurrent_mA()));
-    print.info_msg("INA219-B Voltage(mV): " + std::to_string(inaB.getShuntVoltage_mV()));
+    if(inaA.setup()){
+        print.info_msg("INA219-A setup successful...");
+        inaA.set_32V_2A();  
+        print.info_msg("INA219-A Curren(mA)t: " + std::to_string(inaA.getCurrent_mA()));
+        print.info_msg("INA219-A Voltage(mV): " + std::to_string(inaA.getShuntVoltage_mV()));
+    }
+    
+    if(inaB.setup(0x41)){
+        print.info_msg("INA219-B setup successful...");
+        inaB.set_32V_2A();
+        print.info_msg("INA219-B Current(mA): " + std::to_string(inaB.getCurrent_mA()));
+        print.info_msg("INA219-B Voltage(mV): " + std::to_string(inaB.getShuntVoltage_mV()));
+    }
 }
 
 int main(int argc, char** argv) {

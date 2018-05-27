@@ -112,7 +112,7 @@ bool INA219::setup(void)
                     INA219_CONFIG_SADCRES_12BIT_1S_532US |
                     INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
  
-  return (fd >= 0) && (wiringPiI2CWriteReg16(fd, INA219_REG_CALIBRATION, config) >= 0);
+  return (fd >= 0) && (wiringPiI2CWriteReg16(fd, INA219_REG_CONFIG, config) >= 0);
 }
 
 /*
@@ -130,7 +130,7 @@ bool INA219::setup(int addr)
                     INA219_CONFIG_SADCRES_12BIT_1S_532US |
                     INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
 
-  return (fd >= 0) && wiringPiI2CWriteReg16(fd, INA219_REG_CALIBRATION, config);
+  return (fd >= 0) && wiringPiI2CWriteReg16(fd, INA219_REG_CONFIG, config);
 }
 
 /*

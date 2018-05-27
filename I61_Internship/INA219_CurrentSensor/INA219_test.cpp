@@ -84,7 +84,9 @@ void test3(void){
         inaB.set_32V_1A();
         print.info_msg("INA219-B Current(mA): " + std::to_string(inaB.getCurrent_mA()));
         print.info_msg("INA219-B Voltage(mV): " + std::to_string(inaB.getShuntVoltage_mV()));
+    
     }
+}
 
 /*
  * Tests 2xINA219

@@ -5,9 +5,15 @@
 #include "Scheduler.h"
  
 /*
- * Creates a new instance of Scheduler
+ * Creates a new instance of Scheduler.
+ * Scheduler creates and modifies pre-existing schedules for the application
  */
-Scheduler::Scheduler(void){}
+Scheduler::Scheduler(void){
+	//Look for pre-existing schedules
+
+	std::ifstream file;
+	file.open("01.day");
+}
 
 /*
  * Creates a new schedule that uses only one day, continuously looping
@@ -53,6 +59,9 @@ std::string Scheduler::print_Schedules(void){}
  */
 void Scheduler::select_Schedule(std::string schedule_options){}
 
+/*
+ * Selects the file to edit and runs scheduler
+ */
 int main(int argc, char *argv[]){
 
     //Process command line arguments

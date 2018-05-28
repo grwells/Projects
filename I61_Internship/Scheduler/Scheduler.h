@@ -12,6 +12,9 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
+#include <iostream>
+#include <ifstream>
+
 class Scheduler{
 public:
     Scheduler(void);

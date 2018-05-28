@@ -73,6 +73,15 @@ void Batman::sendData(void){
 }
 
 /*
+ * Send warning to the user
+ * @param std::string message: The message to send to the user
+ */
+ void Batman::sendWarning(std::string message){
+	print.warning_msg(message);
+	//TODO: Send message with FONA
+ }
+
+/*
  * Measures the net current flowing through the system
  * @return float: The net current, positive if charging, negative if discharging power faster than input
  */
@@ -115,7 +124,9 @@ float Batman::getVoltage(float *voltage){
 }
 
 /*
- * Calculates the current amount of charge in the battery as a percentage of total 
+ * Calculates the current amount of charge in the battery as a percentage of total
+ * @param float* netCharge: The amount of charge in the battery
+ * @param float* time_step: How long since the last data collection point
  * @return float: Percent the battery is charged
  */
 float Batman::calcCurrentCharge(float *netCharge, float *time_step){
@@ -137,5 +148,13 @@ bool Batman::batteryIsLow(void){
  * @return int[]: The values other programs might be interested in
  */
 int[] Batman::print_data(void){
-    return int[5]{0,0,0,0,0};
+    /*
+     * 1. Voltage
+     * 2. Net Charge
+     * 3. Current in
+     * 4. Current out
+     * 5. Time stamp
+     */
+    float[4] data{data.voltage, data.netCharge, data.currentIN, data.currentOUT};
+    return data;
 }

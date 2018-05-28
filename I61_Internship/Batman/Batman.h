@@ -80,6 +80,7 @@ public:
 
     void logData(std::string filename, std::string data); //Prints data to a file as a string    
     void sendData(void); //Sends the data to the user when necessary
+    void sendWarning(std::string message); //Sends a warning message to the user when something goes wrong
     bool batteryIsLow(void); //If true the user better charge or replace battery
     int[] print_data(void); //Prints the data collected to an array of values
 

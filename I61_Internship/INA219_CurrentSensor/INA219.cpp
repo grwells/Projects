@@ -20,6 +20,8 @@ INA219::INA219(void)
  */
 bool INA219::setup(void)
 {
+  std::cout << "Calling default setup" << std::endl;
+
   fd = wiringPiI2CSetup(INA219_ADDRESS);
 
   std::cout << "fd = " << fd << std::endl;
@@ -36,6 +38,8 @@ bool INA219::setup(void)
  */
 bool INA219::setup(int addr)
 {
+  std::cout << "Calling setup" << std::endl;
+
   fd = wiringPiI2CSetup(addr);
 
   std::cout << "fd = " << fd << std::endl;

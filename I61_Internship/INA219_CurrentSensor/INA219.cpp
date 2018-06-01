@@ -20,6 +20,8 @@ INA219::INA219(void)
  */
 bool INA219::setup(void)
 {
+  std::cout << "Calling default setup" << std::endl;
+
   fd = wiringPiI2CSetup(INA219_ADDRESS);
 
   std::cout << "fd = " << fd << std::endl;
@@ -36,6 +38,8 @@ bool INA219::setup(void)
  */
 bool INA219::setup(int addr)
 {
+  std::cout << "Calling setup" << std::endl;
+
   fd = wiringPiI2CSetup(addr);
 
   std::cout << "fd = " << fd << std::endl;
@@ -129,7 +133,9 @@ void INA219::set_16V_400mA(void){
  */
 float INA219::getCurrent_mA(void){
   // Call to prevent resetting errors
-  wiringPiI2CWrite(INA219_REG_CALIBRATION, ina219_calValue);
+  int fileDescriptor = wiringPiI2CWrite(INA219_REG_CALIBRATION, ina219_calValue);
+
+  if(fileDescriptor < 0) std::cout << "Failed to write conifg before reading sensor...\n" << std::endl;
 
   return (float)wiringPiI2CReadReg16(fd, INA219_REG_CURRENT)/10; //Reads the voltage from the current register
 }

@@ -22,6 +22,8 @@ bool INA219::setup(void)
 {
   fd = wiringPiI2CSetup(INA219_ADDRESS);
 
+  std::cout << "fd = " << fd << std::endl;
+  
   set_32V_2A(); //Set the sensor to read widest possible range of values
 
   return (fd >= 0);
@@ -35,6 +37,8 @@ bool INA219::setup(void)
 bool INA219::setup(int addr)
 {
   fd = wiringPiI2CSetup(addr);
+
+  std::cout << "fd = " << fd << std::endl;
 
   set_32V_2A(); //Set the sensor to read from as many values as possible
 

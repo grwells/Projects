@@ -7,11 +7,9 @@
  */
 INA219::INA219(void)
 {
-  //Call the default setup method
-  bool setupSuccessful = setup();
-  if(!setupSuccessful){
-	std::cout << "[ERROR]: setup failed, try changing address" << std::endl;
-  }
+  fd = 0;
+  ina219_currentDivider_mA = 0;
+  ina219_powerDivider_mW = 0;
 }
 
 /*
@@ -25,7 +23,9 @@ bool INA219::setup(void)
   fd = wiringPiI2CSetup(INA219_ADDRESS);
 
   std::cout << "fd = " << fd << std::endl;
-  
+
+  if(fd < 0) std::cout <<"ERRROR!!!!: " std::strerror(errno) << std::endl;
+
   set_32V_2A(); //Set the sensor to read widest possible range of values
 
   return (fd >= 0);
@@ -43,6 +43,8 @@ bool INA219::setup(int addr)
   fd = wiringPiI2CSetup(addr);
 
   std::cout << "fd = " << fd << std::endl;
+
+  if(fd < 0) std::cout <<"ERRROR!!!!: " std::strerror(errno) << std::endl;
 
   set_32V_2A(); //Set the sensor to read from as many values as possible
 
@@ -67,12 +69,16 @@ void INA219::set_32V_1A(void){
                     INA219_CONFIG_BADCRES_12BIT |
                     INA219_CONFIG_SADCRES_12BIT_1S_532US |
                     INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
-  
+
   int second_fileDescriptor;
   second_fileDescriptor = wiringPiI2CWriteReg8(fd, INA219_REG_CONFIG, config);
   failed = fileDescriptor < 0 && second_fileDescriptor < 0;
 
-  if(failed) throw_configError("set_32V_1A, fd1 = " + std::to_string(fileDescriptor) + " fd2 = " + std::to_string(second_fileDescriptor));
+  if(failed){
+  	std::cout <<"ERRROR!!!!: " std::strerror(errno) << std::endl;
+  	throw_configError("set_32V_1A, fd1 = " + std::to_string(fileDescriptor) + " fd2 = " + std::to_string(second_fileDescriptor));
+  }
+
 }
 
 /*
@@ -98,7 +104,10 @@ void INA219::set_32V_2A(void){
   second_fileDescriptor = wiringPiI2CWriteReg16(fd, INA219_REG_CONFIG, config);
   failed = fileDescriptor < 0 && second_fileDescriptor < 0;
 
-  if(failed) throw_configError("set_32V_2A, fd1 = " + std::to_string(fileDescriptor) + " fd2 = " + std::to_string(second_fileDescriptor)); 
+  if(failed){
+  	std::cout <<"ERRROR!!!!: " std::strerror(errno) << std::endl;
+  	throw_configError("set_32V_2A, fd1 = " + std::to_string(fileDescriptor) + " fd2 = " + std::to_string(second_fileDescriptor));
+  }
 }
 
 /*
@@ -124,7 +133,10 @@ void INA219::set_16V_400mA(void){
   second_fileDescriptor = wiringPiI2CWriteReg16(fd, INA219_REG_CONFIG, config);
   failed = fileDescriptor < 0 && second_fileDescriptor < 0;
 
-  if(failed) throw_configError("set_16V_400mA, fd1 = " + std::to_string(fileDescriptor) + " fd2 = " + std::to_string(second_fileDescriptor));
+  if(failed){
+  	std::cout <<"ERRROR!!!!: " std::strerror(errno) << std::endl;
+   	throw_configError("set_16V_400mA, fd1 = " + std::to_string(fileDescriptor) + " fd2 = " + std::to_string(second_fileDescriptor));
+   }
 }
 
 /*

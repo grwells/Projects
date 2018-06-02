@@ -24,7 +24,7 @@ bool INA219::setup(void)
 
   std::cout << "fd = " << fd << std::endl;
 
-  if(fd < 0) std::cout <<"ERRROR!!!!: " std::strerror(errno) << std::endl;
+  if(fd < 0) std::cout <<"ERRROR!!!!: " << std::strerror(errno) << std::endl;
 
   set_32V_2A(); //Set the sensor to read widest possible range of values
 
@@ -44,7 +44,7 @@ bool INA219::setup(int addr)
 
   std::cout << "fd = " << fd << std::endl;
 
-  if(fd < 0) std::cout <<"ERRROR!!!!: " std::strerror(errno) << std::endl;
+  if(fd < 0) std::cout <<"ERRROR!!!!: " << std::strerror(errno) << std::endl;
 
   set_32V_2A(); //Set the sensor to read from as many values as possible
 
@@ -75,7 +75,7 @@ void INA219::set_32V_1A(void){
   failed = fileDescriptor < 0 && second_fileDescriptor < 0;
 
   if(failed){
-  	std::cout <<"ERRROR!!!!: " std::strerror(errno) << std::endl;
+  	std::cout <<"ERRROR!!!!: " << std::strerror(errno) << std::endl;
   	throw_configError("set_32V_1A, fd1 = " + std::to_string(fileDescriptor) + " fd2 = " + std::to_string(second_fileDescriptor));
   }
 
@@ -105,7 +105,7 @@ void INA219::set_32V_2A(void){
   failed = fileDescriptor < 0 && second_fileDescriptor < 0;
 
   if(failed){
-  	std::cout <<"ERRROR!!!!: " std::strerror(errno) << std::endl;
+  	std::cout <<"ERRROR!!!!: " << std::strerror(errno) << std::endl;
   	throw_configError("set_32V_2A, fd1 = " + std::to_string(fileDescriptor) + " fd2 = " + std::to_string(second_fileDescriptor));
   }
 }
@@ -134,7 +134,7 @@ void INA219::set_16V_400mA(void){
   failed = fileDescriptor < 0 && second_fileDescriptor < 0;
 
   if(failed){
-  	std::cout <<"ERRROR!!!!: " std::strerror(errno) << std::endl;
+  	std::cout <<"ERRROR!!!!: " << std::strerror(errno) << std::endl;
    	throw_configError("set_16V_400mA, fd1 = " + std::to_string(fileDescriptor) + " fd2 = " + std::to_string(second_fileDescriptor));
    }
 }

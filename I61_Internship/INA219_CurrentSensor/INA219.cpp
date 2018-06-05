@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <stdint.h>
+#include <stdexcept>
 #include "INA219.h"
 
 /*
@@ -7,6 +8,10 @@
  */
 INA219::INA219(void)
 {
+  std::cout << "errno: " << std::strerror(errno) << std::endl;
+  errno = 0;
+  std::cout << "errno: " << std::strerror(errno) << std::endl;
+
   fd = 0;
   ina219_currentDivider_mA = 0;
   ina219_powerDivider_mW = 0;
@@ -18,15 +23,22 @@ INA219::INA219(void)
  */
 bool INA219::setup(void)
 {
+  try{
   std::cout << "Calling default setup" << std::endl;
+  
+  int add = 0x40;
+  std::cout << add << std::endl;
 
-  fd = wiringPiI2CSetup(INA219_ADDRESS);
+  fd = wiringPiI2CSetup(add);
 
   std::cout << "fd = " << fd << std::endl;
 
-  if(fd < 0) std::cout <<"ERRROR!!!!: " << std::strerror(errno) << std::endl;
+  if(fd < 0){std::cout <<"ERRROR!!!!: " << std::strerror(errno) << std::endl;}
 
   set_32V_2A(); //Set the sensor to read widest possible range of values
+  }catch(std::invalid_argument& ia){
+  	std::cerr << "Invalid Argument: " << ia.what() << '\n';
+  }
 
   return (fd >= 0);
 }

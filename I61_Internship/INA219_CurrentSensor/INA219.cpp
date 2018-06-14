@@ -24,12 +24,10 @@ INA219::INA219(void)
 bool INA219::setup(void)
 {
   try{
+  
   std::cout << "Calling default setup" << std::endl;
   
-  int add = 0x40;
-  std::cout << add << std::endl;
-
-  fd = wiringPiI2CSetup(add);
+  fd = wiringPiI2CSetup(0x40);
 
   std::cout << "fd = " << fd << std::endl;
 

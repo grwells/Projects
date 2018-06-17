@@ -4,7 +4,7 @@ Crontab is a scheduling tool for the OS. Tasks can be scheduled by hour, week, o
 # Crontab File Syntax
 The file can contain as many tasks as needed. Each script must be executable and bash shell readable. To make that possible execute the following command:
 
-chmod +rx /bash/script/location
+> chmod +rx /bash/script/location
 
 The script must also contain a shebang line at the top of the file.
 

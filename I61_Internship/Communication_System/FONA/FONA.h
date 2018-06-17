@@ -19,6 +19,7 @@
 class FONA{
 public:
     FONA(std::string owner, std::string name, std::string address, float coordinateLocation[2]);
+    FONA(void);
 
     void sendMSG(std::string address, std::string message);
 

@@ -1,0 +1,1 @@
+55 20 * * * pi /home/pi/Documents/GitHub/Personal/Projects/I61_Internship/Scheduler/Cron/printhello 

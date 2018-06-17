@@ -1,0 +1,38 @@
+#This file is a prototype schedule
+#The value on the right is the hour of the day
+
+#These are the systems that are loaded on startup, and determine which functions are called
+Systems:Batman,Aquaman
+
+#12:00AM
+00:water-level,battery-level
+01:
+02:
+03:
+04:
+05:
+
+#6:00AM
+06:
+07:
+08:
+09:
+10:
+11:
+
+#12:00PM
+12:
+13:
+14:
+15:
+16:
+17:
+
+#6:00PM
+18:
+19:
+20:
+21:
+22:
+23:
+

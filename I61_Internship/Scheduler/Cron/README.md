@@ -11,7 +11,7 @@ The script must also contain a shebang line at the top of the file.
  #!/bin/sh
 
 Minute | Hour | Month | Year | Task
- * * * * usr(like pi/root) /bash/script/location
+  * * * * usr(like pi/root) /bash/script/location
 
 # How to Use With Aquaman
 In crontab daily directory: 

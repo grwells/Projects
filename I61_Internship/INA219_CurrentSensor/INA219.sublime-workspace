@@ -1,0 +1,529 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"getCurrent_",
+				"getCurrent_mA"
+			],
+			[
+				"record",
+				"record_data"
+			],
+			[
+				"getCurrent",
+				"getCurrent_mA"
+			],
+			[
+				"wiring",
+				"wiringPiI2CWriteReg16"
+			],
+			[
+				"wirint",
+				"wiringPiI2CWriteReg16"
+			],
+			[
+				"getBus",
+				"getBusVoltage_mA"
+			],
+			[
+				"wirin",
+				"wiringPiI2CReadReg16"
+			],
+			[
+				"getSh",
+				"getShuntVoltage_mA"
+			],
+			[
+				"int",
+				"init\tfunc"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/C/Users/deepg/Documents/Git/Projects/I61_Internship/Communication_System/CommSys.h",
+			"settings":
+			{
+				"buffer_size": 657,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "\n  BRANCH:  On branch `master` tracking `origin/master`.\n  ROOT:    C:\\Users\\deepg\\Documents\\Git\\Projects\n  HEAD:    acbf06e New stuff\n\n  UNTRACKED:\n    .gitignore\n    I61_Internship/.vs/\n    I61_Internship/Batman/main_batman.cpp\n    I61_Internship/Communication_System/nbproject/\n    I61_Internship/DS18B20_TemperatureSensor/nbproject/\n    I61_Internship/INA219_CurrentSensor/INA219.sublime-project\n    I61_Internship/INA219_CurrentSensor/INA219.sublime-workspace\n    I61_Internship/INA219_CurrentSensor/hello.cpp\n    I61_Internship/INA219_CurrentSensor/makefileWin10\n    I61_Internship/Test/\n    I61_Internship/nbproject/\n\n  ###################                   ###############\n  ## SELECTED FILE ##                   ## ALL FILES ##\n  ###################                   ###############\n\n  [o] open file                         [a] stage all unstaged files\n  [s] stage file                        [A] stage all unstaged and untracked files\n  [u] unstage file                      [U] unstage all staged files\n  [d] discard changes to file           [D] discard all unstaged changes\n  [h] open file on remote\n  [M] launch external merge tool\n\n  [l] diff file inline                  [f] diff all files\n  [e] diff file                         [F] diff all cached files\n\n  #############                         #############\n  ## ACTIONS ##                         ## STASHES ##\n  #############                         #############\n\n  [c] commit                            [t][a] apply stash\n  [C] commit, including unstaged        [t][p] pop stash\n  [m] amend previous commit             [t][s] show stash\n  [p] push current branch               [t][c] create stash\n                                        [t][u] create stash including untracked files\n  [i] ignore file                       [t][g] create stash of staged changes only\n  [I] ignore pattern                    [t][d] drop stash\n\n  [B] abort merge\n\n  ###########\n  ## OTHER ##\n  ###########\n\n  [r]         refresh status\n  [?]         toggle this help menu\n  [tab]       transition to next dashboard\n  [SHIFT-tab] transition to previous dashboard\n  [.]         move cursor to next file\n  [,]         move cursor to previous file\n\n-\n\n",
+			"settings":
+			{
+				"buffer_size": 2202,
+				"line_ending": "Windows",
+				"name": "STATUS: Projects",
+				"read_only": true,
+				"scratch": true
+			}
+		},
+		{
+			"file": "/C/Users/deepg/Documents/Git/Projects/I61_Internship/Communication_System/FONA/FONA.h",
+			"settings":
+			{
+				"buffer_size": 953,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "Packages/C++/C++ Single File.sublime-build",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 400.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"git",
+				"git: status"
+			],
+			[
+				"TODO",
+				"TodoReview: Open Files"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"git: pu",
+				"git: push"
+			],
+			[
+				"git: comm",
+				"git: commit"
+			],
+			[
+				":w",
+				":w - Save"
+			],
+			[
+				":wq",
+				"github: review pull request"
+			],
+			[
+				"Mark",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"Enable",
+				"Package Control: Enable Package"
+			],
+			[
+				"Pack",
+				"Package Control: Enable Package"
+			],
+			[
+				"Pa",
+				"Package Control: Remove Package"
+			],
+			[
+				"TOdo",
+				"TodoReview: Open Files"
+			],
+			[
+				"markdownLivePreview",
+				"MarkdownLivePreview: Edit Current File"
+			],
+			[
+				"TodoReview",
+				"TodoReview: Open Files"
+			],
+			[
+				"setting",
+				"Preferences: Settings"
+			],
+			[
+				"git stat",
+				"git: status"
+			],
+			[
+				"git comm",
+				"git: commit"
+			],
+			[
+				"Code",
+				"Code Folding: Fold Tag Attributes"
+			],
+			[
+				"Code Folding",
+				"Code Folding: Fold Tag Attributes"
+			],
+			[
+				"Package Cotrol: ",
+				"Package Control: Enable Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Remove Package"
+			],
+			[
+				"package Control: ",
+				"Package Control: Disable Package"
+			],
+			[
+				"pack",
+				"Package Control: Enable Package"
+			],
+			[
+				"",
+				"ActualVim: Disable (File)"
+			],
+			[
+				"ActualVim",
+				"Preferences: ActualVim Settings"
+			],
+			[
+				"Actual",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"vim",
+				"ActualVim: Enable (File)"
+			],
+			[
+				"Markdown Live",
+				"MarkdownLivePreview: Edit Current File"
+			],
+			[
+				"mark",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"git savv",
+				"Preferences: GitSavvy Settings"
+			],
+			[
+				"git: sta",
+				"git: status"
+			],
+			[
+				"git hel",
+				"GitSavvy: help"
+			],
+			[
+				"git: stat",
+				"git: status"
+			],
+			[
+				"term",
+				"Terminal: Open"
+			],
+			[
+				"the",
+				"UI: Select Theme"
+			],
+			[
+				"them",
+				"UI: Select Theme"
+			],
+			[
+				"install ",
+				"Install Package Control"
+			],
+			[
+				"menu",
+				"View: Toggle Menu"
+			]
+		],
+		"width": 412.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/Scheduler",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/Scheduler/Cron"
+	],
+	"file_history":
+	[
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/Communication_System/CommSys.cpp",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/Scheduler/Cron/README.md",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/Aquaman/Aquaman.h",
+		"/C/Users/deepg/Documents/Movies",
+		"/C/Users/deepg/Documents/Arduino/libraries/Adafruit_INA219/Adafruit_INA219.cpp",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/INA219_CurrentSensor/INA219.h",
+		"/C/Users/deepg/Documents/Arduino/libraries/Adafruit_INA219/Adafruit_INA219.h",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/INA219_CurrentSensor/INA219_test.cpp",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/INA219_CurrentSensor/INA219.cpp",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/Batman/Batman.c++",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/Batman/main_batman.cpp",
+		"/C/Users/deepg/Documents/Git/Projects/CommandsForLinux.md",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/INA219_CurrentSensor/batmanT.cpp",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/Power_Controller/PC.h",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/Power_Controller/PC.cpp",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/Scheduler/01.day",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/Scheduler/01.week",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/Batman/Batman.h",
+		"/C/Users/deepg/Documents/HelloWorld.cpp",
+		"/C/Users/deepg/Documents/HelloWorld.exe",
+		"/C/Users/deepg/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/Users/deepg/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/C/Users/deepg/AppData/Roaming/Sublime Text 3/Packages/User/ActualVim.sublime-settings",
+		"/C/Users/deepg/Documents/Git/Projects/I61_Internship/README.md",
+		"/C/Users/deepg/AppData/Roaming/Sublime Text 3/Packages/Package Control/Package Control.sublime-settings",
+		"/C/Users/deepg/Documents/Arduino/libraries/Adafruit_INA219/README.md",
+		"/C/Users/deepg/Music/BuyList",
+		"/C/Users/deepg/Documents/Jobs.txt",
+		"/C/Users/deepg/Documents/Git/Projects/README.md",
+		"/C/Users/deepg/AppData/Roaming/Sublime Text 3/Packages/Terminal/Terminal.sublime-settings",
+		"/C/Users/deepg/Documents/hello.txt"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"setup",
+			"wiringPiI2CSetup",
+			"ina219_power",
+			"INA219_CURRENT",
+			"INA219_B",
+			"Volta",
+			"INA219_CALIBRATION",
+			"terminal"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/C/Users/deepg/Documents/Git/Projects/I61_Internship/Communication_System/CommSys.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 657,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								426,
+								426
+							]
+						],
+						"settings":
+						{
+							"git_savvy.repo_path": "C:\\Users\\deepg\\Documents\\Git\\Projects",
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2202,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								153,
+								153
+							]
+						],
+						"settings":
+						{
+							"__vi_external_disable": false,
+							"git_savvy.help_hidden": false,
+							"git_savvy.interface": "status",
+							"git_savvy.repo_path": "C:\\Users\\deepg\\Documents\\Git\\Projects",
+							"git_savvy.status_view": true,
+							"git_savvy.tabbable": true,
+							"syntax": "Packages/GitSavvy/syntax/status.sublime-syntax",
+							"tab_size": 2
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/C/Users/deepg/Documents/Git/Projects/I61_Internship/Communication_System/FONA/FONA.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 953,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								493,
+								493
+							]
+						],
+						"settings":
+						{
+							"git_savvy.repo_path": "C:\\Users\\deepg\\Documents\\Git\\Projects",
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 22.0
+	},
+	"input":
+	{
+		"height": 28.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": false,
+	"output.GitSavvy":
+	{
+		"height": 86.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "INA219.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

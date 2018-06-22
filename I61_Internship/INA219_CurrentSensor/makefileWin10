@@ -1,0 +1,37 @@
+## -*- Makefile -*-
+##
+## User: deepg
+## Time: Apr 29, 2018 9:09:24 PM
+## Makefile created by Oracle Developer Studio.
+##
+## This file is generated automatically.
+##
+
+
+all: batmanT
+
+## Target: batmanT
+batmanT: batmanT.cpp INA219.o Tolako5V.o Debug_MessagePrinter.o  wiringPi.o
+	g++ -o batmanT -std=c++0x batmanT.cpp INA219.o Tolako5V.o Debug_MessagePrinter.o C:\Users\deepg\Documents\Git\Projects\I61_Internship\WiringPi_FakeImplementation
+	
+INA219.o: INA219.cpp INA219.h
+	g++ -c INA219.cpp 
+	
+Tolako5V.o: ../Tolako5V_CurrentSensor/Tolako5V.cpp ../Tolako5V_CurrentSensor/Tolako5V.h
+	g++ -c ../Tolako5V_CurrentSensor/Tolako5V.cpp
+
+	
+Debug_MessagePrinter.o: ../Debug_MessagePrinter/Debug_MessagePrinter.cpp ../Debug_MessagePrinter/Debug_MessengerPrinter.h
+	
+	
+wiringPi.o: C:\Users\deepg\Documents\Git\Projects\I61_Internship\WiringPi_FakeImplementation\wiringPi_fake.cpp C:\SysGCC\raspberry\arm-linux-gnueabihf\include\wiringPi.h
+
+
+
+#### Clean target deletes all generated files ####
+clean:
+
+# Enable dependency checking
+.KEEP_STATE:
+.KEEP_STATE_FILE:.make.state.GNU-amd64-Windows
+

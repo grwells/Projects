@@ -18,13 +18,14 @@
  */
 int main(int argc, char** argv) {
     MSG_Printer print;
-    print.info_msg(true, "Starting test...");
+    print.info_msg("Starting test...");
     
-    print.info_msg(true, "Initializing HC-SR04");
-    HCSR04 hc(4, 5);
-    print.info_msg(true, "Distance(in): " + std::to_string(hc.distance(IMPERIAL)));
+    print.info_msg("Initializing HC-SR04");
+    //HCSR04 hc(4, 5);
+    HCSR04 hc(5, 4);
+    print.info_msg("Distance(in): " + std::to_string(hc.distance(IMPERIAL)));
     
-    print.info_msg(true, "Finishing test...");
+    print.info_msg("Finishing test...");
     return 0;
 }
 

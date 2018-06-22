@@ -21,15 +21,17 @@ int main(void){
     file.open(filename);
     
     //Initialize the sensor and read from it
-    //TODO: remove comment below
-    //HCSR04 hc(5,2);
-    //float distance_toH2O = hc.read();    
-    float distance_toH2O = 5;
-
+    int echoPin = 4, trigPin = 5;
+    HCSR04 hc(trigPin, echoPin);
+    float distance_toH2O = hc.distance(IMPERIAL);    
+    
     //Determine whether or not to send emergency message
+    //TODO: read config file to get tank height
+    int tank_height = 20;
     if(distance_toH2O >= (0.5*tank_height)){sendWarning();}
 
     //Write the sensor values to the file
+    //TODO: append the data, don't overwrite
     file << std::to_string(distance_toH2O);
    
     //Return!

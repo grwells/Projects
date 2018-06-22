@@ -20,4 +20,13 @@ In crontab daily directory:
 * call water measurement sensor and send data to the user
 * interpret the data and move on, calling all other necessary functions
 
-	
+# Automatic Startup
+Although crontab will carry out the scheduled tasks automatically, they must be installed. All scripts in the /etc/init directory are run automatically on startup.
+
+> //To allow the script in /etc/init.d to run it must be executable
+> sudo chmod +rx /script_name
+
+The final step is to set the script to run on boot
+
+> sudo update-rc.d /script_name_and_path defaults
+> sudo update-rc.d /script_name_and_path enable	

@@ -29,4 +29,6 @@ Although crontab will carry out the scheduled tasks automatically, they must be 
 The final step is to set the script to run on boot
 
 > sudo update-rc.d /script_name_and_path defaults
-> sudo update-rc.d /script_name_and_path enable	
+> sudo update-rc.d /script_name_and_path enable
+
+* Note: had to use /etc/crontab file to run script, not sure why	

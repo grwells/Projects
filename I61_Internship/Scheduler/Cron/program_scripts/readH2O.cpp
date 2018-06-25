@@ -14,7 +14,7 @@ void sendWarning(void){
 
 int main(void){
     //Read the sensor values and store them in a log file
-    std::string filename = "waterlevel.log";
+    std::string filename = "/home/pi/Documents/GitHub/Personal/Projects/I61_Internship/Scheduler/Cron/program_scripts/waterlevel.log";
     
     //Open the file to read
     std::ofstream file;

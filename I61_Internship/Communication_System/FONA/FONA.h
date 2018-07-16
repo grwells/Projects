@@ -12,26 +12,35 @@
 #ifndef FONA_H
 #define FONA_H
 
-#include <wiringPi.h>
-#include <wiringSerial.h>
-#include <string.h>
+#include <wiringPi.h> //May not be needed
+#include <wiringSerial.h> //Also may not be needed
+#include <string.h> //std::string
+#include <cstdlib> //std::system
 
 class FONA{
 public:
     FONA(std::string owner, std::string name, std::string address, float coordinateLocation[2]);
     FONA(void);
 
-    void sendMSG(std::string address, std::string message);
+    int sendText(std::string address, std::string message); //Sends a message to another unit
+    int callNum(std::string phone_num); //Calls another FONA or cell phone
 
-    std::string getMSG(void);
-    std::string deleteMessage(int messageNumber);
+    std::string getText(void); //Pulls up all messages
+    std::string deleteText(int messageNumber); //Deletes a message from device history
 
-    std::string printMessages(void);
-
-    float getLocation(void);
+    std::string printText(void); //Prints all messages received
+    
+    int call_cmd(std::string command); //Calls the specified command, forcing the FONA to execute it
+    
+    //Unit status and functionality checks
+    float getLocation(void); //Reads the GPS for current location and stores it for future reference
+    int startVerbose(void); //Tells the FONA to print debug messages in the terminal for commands
+    bool isConnected(void); //Returns true if the FONA connection is correctly configured and operational
+    int signal(void); //Returns the state of the signal with the APN
+    int batteryState(void); //The charge state of the battery
 
 private:
-    std::string addressBook[5]; //Saved addresses for frequent contacts
+    std::string addressBook[30]; //Saved addresses for frequent contacts
 
     std::string owner; //Name of the owner
     std::string name; //Unit specific name

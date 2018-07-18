@@ -2,6 +2,7 @@
  * This code may only be used with the written consent of I61 Ministries and partners.
  */
 #include "FONA.h"
+#include "iostream"
 
 /*
  * Initialize the FONA
@@ -10,27 +11,30 @@
  * @param string address: The phone number used for contacting this unit
  * @param float coordinateLocation[2]: The location of the unit
  */
-FONA::FONA(std::string owner, std::string name, std::string address, float coordinateLocation[2]){
-    this-> owner = owner;
-    this-> name = name;
-    this-> address address;
-    this-> coordinates[0] = coordinateLocation[0];
-    this-> coordinates[1] = coordinateLocation[1];
+FONA::FONA(std::string new_owner, std::string new_name, std::string new_address, float new_coordinateLocation[2]){
+    owner = new_owner;
+    name = new_name;
+    address = new_address;
+    coordinates[0] = new_coordinateLocation[0];
+    coordinates[1] = new_coordinateLocation[1];
     
     //Start system and then
-    std::system("screen /dev/ttyAMA0 115200");
+    std::system(std::string("screen /dev/ttyAMA0 115200").c_str());
+	//std::string output = popen("screen /dev/ttyAMA0 115200", "r");//May have to add "r" if this does not compile
+
     //set default baud with: 'AT'
     std::system("AT");
+	//output = popen("AT");
 }
 
 FONA::FONA(void){
     std::cout << "Simple start for quick tests and simple debug" << std::endl;
     
-    this -> owner = "owner";
-    this -> name = "device_id";
-    this -> address = "home";
-    this -> coordinates[0] = 0.0;
-    this -> coordinates[1] = 0.0;
+    owner = "owner";
+    name = "device_id";
+    address = "home";
+    coordinates[0] = 0.0;
+    coordinates[1] = 0.0;
     
     std::system("screen /dev/ttyAMA0 115200"); //Start interface with FONA
     std::system("AT"); //Set to default Baud rate, if returns 'OK' to interface, command was successful
@@ -48,9 +52,9 @@ int FONA::sendText(std::string address, std::string message){
     std::system("AT+CMGF=1");
     
     //Send message: AT+CMGS="nnnnnn" 
-    std::system("AT+CMGS=\"" + address + "\""); //Tell the FONA that you want to send a message
-    std::system(message); //Print the message to the command line
-    std::system("\x1A"); //Send the message with Ctrl-z
+    std::system(std::string("AT+CMGS=\"" + address + "\"").c_str()); //Tell the FONA that you want to send a message
+    std::system(message.c_str()); //Print the message to the command line
+    std::system(std::string("\x1A").c_str()); //Send the message with Ctrl-z
     
     //TODO: if cmdline returns 'OK' return good reading, otherwise return -1
     return 0;
@@ -65,7 +69,7 @@ int FONA::callNum(std::string phone_num){
     //TODO: Call somebody (867-5309 ;) )
     
     //To dial a number: ATDnnnnn;
-    std::system("ATD" + phone_num + ";");
+    std::system(std::string("ATD" + phone_num + ";").c_str());
     //Hang up with: ATH
     std::system("ATH");
     

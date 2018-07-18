@@ -3,7 +3,7 @@
 
 #include <wiringPi.h>
 #include <wiringSerial.h>
-#include "FONA.h"
+#include "FONA/FONA.h"
 
 #include "../Debug_MessagePrinter/MSG_Printer.h"
 

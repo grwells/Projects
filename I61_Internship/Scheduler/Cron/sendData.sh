@@ -1,2 +1,2 @@
 #!/bin/sh
-sudo ./program_scripts/sendmessage
+sudo ./program_scripts/sendmsg

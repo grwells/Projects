@@ -9,9 +9,18 @@ int main(void){
 	std::string com = "AT";
 
 	serialPuts(fd, com.c_str());
+	serialPuts(fd, com.c_str());
+	int charsAvail = serialDataAvail(fd);
+	char output[6] = {};
 	//TODO: Make see if FONA has any output and parse
-	if(
- 	serialPuts(fd, com.c_str());
+	if(charsAvail > 0){
+		for(int i = 0; i < charsAvail; i++){
+			output[i] = serialGetchar(fd);
+		}
+	}
+
+	std::cout << output << std::endl;
+ 	
 
 	com = "AT+CMGF=1";
 

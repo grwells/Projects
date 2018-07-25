@@ -1,6 +1,7 @@
 #include "FONA.h"
 #include <iostream>
 #include <string>
+#include <wiringPiSerial.h>
 
 int main(void){
 	std::string dev = "/dev/ttyUSB0";

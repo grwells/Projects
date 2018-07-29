@@ -1,10 +1,11 @@
 #include "FONA.h"
 #include <iostream>
 #include <string>
-#include <wiringPiSerial.h>
+#include <wiringSerial.h>
 
 int main(void){
-	std::string dev = "/dev/ttyUSB0";
+	wiringPiSetup();
+	std::string dev = "/dev/ttyAMA0";
 	int fd = serialOpen(dev.c_str(), 115200);
 	
 	std::string com = "AT";

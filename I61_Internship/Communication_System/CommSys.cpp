@@ -1,4 +1,4 @@
-#include <CommSys.h>
+#include "CommSys.h"
 
 CommSys::CommSys(bool radioOrFONA){
 	//TODO: Configure for radio or FONA modules
@@ -6,12 +6,12 @@ CommSys::CommSys(bool radioOrFONA){
 		//TODO: set up the radio interface
 	}else if(FONA){
 		//TODO: set up the FONA interface
-		FONA gsm;
+		//FONA gsm;
 	}
 
 }
 
-CommSysCommSys(void){
+CommSys::CommSys(void){
 	//TODO: write default constructor
 }
 

@@ -11,11 +11,11 @@ msg_printer: /home/pi/Documents/GitHub/Personal/Projects/I61_Internship/Debug_Me
 	g++ -c -o msg_printer /home/pi/Documents/GitHub/Personal/Projects/I61_Internship/Debug_MessagePrinter/MSG_Printer.cpp 
 
 commsys: /home/pi/Documents/GitHub/Personal/Projects/I61_Internship/Communication_System/CommSys.cpp fona
-	g++ -c /home/pi/Documents/GitHub/Personal/Projects/I61_Internship/Communication_System/CommSys.cpp fona -lwiringPi
+	g++ -c -o commsys /home/pi/Documents/GitHub/Personal/Projects/I61_Internship/Communication_System/CommSys.cpp fona -lwiringPi
 
 
 fona: /home/pi/Documents/GitHub/Personal/Projects/I61_Internship/Communication_System/FONA/FONA.cpp
-	g++ -c /home/pi/Documents/GitHub/Personal/Projects/I61_Internship/Communication_System/FONA/FONA.cpp -lwiringPi
+	g++ -c -o fona /home/pi/Documents/GitHub/Personal/Projects/I61_Internship/Communication_System/FONA/FONA.cpp -lwiringPi
 
 clean:
 	rm 

@@ -14,11 +14,14 @@
 
 #include <wiringPi.h> //May not be needed
 #include <wiringSerial.h> //Also may not be needed
-#include <string.h> //std::string
-#include <cstdlib> //std::system
+#include <string> //std::string
+#include <cstdlib> //std::system()
+#include <stdio.h> //popen()
 
 class FONA{
+
 public:
+
     FONA(std::string owner, std::string name, std::string address, float coordinateLocation[2]);
     FONA(void);
 

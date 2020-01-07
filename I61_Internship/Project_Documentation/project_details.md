@@ -31,4 +31,6 @@ In order to compile projects that reference wiringPi the following should be ent
 
 #### CONFIGURING C++ HEADERS:
 In order for the compiler to run, the header files must be stored in /usr/local/include,
-/usr/include, or any of the directories listed by "gcc -print-prog-name=cc1plus` -v".
+/usr/include, or any of the directories listed by 
+	
+	gcc -print-prog-name=cc1plus` -v

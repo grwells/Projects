@@ -88,13 +88,13 @@ int setup(void){
 	serialFlush(fd);
 
 	if(fd < 0) std::cout << "ERROR: file descriptor < 0" << std::endl;
-	return fd;	
+	return fd;
 }
 
 int main(void){
-	
+
 	int fd = setup(); //Setup wiringPi and serial connections
-	
+
 	/*
 	 * TODO: Try printing "\n\r" to terminate commands
 	 * TODO: call serial flush after all output has beeb processed
@@ -108,7 +108,7 @@ int main(void){
 	//std::cout << "\n";
 
 	serialFlush(fd);
-	
+
 	serialClose(fd);
 	return 0;
 }
